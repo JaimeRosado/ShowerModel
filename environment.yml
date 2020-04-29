@@ -1,0 +1,10 @@
+name: toymodel
+channels:
+  - default
+  - conda-forge
+
+dependencies:
+  - conda-build
+  - numpy
+  - pandas
+  - matplotlib
