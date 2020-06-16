@@ -1,247 +1,271 @@
 # coding: utf-8
 
-import math
 import numpy as np
 import pandas as pd
 import warnings
-warnings.filterwarnings('ignore', 'Pandas doesn\'t allow columns to be created via a new attribute name', UserWarning)
-#get_ipython().magic('matplotlib inline')        
-#import ToyModel as tm
-
+warnings.filterwarnings(
+    'ignore',
+    'Pandas doesn\'t allow columns to be created via a new attribute name',
+    UserWarning)
 
 # Default values for atmosphere
-_h0 = 2.20 #km
-_h_top = 112.8292 #km
+_h0 = 2.20  # km
+_h_top = 112.8292  # km
 _N_steps = 550
 _model = 1
 
 
-#### Constructor ##########################################
+# Constructor #################################################################
 def Atmosphere(h0=_h0, h_top=_h_top, N_steps=_N_steps, model=_model):
-    """Make an atmosphere discretization.
-    
-Atmosphere() makes the default Atmosphere object.
-    
-Parameters
-----------
-h0 : Ground level in km above sea level.
-h_top : Top level of the atmosphere in km above sea level.
-N_steps : Number of discretization steps.
-model : CORSIKA atmospheric model.
-    Presently either 1 or 17. More models to be implemented.
-
-Returns
--------
-atmosphere : Atmosphere object.
-
-See also
---------
-Atmosphere object.
-Track : Constructor of Track object.
-Profile: Constructor of Profile object.
-Shower : Contructor of Shower object.
     """
-    atmosphere = _Atmosphere( columns=['h', 'X_vert', 'rho','temp', 'P', 'P_w', 'E_th', 'r_M'] )
-    
-    if (h0==_h0) and (N_steps==_N_steps) and (model==_model):  #For the default atmospheric parameters
+    Make an atmosphere discretization.
+
+    Atmosphere() makes the default Atmosphere object.
+
+    Parameters
+    ----------
+    h0 : Ground level in km above sea level.
+    h_top : Top level of the atmosphere in km above sea level.
+    N_steps : Number of discretization steps.
+    model : CORSIKA atmospheric model.
+        Presently either 1 or 17. More models to be implemented.
+
+    Returns
+    -------
+    atmosphere : Atmosphere object.
+
+    See also
+    --------
+    Atmosphere object.
+    Track : Constructor of Track object.
+    Profile: Constructor of Profile object.
+    Shower : Contructor of Shower object.
+    """
+    atmosphere = _Atmosphere(
+        columns=['h', 'X_vert', 'rho', 'temp', 'P', 'P_w', 'E_th', 'r_M'])
+
+    # For the default atmospheric parameters
+    if (h0 == _h0) and (N_steps == _N_steps) and (model == _model):
         global ATM
         try:
-            return ATM   #It outputs the default atmosphere if already generated
-        except:
-            ATM = atmosphere      #If the default atmosphere is to be generated, it will be asigned to the global variable ATM
-        
-    #The output DataFrame includes the input parameters h0, h_top, N_steps, model as atributes        
+            return ATM  # Outputs the default atmosphere if already generated
+        except Exception:
+            # If the default atmosphere is to be generated,
+            # it will be asigned to the global variable ATM
+            ATM = atmosphere
+
+    # The output DataFrame includes the input parameters h0, h_top, N_steps,
+    # model as atributes
     atmosphere.h0 = h0
     atmosphere.h_top = h_top
     atmosphere.N_steps = N_steps
     atmosphere.model = model
-            
-    #Array of mid heights of the discretization of the atmosphere. h0 represent the ground level.
+
+    # Array of mid heights of the discretization of the atmosphere.
+    # h0 represent the ground level.
     height = np.linspace(h0, atmosphere.h_top, N_steps+1)
     atmosphere.h_step = height[1] - height[0]
     atmosphere.h = height[1:] - atmosphere.h_step/2.
-    
-    Xv, rho = atmosphere._get_Xv_rho(atmosphere.h) #It obtains the vertical depth and density from the input model
-            
+
+    # Vertical depth and density from the input model
+    Xv, rho = atmosphere._get_Xv_rho(atmosphere.h)
+
     atmosphere.X_vert = Xv
     atmosphere.rho = rho
-        
+
     temp = np.zeros_like(rho)
-    temp[rho>0] = 28.96 * 9.81 * Xv[rho>0] / 831445.98 / rho[rho>0]  #Air is assumed to be an ideal gas with 28.96 g/mol
+    # Air is assumed to be an ideal gas with 28.96 g/mol
+    temp[rho > 0] = 28.96 * 9.81 * Xv[rho > 0] / 831445.98 / rho[rho > 0]
     atmosphere.temp = temp
-    P = 9.81 * Xv / 10.    #A constant gravitational acceleration is assumed
+    P = 9.81 * Xv / 10.  # A constant gravitational acceleration is assumed
     atmosphere.P = P
-    P_w = np.zeros_like(P) #CORSIKA models do not describe the partial pressure of water vapor
-    atmosphere.P_w = P_w            
-        
-    #delta=1-n at 350nm. J.C. Owens, Appl. Opt. 6 (1967) 51
+    # CORSIKA models do not describe the partial pressure of water vapor
+    P_w = np.zeros_like(P)
+    atmosphere.P_w = P_w
+
+    # delta=1-n at 350nm. J.C. Owens, Appl. Opt. 6 (1967) 51
     delta = np.zeros_like(temp)
-    delta[temp>0] = 0.00000001 * (
-             8132.8589 * ( P[temp>0] - P_w[temp>0])/temp[temp>0] * ( 1. + (P[temp>0]-P_w[temp>0]) *
-                 ( 0.000000579 - 0.0009325/temp[temp>0] + 0.25844/temp[temp>0]**2 ))
-            + 6961.9879 * P_w[temp>0]/temp[temp>0] * ( 1. + P_w[temp>0] * ( 1. + 0.00037 * P_w[temp>0] ) *
-                 ( -0.00237321 + 2.23366/temp[temp>0] - 710.792/temp[temp>0]**2 + 0.000775141/temp[temp>0]**3 )))
-    
-    #Threshold energy for Cherenkov production at 350 nm in air
+    delta[temp > 0] = 0.00000001 * (
+        8132.8589*(P[temp > 0]-P_w[temp > 0])/temp[temp > 0]
+        * (1.+(P[temp > 0]-P_w[temp > 0])
+            * (0.000000579-0.0009325/temp[temp > 0]+0.25844/temp[temp > 0]**2))
+        + 6961.9879*P_w[temp > 0]/temp[temp > 0]
+        * (1.+P_w[temp > 0]*(1.+0.00037*P_w[temp > 0])
+            * (-0.00237321+2.23366/temp[temp > 0]-710.792/temp[temp > 0]**2
+                + 0.000775141/temp[temp > 0]**3)))
+
+    # Threshold energy for Cherenkov production at 350 nm in air
     atmosphere.E_th = 0.511 / np.sqrt(2.*delta)
-    
-    #Moliere radius in km
+
+    # Moliere radius in km
     atmosphere.r_M = 21.2 / 81. * 36.7 / atmosphere.rho / 100000.
 
     return atmosphere
 
 
-
-#### Class ######################################
+# Class #######################################################################
 class _Atmosphere(pd.DataFrame):
-    """DataFrame containing an atmosphere discretization.
-    
-Use tm.Atmosphere to construct an Atmosphere object.
-
-Columns
--------
-h : Height in km above sea level.
-X_vert : Vertical depth in g/cm^2.
-rho : Mass density in g/cm^3.
-temp : Temperature in K.
-P : Pressure in hPa.
-P_w : Partial pressure of water vapor in hPa.
-E_th : Cherenkov energy threshold in MeV at 350 nm.
-r_M : Moliere radius in km.
-
-Attributes
-----------
-h0 : Ground level in km above sea level.
-h_top : Top level of the atmosphere in km above sea level.
-N_steps : Number of discretization steps.
-h_step : Size of discretization step in km.
-model : CORSIKA atmospheric model.
-    Presently either 1 or 17. More models to be implemented.
-
-Methods
--------
-h_to_Xv : Get vertical depth from height.
-h_to_rho : Get mass density from height.
-Xv_to_h : Get height from vertical depth.
-
-See also
---------
-Atmosphere : Constructor of Atmosphere object.
-Track : Constructor of Track object.
-Profile : Constructor of Profile object.
-Shower : Contructor of Shower object.
     """
-    
+    DataFrame containing an atmosphere discretization.
+
+    Use tm.Atmosphere to construct an Atmosphere object.
+
+    Columns
+    -------
+    h : Height in km above sea level.
+    X_vert : Vertical depth in g/cm^2.
+    rho : Mass density in g/cm^3.
+    temp : Temperature in K.
+    P : Pressure in hPa.
+    P_w : Partial pressure of water vapor in hPa.
+    E_th : Cherenkov energy threshold in MeV at 350 nm.
+    r_M : Moliere radius in km.
+
+    Attributes
+    ----------
+    h0 : Ground level in km above sea level.
+    h_top : Top level of the atmosphere in km above sea level.
+    N_steps : Number of discretization steps.
+    h_step : Size of discretization step in km.
+    model : CORSIKA atmospheric model.
+        Presently either 1 or 17. More models to be implemented.
+
+    Methods
+    -------
+    h_to_Xv : Get vertical depth from height.
+    h_to_rho : Get mass density from height.
+    Xv_to_h : Get height from vertical depth.
+
+    See also
+    --------
+    Atmosphere : Constructor of Atmosphere object.
+    Track : Constructor of Track object.
+    Profile : Constructor of Profile object.
+    Shower : Contructor of Shower object.
+    """
+
     def h_to_Xv(self, h):
-        """Get vertical depth in g/cm^2 from height in km above sea level.
+        """
+        Get vertical depth in g/cm^2 from height in km above sea level.
 
-Parameters
-----------
-h : Scalar or array-type.
+        Parameters
+        ----------
+        h : Scalar or array-type.
 
-Returns
--------
-Xv : Scalar or array-type.
+        Returns
+        -------
+        Xv : Scalar or array-type.
         """
         Xv, rho = self._get_Xv_rho(h)
         return Xv
-    
-    
+
     def h_to_rho(self, h):
-        """Get mass density in g/cm^3 from height in km above sea level.
+        """
+        Get mass density in g/cm^3 from height in km above sea level.
 
-Parameters
-----------
-h : Scalar or array-type.
+        Parameters
+        ----------
+        h : Scalar or array-type.
 
-Returns
--------
-rho : Scalar or array-type.
+        Returns
+        -------
+        rho : Scalar or array-type.
         """
         Xv, rho = self._get_Xv_rho(h)
         return rho
-    
-    
+
     def _get_Xv_rho(self, h):
-        """Get both the vertical depth in g/cm^2 and the mass density in g/cm^3 from height in km above sea level.
+        """
+        Get both the vertical depth in g/cm^2 and the mass density in g/cm^3
+        from height in km above sea level.
         """
         return _get_Xv_rho(h, self.model)
-    
-    
+
     def Xv_to_h(self, Xv):
-        """Get height in km above sea level from vertical depth in g/cm^2.
-
-Parameters
-----------
-Xv : Scalar or array-type.
-
-Returns
--------
-h : Scalar or array-type.
         """
-        if Xv==0:
+        Get height in km above sea level from vertical depth in g/cm^2.
+
+        Parameters
+        ----------
+        Xv : Scalar or array-type.
+
+        Returns
+        -------
+        h : Scalar or array-type.
+        """
+        if Xv == 0:
             return self.h_top
-        
-        h_lower = self.h[self.X_vert>Xv].max() #Lower bound for h
-        h_upper = self.h[self.X_vert<Xv].min() #Lower bound for h
-        Xv_upper = self.X_vert[self.X_vert>Xv].min() #Upper bound for Xv (corresponding to h_lower)
-        Xv_lower = self.X_vert[self.X_vert<Xv].max() #Lower bound for Xv (corresponding to h_upper)
-        #An exponential atmosphere is assumed to interpolate h
-        #The approximation is good enough for the top atmosphere too (more or less linear) 
-        return h_lower + (h_upper-h_lower) / np.log(Xv_upper/Xv_lower) * np.log(Xv_upper/Xv)
+
+        h_lower = self.h[self.X_vert > Xv].max()  # Lower bound for h
+        h_upper = self.h[self.X_vert < Xv].min()  # Lower bound for h
+        # Upper and lower bounds for Xv (corresponding to h_lower and  h_upper)
+        Xv_upper = self.X_vert[self.X_vert > Xv].min()
+        Xv_lower = self.X_vert[self.X_vert < Xv].max()
+        # An exponential atmosphere is assumed to interpolate h
+        # The approximation is good enough for the top atmosphere too
+        # (more or less linear)
+        return (h_lower + (h_upper-h_lower) / np.log(Xv_upper/Xv_lower)
+                * np.log(Xv_upper/Xv))
 
 
-
-#### Auxiliary functions ######################
+# Auxiliary functions #########################################################
 def _get_Xv_rho(h, model):
-    """Get vertical depth in g/cm^2 and mass density in g/cm^3 from height in km above sea level for an atmospheric model.
-    
-Parameters
-----------
-h : Scalar or array-type.
-model : CORSIKA atmospheric model.
-    Presently either 1 or 17. More models to be implemented.
-
-Returns
--------
-Xv : Scalar or array-type.
-rho : Scalar or array-type.
     """
-    #Some atmospheric models used in CORSIKA.
-    #Each row contains the model parameters for a different atmospheric layer: h_ini(km), a(g/cm^2), b(g/cm^2), c(km)
-    if model==1: #model 1
-        h_top = 112.8292  #Height of the atmosphere at which Xv=0 for this model
-           #h_ini(km),    a(g/cm^2), b(g/cm^2),        c(km)
-        param = ((100. ,   0.01128292,   1.    ,10000.       ),
-                 ( 40. ,   0.        , 540.1778,    7.7217016),
-                 ( 10. ,   0.61289   ,1305.5948,    6.3614304),
-                 (  4. , -94.919     ,1144.9069,    8.7815355),
-                 (  0. ,-186.555306  ,1222.6562,    9.9418638))
-    elif model==17:
+    Get vertical depth in g/cm^2 and mass density in g/cm^3 from height in km
+    above sea level for an atmospheric model.
+
+    Parameters
+    ----------
+    h : Scalar or array-type.
+    model : CORSIKA atmospheric model.
+        Presently either 1 or 17. More models to be implemented.
+
+    Returns
+    -------
+    Xv : Scalar or array-type.
+    rho : Scalar or array-type.
+    """
+    # Some atmospheric models used in CORSIKA.
+    # Each row contains the model parameters for a different atmospheric layer:
+    # h_ini(km), a(g/cm^2), b(g/cm^2), c(km)
+    if model == 1:  # model 1
+        h_top = 112.8292  # Height of the atmosphere at which Xv=0
+        #     h_ini(km),     a(g/cm^2), b(g/cm^2),          c(km)
+        param = ((100.0,    0.01128292,    1.00000, 10000.0000000),
+                 (040.0,    0.00000000,  540.17780,     7.7217016),
+                 (010.0,    0.61289000, 1305.59480,     6.3614304),
+                 (004.0,  -94.91900000, 1144.90690,     8.7815355),
+                 (000.0, -186.55530600, 1222.65620,     9.9418638))
+    elif model == 17:
         h_top = 112.8292
-           #h_ini(km),    a(g/cm^2), b(g/cm^2),        c(km)
-        param = ((100. ,   0.01128292,   1.     ,10000.       ),
-                 ( 37. ,   0.00043545, 655.67307,    7.3752177),
-                 ( 11.4,   0.61289   ,1322.9748 ,    6.2956893),
-                 (  7. , -57.932486  ,1143.0425 ,    8.0000534),
-                 (  0. ,-149.801663  ,1183.6071 ,    9.5424834))
+        #     h_ini(km),     a(g/cm^2),  b(g/cm^2),         c(km)
+        param = ((100.0,    0.01128292,    1.00000, 10000.0000000),
+                 (037.0,    0.00043545,  655.67307,     7.3752177),
+                 (011.4,    0.61289000, 1322.97480,     6.2956893),
+                 (007.0,  -57.93248600, 1143.04250,     8.0000534),
+                 (000.0, -149.80166300, 1183.60710,     9.5424834))
     else:
         raise ValueError('This input model is not implemented yet')
-        
+
     h = np.array(h)
     Xv = np.zeros_like(h)
     rho = np.zeros_like(h)
-    
-    #For the atmospheric models used in CORSIKA, the different atmospheric layers are exponential
-    #except for the top layer, which is linear
+
+    # For the atmospheric models used in CORSIKA, the different atmospheric
+    # layers are exponential except for the top layer, which is linear
     for (i, (h_ini, a, b, c)) in enumerate(param):
-        if i==0:                                 #Top layer
-            h_fin = h_top           #h_top is such that Xv=0 for h=h_top
-            Xv[ (h>=h_ini) & (h<h_fin) ] = a - b * h[ (h>=h_ini) & (h<h_fin) ] / c
-            rho[ (h>=h_ini) & (h<h_fin) ] = b / c / 100000.                   #Constant density
-        else:                                    #Exponential model for the other layers
-            Xv[ (h>=h_ini) & (h<h_fin) ] = a + b * np.exp( -h[ (h>=h_ini) & (h<h_fin) ] / c )
-            rho[ (h>=h_ini) & (h<h_fin) ] = ( Xv[ (h>=h_ini) & (h<h_fin) ] - a ) / c / 100000.
+        if i == 0:                  # Top layer
+            h_fin = h_top           # h_top is such that Xv=0 for h=h_top
+            Xv[(h >= h_ini) & (h < h_fin)] = (
+                a - b * h[(h >= h_ini) & (h < h_fin)] / c)
+            # Constant density
+            rho[(h >= h_ini) & (h < h_fin)] = b / c / 100000.
+        else:  # Exponential model for the other layers
+            Xv[(h >= h_ini) & (h < h_fin)] = (
+                a + b * np.exp(-h[(h >= h_ini) & (h < h_fin)] / c))
+            rho[(h >= h_ini) & (h < h_fin)] = (
+                (Xv[(h >= h_ini) & (h < h_fin)] - a) / c / 100000.)
         h_fin = h_ini
-    
-    return 1.*Xv, 1.*rho #If the input h is a scalar, then the function returns two scalars
+
+    # If the input h is a scalar, then the function returns two scalars
+    return 1.*Xv, 1.*rho
