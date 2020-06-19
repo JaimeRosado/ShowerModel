@@ -25,8 +25,8 @@ def Shower(E=_E, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
         If None, theta is used. If given, theta is overwritten.
     az : Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
-    x0 : East coordinate in km of shower interaction point at ground.
-    y0 : West coordinate in km of shower interaction point at ground.
+    x0 : East coordinate in km of shower impact point at ground.
+    y0 : West coordinate in km of shower impact point at ground.
     prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame cointaining a
         numerical energy deposit profile. If 'Greisen', the Greisen function
         for electromagnetic showers is used. If 'Gaisser-Hillas', the
@@ -132,8 +132,8 @@ class _Shower:
     alt : Altitude in degrees of the apparent position of the source.
     az : Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
-    x0 : East coordinate in km of shower interaction point at ground.
-    y0 : North coordinate in km of shower interaction point at ground.
+    x0 : East coordinate in km of shower impact point at ground.
+    y0 : North coordinate in km of shower impact point at ground.
     prf_model : 'Greisen', 'Gaisser-Hillas' or DataFrame cointaining the input
         energy deposit profile.
     X_max : Slant depth in g/cm^2 at shower maximum.

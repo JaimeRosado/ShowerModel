@@ -14,7 +14,8 @@ warnings.filterwarnings(
 def Cherenkov(profile):
     """
     Calculate the Cherenkov light production from a shower profile
-    discretization.
+    discretization according toe the parameterization described in
+    F. Nerling et al., Astropart. Phys. 24(2006)241.
 
     Parameters
     ----------
@@ -44,7 +45,7 @@ class _Cherenkov(pd.DataFrame):
     """
     DataFrame containing the Cherenkov ligth production in the 290 - 430 nm
     range as well as the parameters determining the angular distribution of
-    Cherenkov emission     based on the parameterization described in
+    Cherenkov emission based on the parameterization described in
     F. Nerling et al., Astropart. Phys. 24(2006)241.
 
     Columns

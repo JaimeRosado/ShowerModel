@@ -13,7 +13,7 @@ warnings.filterwarnings(
 def Fluorescence(profile):
     """
     Calculate the fluorescence photon production from a shower profile
-    discretization     using the parameterization described in
+    discretization using the parameterization described in
     D. Morcuende et al., Astropart. Phys. 107(2019)26 and references therein.
 
     Parameters

@@ -31,8 +31,8 @@ def Track(theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0, atmosphere=None,
         If None, theta is used. If given, theta is overwritten.
     az : Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
-    x0 : East coordinate in km of shower interaction point at ground.
-    y0 : West coordinate in km of shower interaction point at ground.
+    x0 : East coordinate in km of shower impact point at ground.
+    y0 : West coordinate in km of shower impact point at ground.
     atmosphere : Existing Atmosphere object to be used.
         If None, a new Atmosphere object is generated.
     **kwargs {h0, h_top, N_steps, model} : Options to construct the new
@@ -154,8 +154,8 @@ class _Track(pd.DataFrame):
     wx : East coordinate of a unit vector perpendicular to both u and v.
     wy : North coordinate of a unit vector perpendicular to both u and v.
     wz : Vertical coordinate of a unit vector perpendicular to both u and v.
-    x0 : East coordinate in km of shower interaction point at ground.
-    y0 : North coordinate in km of shower interaction point at ground.
+    x0 : East coordinate in km of shower impact point at ground.
+    y0 : North coordinate in km of shower impact point at ground.
     t0 : Travel time in microseconds at ground level.
     x_top : East coordinate in km of shower at the top of the atmosphere.
     y_top : North coordinate in km of shower at the top of the atmosphere.
