@@ -84,9 +84,9 @@ class _Event():
 
     Attributes
     ----------
-    event_type : Name of subclass of Event.
-        Presently, only the parent class Event and the subclass GridEvent are
-        available. More subclasses to be implemented.
+    event_type : Name of subclass of Event. Presently, only the parent class
+        Event and the subclass GridEvent are available. More subclasses to be
+        implemented.
     shower : Shower object.
     track : Track object.
     profile : Profile object.
@@ -94,8 +94,8 @@ class _Event():
     cherenkov : Cherenkov object.
     atmosphere : Atmosphere object.
     observatory : Observatory object.
-    grid : Grid object (only GridEvent objects).
-        It replaces observatory for GridEvent objects
+    grid : Grid object (only GridEvent objects). It replaces observatory for
+        GridEvent objects
     projections : list of Projection objects (one for each telescope).
     signals : list of Signal objects (one for each telescope).
     atm_trans : True if the atmospheric transmision is included.
@@ -282,11 +282,10 @@ class _Event():
 
         Parameters
         ----------
-        grid : Existing Grid object to be used.
-            If None, a new Grid object is generated from the specificed
-            dimensions and the characteristics of the telescope with
-            tel_index=0 of the observatory. If given, size_x, size_y, N_x, N_y
-            are not used.
+        grid : Existing Grid object to be used. If None, a new Grid object is
+            generated from the specificed dimensions and the characteristics of
+            the telescope with tel_index=0 of the observatory. If given,
+            size_x, size_y, N_x, N_y are not used.
         size_x : Size of the grid in km across the x direction.
         size_y : Size of the grid in km across the y direction.
         N_x : Number of cells across the x direction.

@@ -27,8 +27,8 @@ def Profile(E=_E, theta=_theta, alt=None, prf_model=_prf_model, X_max=None,
     ----------
     E : Energy of the primary particle in MeV.
     theta : Zenith angle in degrees of the apparent position of the source.
-    alt : Altitude in degrees of the apparent position of the source.
-        If None, theta is used. If given, theta is overwritten.
+    alt : Altitude in degrees of the apparent position of the source. If None,
+        theta is used. If given, theta is overwritten.
     prf_model : 'Greisen', 'Gaisser-Hillas' or DataFrame cointaining a
         numerical energy deposit profile. If 'Greisen', the Greisen function
         for electromagnetic showers is used. If 'Gaisser-Hillas', the

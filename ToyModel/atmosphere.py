@@ -27,8 +27,8 @@ def Atmosphere(h0=_h0, h_top=_h_top, N_steps=_N_steps, model=_model):
     h0 : Ground level in km above sea level.
     h_top : Top level of the atmosphere in km above sea level.
     N_steps : Number of discretization steps.
-    model : CORSIKA atmospheric model.
-        Presently either 1 or 17. More models to be implemented.
+    model : CORSIKA atmospheric model. Presently either 1 or 17. More models to
+        be implemented.
 
     Returns
     -------
@@ -127,8 +127,8 @@ class _Atmosphere(pd.DataFrame):
     h_top : Top level of the atmosphere in km above sea level.
     N_steps : Number of discretization steps.
     h_step : Size of discretization step in km.
-    model : CORSIKA atmospheric model.
-        Presently either 1 or 17. More models to be implemented.
+    model : CORSIKA atmospheric model. Presently either 1 or 17. More models to
+        be implemented.
 
     Methods
     -------
@@ -217,8 +217,8 @@ def _get_Xv_rho(h, model):
     Parameters
     ----------
     h : Scalar or array-type.
-    model : CORSIKA atmospheric model.
-        Presently either 1 or 17. More models to be implemented.
+    model : CORSIKA atmospheric model. Presently either 1 or 17. More models to
+        be implemented.
 
     Returns
     -------

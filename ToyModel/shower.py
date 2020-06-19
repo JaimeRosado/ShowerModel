@@ -21,8 +21,8 @@ def Shower(E=_E, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
     ----------
     E : Energy of the primary particle.
     theta : Zenith angle in degrees of the apparent position of the source.
-    alt : Altitude in degrees of the apparent position of the source.
-        If None, theta is used. If given, theta is overwritten.
+    alt : Altitude in degrees of the apparent position of the source. If None,
+        theta is used. If given, theta is overwritten.
     az : Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
     x0 : East coordinate in km of shower impact point at ground.
@@ -123,8 +123,8 @@ class _Shower:
     h_top : Top level of the atmosphere in km above sea level.
     N_steps : Number of discretization steps.
     h_step : Size of discretization step in km.
-    model : CORSIKA atmospheric model.
-        Presently either 1 or 17. More models to be implemented.
+    model : CORSIKA atmospheric model. Presently either 1 or 17. More models to
+        be implemented.
     track : Track object.
     profile : Profile object.
     E : Energy of the primary particle.

@@ -27,14 +27,14 @@ def Track(theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0, atmosphere=None,
     Parameters
     ----------
     theta : Zenith angle in degrees of the apparent position of the source.
-    alt : Altitude in degrees of the apperent position of the source.
-        If None, theta is used. If given, theta is overwritten.
+    alt : Altitude in degrees of the apperent position of the source. If None,
+        theta is used. If given, theta is overwritten.
     az : Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
     x0 : East coordinate in km of shower impact point at ground.
     y0 : West coordinate in km of shower impact point at ground.
-    atmosphere : Existing Atmosphere object to be used.
-        If None, a new Atmosphere object is generated.
+    atmosphere : Existing Atmosphere object to be used. If None, a new
+        Atmosphere object is generated.
     **kwargs {h0, h_top, N_steps, model} : Options to construct the new
         Atmosphere object when atm==None. If None, the default Atmosphere
         object is used.
@@ -129,9 +129,8 @@ class _Track(pd.DataFrame):
     x : East coordinate in km.
     y : North coordinate in km.
     z : Height in km from ground level.
-    t : Travel time in microseconds.
-        t=0 at the top of the atmosphere.
-        The shower is assumed to propates with the speed of light.
+    t : Travel time in microseconds. t=0 at the top of the atmosphere. The
+        shower is assumed to propates with the speed of light.
 
     Attributes
     ----------

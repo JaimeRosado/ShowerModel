@@ -55,18 +55,17 @@ def Array25(telescope=None, tel_type='MST', x_c=_x, y_c=_y, z_c=_z,
 
     Parameters
     ----------
-    telescope : Existing Telescope object to be used.
-        If None, a new Telescope object of type tel_type is generated.
-    tel_type : Subclass of Telescope to be used when telescope==None.
-        Default to MST with field of view of 8 degrees, mirror area of
-        113 m^2 and 1800 pixels. If tel_type==None, the parent class Telescope
-        is used.
+    telescope : Existing Telescope object to be used. If None, a new Telescope
+        object of type tel_type is generated.
+    tel_type : Subclass of Telescope to be used when telescope==None. Default
+        to MST with field of view of 8 degrees, mirror area of 113 m^2 and
+        1800 pixels. If tel_type==None, the parent class Telescope is used.
     x_c : East coordinate in km of the center of the array.
     y_c : North coordinate in km of the center of the array.
     z_c : Height of the array in km above ground level.
     theta : Zenith angle in degrees of the telescope pointing directions.
-    alt : Altitude in degrees of the telescope pointing directions.
-        If None, theta is used. If given, theta is overwritten.
+    alt : Altitude in degrees of the telescope pointing directions. If None,
+        theta is used. If given, theta is overwritten.
     az : Azimuth angle (from north, clockwise) in degrees of the telescope
         pointing directions.
     R : Radius in km of the array.
@@ -158,16 +157,16 @@ def Grid(telescope=None, tel_type='GridElement', x_c=_x, y_c=_y, z_c=_z,
     ----------
     telescope : Existing Telescope object to be used.
         If None, a new Telescope object of type tel_type is generated.
-    tel_type : Subclass of Telescope to be used when telescope==None.
-        Default to GridElement with 100% detection efficiency, FoV of
-        180 degrees around zenith and area of one grid cell. If tel_type==None,
-        the parent class Telescope is used.
+    tel_type : Subclass of Telescope to be used when telescope==None. Default
+        to GridElement with 100% detection efficiency, FoV of 180 degrees
+        around zenith and area of one grid cell. If tel_type==None, the parent
+        class Telescope is used.
     x_c : East coordinate in km of the center of the grid.
     y_c : North coordinate in km of the center of the grid.
     z_c : Height of the grid in km above ground level.
     theta : Zenith angle in degrees of the telescope pointing directions.
-    alt : Altitude in degrees of the telescope pointing directions.
-        If None, theta is used. If given, theta is overwritten.
+    alt : Altitude in degrees of the telescope pointing directions. If None,
+        theta is used. If given, theta is overwritten.
     az : Azimuth angle in degrees of the telescope pointing directions.
     size_x : Size of the grid in km across the x direction.
     size_y : Size of the grid in km across the y direction.

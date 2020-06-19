@@ -27,8 +27,8 @@ def Telescope(x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
     y : North coordinate of the telescope in km.
     z : Height of the telescope in km above ground level.
     theta : Zenith angle in degrees of the telescope pointing direction.
-    alt : Altitude in degrees of the telescope pointing direction.
-        If None, theta is used. If given, theta is overwritten.
+    alt : Altitude in degrees of the telescope pointing direction. If None,
+        theta is used. If given, theta is overwritten.
     az : Azimuth angle (from north, clockwise) in degrees of the telescope
         pointing direction.
     tel_type : Subclass of Telescope to be used, default to MST. If None, the
@@ -157,8 +157,8 @@ class _Telescope:
     wvl_step : Step size in nm of the detection efficiency data.
     wvl_fluo : Array containing the wavelengths of the 34 fluorescence bands
         included in the model.
-    eff_fluo : Array containing the detection efficiency at these
-        34 wavelenghts.
+    eff_fluo : Array containing the detection efficiency at these 34
+        wavelenghts.
     wvl_cher : Array containing the range of wavelengths in nm defined by
         wvl_ini, wvl_fin and wvl_step
     eff_cher : Array containing the detection efficiency data in this range
