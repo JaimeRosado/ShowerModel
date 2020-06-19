@@ -294,13 +294,13 @@ def _show(signal):
     track = signal.track
     projection = signal.projection
 
-    FoV = np.array(projection.FoV)
-    distance = np.array(projection.distance[FoV])
+    points = projection[projection.FoV & (signal.profile.s > 0.01)].index
+    distance = np.array(projection.distance.loc[points])
     if len(distance) == 0:
         print('The shower track is outside the telescope field of view.')
         return
-    beta = np.array(projection.beta[FoV])
-    time = np.array(projection.time[FoV])
+    beta = np.array(projection.beta.loc[points])
+    time = np.array(projection.time.loc[points])
 
     # Arrival time interval in microseconds (or nanoseconds) for each
     # discretization step.
@@ -312,15 +312,15 @@ def _show(signal):
 
     # Number of photoelectrons due to each light component (and total)
     # per unit time
-    cher_time = np.array(signal.Npe_cher[FoV] / Delta_time)
-    fluo_time = np.array(signal.Npe_fluo[FoV] / Delta_time)
+    cher_time = np.array(signal.Npe_cher / Delta_time)
+    fluo_time = np.array(signal.Npe_fluo / Delta_time)
     total_time = cher_time + fluo_time
 
     # Number of photoelectrons due to each light componente (and total) per
     # unit of beta angle
     Delta_beta = np.degrees(track.dl / distance * np.sin(np.radians(beta)))
-    cher_beta = np.array(signal.Npe_cher[FoV] / Delta_beta)
-    fluo_beta = np.array(signal.Npe_fluo[FoV] / Delta_beta)
+    cher_beta = np.array(signal.Npe_cher / Delta_beta)
+    fluo_beta = np.array(signal.Npe_fluo / Delta_beta)
     total_beta = cher_beta + fluo_beta
 
     # Signal evolution as a function of time
