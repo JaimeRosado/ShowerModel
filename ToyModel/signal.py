@@ -294,7 +294,7 @@ def _show(signal):
     track = signal.track
     projection = signal.projection
 
-    points = projection[projection.FoV & (signal.profile.s > 0.01)].index
+    points = signal.index
     distance = np.array(projection.distance.loc[points])
     if len(distance) == 0:
         print('The shower track is outside the telescope field of view.')
