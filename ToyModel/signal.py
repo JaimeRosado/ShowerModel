@@ -331,10 +331,16 @@ def _show(signal):
     # Auto-scale
     if ns:
         ax1.axes.xaxis.set_label_text("Time (ns)")
-        ax1.axes.yaxis.set_label_text("Photoelectrons / ns")
+        if signal.tel_eff:
+            ax1.axes.yaxis.set_label_text("Photoelectrons / ns")
+        else:
+            ax1.axes.yaxis.set_label_text("Photons / ns")
     else:
         ax1.axes.xaxis.set_label_text("Time (us)")
-        ax1.axes.yaxis.set_label_text("Photoelectrons / us")
+        if signal.tel_eff:
+            ax1.axes.yaxis.set_label_text("Photoelectrons / us")
+        else:
+            ax1.axes.yaxis.set_label_text("Photons / us")
     ax1.legend(loc=0)
 
     # Signal evolution as a function of beta
@@ -343,7 +349,10 @@ def _show(signal):
     ax2.plot(beta, total_beta, 'k', label='Total')
 
     ax2.axes.xaxis.set_label_text("Beta (degrees)")
-    ax2.axes.yaxis.set_label_text("Photoelectrons / degree")
+    if signal.tel_eff:
+        ax2.axes.yaxis.set_label_text("Photoelectrons / degree")
+    else:
+        ax2.axes.yaxis.set_label_text("Photons / degree")
     ax2.legend(loc=0)
     plt.tight_layout()
 
