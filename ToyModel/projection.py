@@ -57,7 +57,7 @@ def Projection(telescope, track):
     projection.theta = theta
     projection.phi = phi
 
-    # Coordinates of the shower interaction point at ground level relative to
+    # Coordinates of the shower impact point at ground level relative to
     # the telescope position
     distance_0, alt_0, az_0, theta_0, phi_0 = telescope.spherical(track.x0,
                                                                   track.y0, 0.)
@@ -80,7 +80,7 @@ def Projection(telescope, track):
     projection.phi_inf = phi_inf
 
     # Angle formed by the shower axis (upwards) and the vector going from the
-    # telescope position to the shower interaction point at ground
+    # telescope position to the shower impact point at ground
     x0, y0, z0 = telescope.abs_to_rel(track.x0, track.y0, 0.)
     beta_0 = telescope.zr_to_theta(x0 * track.ux + y0 * track.uy
                                    + z0 * track.uz, distance_0)
@@ -139,7 +139,7 @@ class _Projection(pd.DataFrame):
     theta : Offset angle in degrees relative to the telescope pointing
         direction.
     phi : Position angle in degrees from north in FoV projection.
-    beta : Angle in degrees relative to the apparent position of the source.
+    beta : Angle in degrees relative to the apparent source position.
     time : Arrival time in microseconds of photons emitted at each point of
         the shower, where time=0 for photons produced at the top of the
         atmosphere.
@@ -154,14 +154,14 @@ class _Projection(pd.DataFrame):
     distance_top : Distance in km to shower point at the top of the atmosphere.
     beta_top : Beta angle in degrees of the shower point at the top of the
         atmosphere.
-    distance_0 : Distance in km to the shower interaction point at ground.
-    beta_0 : Beta angle in degrees of the shower interaction point at ground.
+    distance_0 : Distance in km to the shower impact point at ground.
+    beta_0 : Beta angle in degrees of the shower impact point at ground.
     distance_min : Minimum distance in km to (infinite) line going to the
         shower axis.
-    alt_inf : Altitude in degrees of the apparent position of the source.
-    az_inf : Azimuth in degrees of the apparent position of the source.
-    theta_inf : Offset angle in degrees of the apparent position of the source.
-    phi_inf : Position angle in degrees of the apparent position of the source.
+    alt_inf : Altitude in degrees of the apparent source position.
+    az_inf : Azimuth in degrees of the apparent source position.
+    theta_inf : Offset angle in degrees of the apparent source position.
+    phi_inf : Position angle in degrees of the apparent source position.
 
     Methods
     -------
