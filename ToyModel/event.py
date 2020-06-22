@@ -382,7 +382,7 @@ def _show_distribution(grid_event):
         signal_cher = signal_cher.reshape(N_y, N_x)
         signal_fluo = signal_fluo.reshape(N_y, N_x)
 
-        # Image frame, maximum and minimum signals to adjust axes
+        # Image frame
         extent = (x_c-size_x/2., x_c+size_x/2., y_c-size_y/2., y_c+size_y/2.)
 
         # Image plots with color map in logaritmic scale

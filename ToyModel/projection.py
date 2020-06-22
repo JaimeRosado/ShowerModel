@@ -108,7 +108,7 @@ def Projection(telescope, track):
             telescope.zr_to_theta(x_top * track.ux + y_top * track.uy
                                   + z_top * track.uz, distance_top))
 
-    # Travel time of photon reaching the telescope, with time=0 for a photon
+    # Travel time of photons reaching the telescope, with time=0 for photons
     # emitted at the top of the atmosphere. Equivalent to
     # projection.time = track.t - (distance_top - distance) / 0.2998
     # except for distance_min<half_R
