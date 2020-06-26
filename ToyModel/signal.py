@@ -108,7 +108,7 @@ def Signal(telescope, shower, projection=None, atm_trans=True, tel_eff=True,
         + b / theta_cc * np.exp(-beta / theta_cc))
 
     # Relative fluorescence contribution from each shower point at each band
-    # (between wvl_ini and wvl_fin) The atmospheric transmission is included
+    # (between wvl_ini and wvl_fin). The atmospheric transmission is included
     # later
     rel_fluo = fluorescence.loc[points]
     if tel_eff:
@@ -358,31 +358,197 @@ def _show(signal):
 
     return (ax1, ax2)
 
+def image(signal, NSB = 33.e6, NKG = True):
+    """
+    Generate a camera image in a projection with area proportional to solid
+    angle, such that r = sqrt(1-cos(theta)).
 
-# Being developed
-def image(signal):
-    atmosphere = signal.atmosphere
-    track = signal.track
-    projection = signal.projection
-    telescope = signal.telescope
+    Parameters
+    ----------
+    NSB : Night sky background in MHz/m$^2$/sr.
+    NKG : Bool indicating wether the shower lateral profile is included.
+    """
+    # Side of square pixel in solid angle projection
+    Delta_pix = math.sqrt(telescope.sol_angle_pix / 2.)
+    # Number of pixels across a radius within the camera FoV
+    N_pix_r_exact = math.sqrt(telescope.N_pix / math.pi)
+    N_pix_r = math.ceil(N_pix_r_exact)
 
-    Delta_r = telescope.Delta_r
-    Delta_pix = telescope.Delta_pix
-    # Number of pixels across a diameter
-    N_pix_d = math.ceil(math.sqrt(2. * telescope.N_pix))
-    Delta_r_max = Delta_pix * N_pix_d / 2.  # Radius containing
-    x = np.linspace(-Delta_r_max, Delta_r_max, N_pix_d+1)  # Pixel bounds
-    extent = (-Delta_r_max, Delta_r_max, -Delta_r_max, Delta_r_max)
-
+    # Only points included in signal
     points = signal.index
-    R = np.array(10. * atmosphere.r_M.loc[points])
+    x = np.array(track.x.loc[points])
+    y = np.array(track.y.loc[points])
+    z = np.array(track.z.loc[points])
+    s = np.array(profile.s.loc[points])
+    # Apparent half lenght of a shower track step
+    L = np.array(track.dl / 2.
+                 * np.sin(np.radians(projection.beta.loc[points])))
+    # Moliere radius
+    R = np.array(atmosphere.r_M.loc[points])
+    # FoV coordinates and photon arrival time
     distance = np.array(projection.distance.loc[points])
-    theta = np.radians(projection.theta.loc[points])
-    dl = track.dl
-    Delta_theta = 2. * Delta_r / np.sqrt(1. + np.cos(theta))
+    cos_theta = np.array(np.cos(np.radians(projection.theta.loc[points])))
+    # phi angle wrt right direction in radians
+    phi = np.array(np.radians(projection.phi.loc[points]
+                              - telescope.phi_right))  # (-2*pi, 2*pi)
+    time = np.array(projection.time[points])
+    # Total travel time of shower track within the camera
+    Delta_time = time.max() - time.min()
 
-    chi1 = np.arctan(R/distance)
-    chi2 = np.arctan(dl/2./distance)
+    # Unit local coordinate vectors
+    # Parallel to shower axis (upwards)
+    ux = track.ux
+    uy = track.uy
+    uz = track.uz
+    # Horizontal plane
+    vx = track.vx
+    vy = track.vy
+    # vz = 0.  by definition
+    # Perpendicular to both u and v
+    wx = track.wx
+    wy = track.wy
+    wz = track.wz
 
-    for point in points:
-        R = 10. * atmosphere.loc[point, 'r_M']
+    # Total number photoelectrons
+    Npe = np.array(signal.Npe_total)
+    # Night sky background per pixel
+    NSB = NSB * 1.e-6 * telescope.area * telescope.sol_angle_pix * Delta_time
+
+    # Approximate theta size of a pixel
+    Delta_theta = 2. * Delta_pix / np.sqrt(1. + cos_theta)
+    # Apparent angles of a cylinder coaxial to shower axis
+    chi1 = np.arctan(L / distance)
+    chi2 = np.arctan(R / distance)
+    # Appararent size of the cylinder in number of pixels
+    n1 = np.array(np.round(2. * chi1 / Delta_theta), int)  # Along shower axis
+    n2 = np.array(np.round(2. * chi2 / Delta_theta), int)  # Perpendicular
+
+    # Image size and initialization of pixel values
+    image_clean = np.zeros((2*N_pix_r+1, 2*N_pix_r+1))
+    image_noise = np.array(
+        np.random.poisson(NSB, (2*N_pix_r+1, 2*N_pix_r+1)), float)
+    for pix_y in range(2*N_pix_r+1):
+        for pix_x in range(2*N_pix_r+1):
+            if (pix_x-N_pix_r)**2 + (pix_y-N_pix_r)**2 > N_pix_r_exact**2:
+                image_clean[pix_y, pix_x] = -float('inf')  # Blank pixels
+                image_noise[pix_y, pix_x] = -float('inf')
+
+    # Loop over shower points
+    for point, (n1_p, n2_p, Npe_p) in enumerate(zip(n1, n2, Npe)):
+        # No pixel spread
+        if NKG and (n1_p < 2) and (n2_p < 2):
+            phi_p = phi[point]
+            # Radii and x, y indexes of pixels
+            pix_r_p = math.sqrt(1. - cos_theta[point]) / Delta_pix
+            pix_x_p = int(round(pix_r_p * np.cos(phi_p) + N_pix_r_exact))
+            pix_y_p = int(round(pix_r_p * np.sin(phi_p) + N_pix_r_exact))
+            image_clean[pix_y_p, pix_x_p] += Npe_p
+            image_noise[pix_y_p, pix_x_p] += Npe_p
+            continue
+
+        # Lists of lenght = 1 to allow for loops
+        x_p = [x[point]]
+        y_p = [y[point]]
+        z_p = [z[point]]
+
+        # Contributions beyond one Moliere radius are not included
+        # Num. photoelectrons are approximately corrected as a
+        # function of shower age to account for these losses
+        s_p = s[point]
+        Npe_ps = Npe_p * (2. * s_p - 4.5) / (s_p - 4.5)
+
+        # Apparent length of cylinder takes several pixels
+        if n1_p > 1:
+            # n1_p substeps along the shower axis
+            Lmax = L[point]
+            L_p = np.linspace(-Lmax, Lmax, n1_p)
+            # Arrays of lenght = n1_p
+            x_p = x_p + L_p * ux
+            y_p = y_p + L_p * uy
+            z_p = z_p + L_p * uz
+            # Number of photoelectrons equally distributed in substeps
+            Npe_ps = Npe_p / n1_p
+
+            # A Moliere radius takes an only pixel
+            if n2_p <2:
+                # theta, phi are calculated for all substeps
+                distance_p, alt_p, az_p, theta_p, phi_p = (
+                    telescope.spherical(x_p, y_p, z_p))
+                cos_theta_p = np.cos(np.radians(theta_p))
+                phi_p = np.radians(phi_p - telescope.phi_right)
+                # Radii and x, y indexes of pixels
+                pix_r_p = np.sqrt(1. - cos_theta_p) / Delta_pix
+                pix_x_p = np.array(np.round(pix_r_p * np.cos(phi_p)
+                                            + N_pix_r_exact), int)
+                pix_y_p = np.array(np.round(pix_r_p * np.sin(phi_p)
+                                            + N_pix_r_exact), int)
+
+                # Loop over substeps to spread signal over pixels
+                for (pix_r_ps, pix_x_ps, pix_y_ps) in zip(pix_r_p, pix_x_p,
+                                                          pix_y_p):
+                    # Some substeps may lay outside the FoV
+                    pix_r_ps = math.sqrt((pix_x_ps-N_pix_r)**2
+                                         +(pix_y_ps-N_pix_r)**2)
+                    if pix_r_ps <= pix_r_max:
+                        image_clean[pix_y_ps, pix_x_ps] += Npe_ps
+                        image_noise[pix_y_ps, pix_x_ps] += Npe_ps
+                continue
+
+        # A Moliere radius takes n2_p (>1) pixels
+        Rmax = R[point]
+        delta = 1./n2_p
+        # n2_p radii are generated
+        xx = np.arange(delta/2., 1., delta)  # In units of Moliere radius
+        R_p = Rmax * xx
+        # Each radius is weighted according to the NGG model
+        weight_p = NKG(s_p, xx)
+        Npe_ps = Npe_ps * weight_p / weight_p.sum()
+
+        # Loop over substeps (may be only one)
+        for (x_ps, y_ps, z_ps) in zip(x_p, y_p, z_p):
+            # 5 * n2_p random polar angles for each substep
+            alpha_ps = 2. * math.pi * np.random.rand(5, n2_p)
+            # v, w projections of 5 * n2_p vectors
+            Rv_ps = np.array((R_p * np.cos(alpha_ps)).flat)
+            Rw_ps = np.array((R_p * np.sin(alpha_ps)).flat)
+            # 5 * n2_p samples around shower axis
+            x_ps = x_ps + Rv_ps * vx + Rw_ps * wx
+            y_ps = y_ps + Rv_ps * vy + Rw_ps * wy
+            z_ps = z_ps + Rw_ps * wz  # vz = 0 by definition
+            # Fraction of photoelectrons for each polar angle
+            fraction_ps = np.ones(5) / 5
+            Npe_ps = np.array((Npe_ps * fraction_ps[:, np.newaxis]).flat)
+
+            distance_ps, alt_ps, az_ps, theta_ps, phi_ps = (
+                telescope.spherical(x_ps, y_ps, z_ps))
+            cos_theta_ps = np.cos(np.radians(theta_ps))
+            phi_ps = np.radians(phi_ps - telescope.phi_right)
+            pix_r_ps = np.sqrt(1. - cos_theta_ps) / Delta_pix
+            pix_x_ps = np.array(np.round(pix_r_ps * np.cos(phi_ps)
+                                         + N_pix_r_exact), int)
+            pix_y_ps = np.array(np.round(pix_r_ps * np.sin(phi_ps)
+                                         + N_pix_r_exact), int)
+
+            # Loop over samples around shower axis
+            for (pix_r_pss, pix_x_pss, pix_y_pss,
+                 Npe_pss) in zip(pix_r_ps, pix_x_ps, pix_y_ps, Npe_ps):
+                pix_r_pss = math.sqrt((pix_x_pss-N_pix_r)**2
+                                      +(pix_y_pss-N_pix_r)**2)
+                if pix_r_pss <= pix_r_max:
+                    image_clean[pix_y_pss, pix_x_pss] += Npe_pss
+                    image_noise[pix_y_pss, pix_x_pss] += Npe_pss
+
+    extent = (-N_pix_r-0.5, N_pix_r+0.5, -N_pix_r-0.5, N_pix_r+0.5)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4), constrained_layout=True)
+    ax1.imshow(image_clean, extent=extent)  # cmap=viridis
+    psm = ax2.imshow(image_noise, extent=extent)  # cmap=viridis
+    cbar = fig.colorbar(psm)
+    cbar.ax.set_ylabel('Photoelectrons');
+
+def _NKG(s, x):
+    """
+    Non-normalized distribution of particles per unit radius according to the
+    NKG model. 
+    """
+    s = s if s<2.25 else 2.24
+    return x**(s-1.)*(1.+x)**(s-4.5)

@@ -217,8 +217,8 @@ class _Telescope:
     sol_angle = 2. * math.pi*(1. - math.cos(math.radians(apert) / 2.))  # str
     sol_angle_pix = sol_angle / N_pix    # str
     apert_pix = 2. * np.degrees(np.arccos(1.-sol_angle_pix/2./math.pi))  # deg
-    Delta_pix = math.sqrt(sol_angle_pix / 2.)
-    Delta_r = math.sqrt(sol_angle / 2 / math.pi)
+    # Delta_pix = math.sqrt(sol_angle_pix / 2.)
+    # Delta_r = math.sqrt(sol_angle / 2 / math.pi)
 
     wvl_ini = 290.  # nm
     wvl_fin = 430.  # nm
