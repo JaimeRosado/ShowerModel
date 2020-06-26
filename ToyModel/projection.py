@@ -116,7 +116,7 @@ def Projection(telescope, track):
                        * (1. - np.sin(np.radians(projection.beta_top))
                           / np.sin(np.radians(beta))))
 
-    # FoV = True por shower points within the telescope field of view
+    # FoV = True for shower points within the telescope field of view
     projection.FoV = ((projection.theta <= telescope.apert/2.)
                       & (projection.distance > 0.))
 

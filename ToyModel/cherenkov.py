@@ -35,7 +35,9 @@ def Cherenkov(profile):
     cherenkov.a = 0.42489 + 0.58371 * profile.s - 0.082373 * profile.s**2
     cherenkov.theta_c = np.degrees(0.62694 / profile.atmosphere.E_th**0.6059)
     cherenkov.b = 0.055108 - 0.095587 * profile.s + 0.056952 * profile.s**2
-    cherenkov.theta_cc = (10.509 - 4.9444 * profile.s) * cherenkov.theta_c
+    theta_cc = np.array((10.509 - 4.9444 * profile.s) * cherenkov.theta_c)
+    theta_cc[theta_cc < 0.] = 0.
+    cherenkov.theta_cc = theta_cc
 
     return cherenkov
 
@@ -52,7 +54,7 @@ class _Cherenkov(pd.DataFrame):
     -------
     N_ph : Number of Cherenkov photons in the 290 - 430 nm range.
     a : First parameter of the angular distribution of Cherenkov emission.
-    theta_cc : Second parameter (degrees) of the angular distribution.
+    theta_c : Second parameter (degrees) of the angular distribution.
     b : Third parameter of the angular distribution.
     theta_cc : Fourth parameter (degrees) of the angular distribution.
 

@@ -159,10 +159,10 @@ class _Shower:
     show_projection : Make a Projection object and show it.
     show_signal : Make a Signal object and show it.
     show_event : Make an Event object and show it.
-    geometry : Show either a 2D or a 3D plot of the shower track along with
-        input telescope positions.
-    geometry3D : Show a 3D plot of the shower track along with input telescopes
-        positions.
+    show_geometry2D : Show a 2D plot of the shower track along with input
+        telescope positions.
+    show_geometry3D : Show a 3D plot of the shower track along with input
+        telescopes positions.
 
     See also
     --------
