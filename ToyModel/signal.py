@@ -221,6 +221,7 @@ class _Signal(pd.DataFrame):
         depth.
     show : Show the signal evolution as a function of both time and beta angle
         (relative to the shower axis direction).
+    Image : Generate a time-varying shower image.
     """
 
     def show_projection(self, shower_size=True, axes=True, max_theta=30.,
@@ -286,6 +287,28 @@ class _Signal(pd.DataFrame):
         (ax1, ax2) : AxesSubplot objects.
         """
         return _show(self)
+
+    def Image(lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
+    """
+    Generate a time-varying shower image in a circular camera with square
+    pixels of same solid angle. A Nishimura-Kamata-Greisen lateral profile is
+    used to spread the signal contribution from each shower point to several
+    pixels.
+
+    Parameters
+    ----------
+    lat_profile : Bool indicating wether a NKG lateral profile is used to
+        spread the signal. If False, a linear shower is assumed.
+    N_pix : Number of camera pixels. If not given, the predefined value in the
+        telescope that produces the signal.
+    int_time : Integration time in microseconds of a camera frame.
+    NSB : Night sky background in MHz/m$^2$/deg$^2$.
+
+    Returns
+    -------
+    Image object
+    """
+    return tm.Image(self, N_pix, int_time, NSB)
 
 
 # Auxiliary functions #########################################################
