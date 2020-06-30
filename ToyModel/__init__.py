@@ -11,3 +11,4 @@ from .projection import Projection
 from .signal import Signal
 from .observatory import Observatory, Array25, Grid
 from .event import Event
+from .image import Image
