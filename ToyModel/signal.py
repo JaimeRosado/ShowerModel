@@ -291,16 +291,16 @@ class _Signal(pd.DataFrame):
     def Image(lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
         """
         Generate a time-varying shower image in a circular camera with square
-        pixels of same solid angle. A Nishimura-Kamata-Greisen lateral profile is
-        used to spread the signal contribution from each shower point to several
-        pixels.
+        pixels of same solid angle. A Nishimura-Kamata-Greisen lateral profile
+        is used to spread the signal contribution from each shower point to
+        several pixels.
 
         Parameters
         ----------
         lat_profile : Bool indicating wether a NKG lateral profile is used to
             spread the signal. If False, a linear shower is assumed.
-        N_pix : Number of camera pixels. If not given, the predefined value in the
-            telescope that produces the signal.
+        N_pix : Number of camera pixels. If not given, the predefined value in
+            the telescope that produces the signal.
         int_time : Integration time in microseconds of a camera frame.
         NSB : Night sky background in MHz/m$^2$/deg$^2$.
 
