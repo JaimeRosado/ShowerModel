@@ -45,6 +45,8 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
     N_pix_r_exact = math.sqrt(N_pix / math.pi)
     N_pix_r = math.ceil(N_pix_r_exact)
     image.N_pix_r = N_pix_r
+    # Image size
+    N = 2 * N_pix_r + 1
     # Night sky background per pixel and frame
     NSB_pix = (NSB * 90.**2 / math.pi**2 * telescope.area *
                telescope.sol_angle_pix * int_time)
@@ -82,7 +84,12 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
     N_frames = f_index.max() + 1
     image.N_frames = N_frames
     # Initialization of pixel values at each frame
-    frames = np.zeros((N_frames, 2*N_pix_r+1, 2*N_pix_r+1))
+    frames = np.zeros((N_frames, N, N))
+    # Camera FoV
+    for pix_y in range(N):
+        for pix_x in range(N):
+            if (pix_x-N_pix_r)**2+(pix_y-N_pix_r)**2 > N_pix_r_exact**2:
+                frames[:, pix_y, pix_x] = -float('inf')  # Blanck pixels
 
     if not lat_profile:
         # Radii and x, y indexes of pixels
@@ -171,9 +178,8 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
 
                 # Loop over substeps to spread signal over pixels
                 for (pix_x_ps, pix_y_ps) in zip(pix_x_p, pix_y_p):
-                    # Some substeps may lay outside the FoV
-                    if ((pix_x_ps-N_pix_r)**2+(pix_y_ps-N_pix_r)**2
-                            <= N_pix_r_exact**2):
+                    # Some indexes may be outside the matrix bounds
+                    if (pix_x_ps in range(N) and pix_y_ps in range(N)):
                         frames[f_index_p, pix_y_ps, pix_x_ps] += Npe_ps
                 continue
 
@@ -215,9 +221,8 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
             # Loop over samples points around shower axis
             for (pix_x_pss, pix_y_pss, Npe_pss) in zip(pix_x_ps, pix_y_ps,
                                                        Npe_ps):
-                # Some sample points may lay outside the FoV
-                if ((pix_x_pss-N_pix_r)**2+(pix_y_pss-N_pix_r)**2
-                        <= N_pix_r_exact**2):
+                # Some indexes may be outside the matrix bounds
+                if (pix_x_pss in range(N) and pix_y_pss in range(N)):
                     frames[f_index_p, pix_y_pss, pix_x_pss] += Npe_pss
 
     image.frames = frames
@@ -241,9 +246,9 @@ class _Image:
     N_pix_r : Number of pixels across a camera radius.
     int_time : Integration time in microseconds of a camera frame.
     N_frames : Number of frames.
-    frames : Array of size (N_frames, (2*N_pix_r+1), (2*N_pix_r+1)) containing
-        the pixel values at each frame. Array elements not corresponding to any
-        camera pixel have zero value.
+    frames : Array of size (N_frames, 2*N_pix_r+1, 2*N_pix_r+1) containing the
+        pixel values at each frame. Array elements not corresponding to any
+        camera pixel are set to -inf.
     NSB : Night sky background in MHz/m$^2$/deg$^2$.
     NSB_pix : Mean number of background photoelectrons per pixel and frame.
 
@@ -274,6 +279,8 @@ class _Image:
         N_pix_r = self.N_pix_r
         N_frames = self.N_frames
         frames = self.frames
+        # Image size
+        N = 2 * N_pix_r +1
 
         # The NSB defined in image is used
         if NSB is None:
@@ -287,29 +294,20 @@ class _Image:
 
         # Sum of frames
         if frame is None:
-            image = np.zeros((2*N_pix_r+1, 2*N_pix_r+1))
-            for f in frames:
-                image += f
+            image = frames.sum(0)
             # Integrated noise
-            noise = np.array(np.random.poisson(
-                N_frames*NSB_pix, (2*N_pix_r+1, 2*N_pix_r+1)), float)
+            noise = np.array(np.random.poisson(N_frames*NSB_pix, (N, N)),
+                             float)
             image += noise
         # A given frame is shown
         elif frame < N_frames:
             image = frames[frame]
             # Noise of a single frame
-            noise = np.array(np.random.poisson(
-                NSB_pix, (2*N_pix_r+1, 2*N_pix_r+1)), float)
+            noise = np.array(np.random.poisson(NSB_pix, (N, N)), float)
             image += noise
         else:
             raise ValueError(
                 'The frame number must be lower the number of frames')
-
-        # The image is undefined outside the FoV (blank pixels)
-        for pix_y in range(2*N_pix_r+1):
-            for pix_x in range(2*N_pix_r+1):
-                if (pix_x-N_pix_r)**2 + (pix_y-N_pix_r)**2 > N_pix / math.pi:
-                    image[pix_y, pix_x] = -float('inf')  # Blank pixels
 
         extent = (-N_pix_r-0.5, N_pix_r+0.5, -N_pix_r-0.5, N_pix_r+0.5)
         fig, ax = plt.subplots(1, 1, figsize=(5, 5))
@@ -334,6 +332,8 @@ class _Image:
         N_pix = self.N_pix
         N_pix_r = self.N_pix_r
         frames = self.frames
+        # Image size
+        N = 2 * N_pix_r +1
 
         # The NSB defined in image is used
         if NSB is None:
@@ -355,15 +355,8 @@ class _Image:
         for i, f in enumerate(frames):
             # Noise of a single frame
             noise = np.array(
-                np.random.poisson(NSB_pix, (2*N_pix_r+1, 2*N_pix_r+1)), float)
+                np.random.poisson(NSB_pix, (N, N)), float)
             f += noise
-
-            # The image is undefined outside the FoV (blank pixels)
-            for pix_y in range(2*N_pix_r+1):
-                for pix_x in range(2*N_pix_r+1):
-                    if ((pix_x-N_pix_r)**2 + (pix_y-N_pix_r)**2
-                            > N_pix / math.pi):
-                        f[pix_y, pix_x] = -float('inf')  # Blank pixels
 
             im = plt.imshow(f, extent=extent, vmin=vmin, vmax=vmax)
             ims.append([im])
