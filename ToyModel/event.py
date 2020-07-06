@@ -25,7 +25,7 @@ def Event(observatory, shower, atm_trans=True, tel_eff=True, **kwargs):
         interval when tel_eff==False. If None, the wavelength interval defined
         in each telescope is used.
 
-    Results
+    Returns
     -------
     Event object.
     """
