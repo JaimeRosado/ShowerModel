@@ -36,11 +36,22 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=None, NSB=40.):
     image.signal = signal
 
     telescope = signal.telescope
-    # Side of a square pixel in solid angle projection
-    Delta_pix = math.sqrt(telescope.sol_angle_pix / 2.)
+    # Camera integration time
+    if int_time is None:
+        int_time = telescope.int_time
+    image.int_time = int_time
+
+    # Number of camera pixel and pixel solid angle
     if N_pix is None:
         N_pix = telescope.N_pix
+        sol_angle_pix = telescope.sol_angle_pix
+    else:
+        sol_angle_pix = telescope.sol_angle / N_pix
     image.N_pix = N_pix
+    image.sol_angle_pix = sol_angle_pix
+
+    # Side of a square pixel in solid angle projection
+    Delta_pix = math.sqrt(sol_angle_pix / 2.)
     # Number of pixels across a radius within the camera FoV
     N_pix_r_exact = math.sqrt(N_pix / math.pi)
     N_pix_r = math.ceil(N_pix_r_exact)
@@ -48,13 +59,9 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=None, NSB=40.):
     # Image size
     N = 2 * N_pix_r + 1
 
-    # Camera integration time
-    if int_time is None:
-        int_time = telescope.int_time
-    image.int_time = int_time
     # Night sky background per pixel and frame
-    NSB_pix = (NSB * 90.**2 / math.pi**2 * telescope.area *
-               telescope.sol_angle_pix * int_time)
+    NSB_pix = (NSB * 90.**2 / math.pi**2 * telescope.area * sol_angle_pix
+               * int_time)
     image.NSB_pix = NSB_pix
 
     # Only points included in signal
@@ -253,6 +260,7 @@ class _Image:
         spread the signal. If False, a linear shower is assumed.
     N_pix : Number of camera pixels.
     N_pix_r : Number of pixels across a camera radius.
+    sol_angle_pix : Solid angle in stereoradians of a single pixel.
     int_time : Integration time in microseconds of a camera frame.
     N_frames : Number of frames.
     frames : Array of size (N_frames, 2*N_pix_r+1, 2*N_pix_r+1) containing the
@@ -309,8 +317,9 @@ class _Image:
         else:
             telescope = self.signal.telescope
             int_time = self.int_time
+            sol_angle_pix = self.sol_angle_pix
             NSB_pix = (NSB * 90.**2 / math.pi**2 * telescope.area *
-                       telescope.sol_angle_pix * int_time)
+                       sol_angle_pix * int_time)
 
         # Sum of frames
         if frame is None:
@@ -367,8 +376,9 @@ class _Image:
         else:
             telescope = self.signal.telescope
             int_time = self.int_time
+            sol_angle_pix = self.sol_angle_pix
             NSB_pix = (NSB * 90.**2 / math.pi**2 * telescope.area *
-                       telescope.sol_angle_pix * int_time)
+                       sol_angle_pix * int_time)
 
         fig = plt.figure()
         extent = (-N_pix_r-0.5, N_pix_r+0.5, -N_pix_r-0.5, N_pix_r+0.5)
