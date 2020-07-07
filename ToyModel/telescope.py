@@ -17,7 +17,7 @@ _tel_type = 'MST'
 # Constructor #################################################################
 def Telescope(x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
               tel_type=_tel_type, efficiency=None, apert=None, area=None,
-              N_pix=None):
+              N_pix=None, int_time=None):
     """
     Make a Telescope object with the specified characteristics.
 
@@ -41,6 +41,7 @@ def Telescope(x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
     apert : Angular diameter in degrees of the telescope field of view.
     area : Detection area in m^2 (e.g., mirror area of an IACT).
     N_pix : Number of camera pixels.
+    int_time : Integration time in microseconds of camera frames.
 
     Returns
     -------
@@ -107,6 +108,9 @@ def Telescope(x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
     if area is not None:
         telescope.area = area
 
+    if int_time is not None:
+        telescope.int_time = int_time
+
     if isinstance(efficiency, pd.DataFrame):
         # Sorted to allow for interpolation
         efficiency.sort_index(axis=0, ascending=True, inplace=True)
@@ -149,6 +153,7 @@ class _Telescope:
     apert : Angular diameter in degrees of the telescope field of view.
     area : Detection area in m^2 (e.g., mirror area of an IACT).
     N_pix : Number of camera pixels.
+    int_time : Integration time in microseconds of camera frames.
     sol_angle : Telescope field of view in stereoradians.
     sol_angle_pix : Pixel field of view in steresorians.
     apert_pix : Angular diameter in degrees of the pixel FoV.
@@ -213,6 +218,7 @@ class _Telescope:
     apert = 10.  # deg
     area = 100.  # m^2
     N_pix = 1500
+    int_time = 0.01  # us
 
     sol_angle = 2. * math.pi*(1. - math.cos(math.radians(apert) / 2.))  # str
     sol_angle_pix = sol_angle / N_pix    # str
@@ -261,6 +267,7 @@ class _Telescope:
         kwargs['apert'] = kwargs.get('apert', self.apert)
         kwargs['area'] = kwargs.get('area', self.area)
         kwargs['N_pix'] = kwargs.get('N_pix', self.N_pix)
+        kwargs['int_time'] = kwargs.get('int_time', self.int_time)
 
         telescope_c = Telescope(**kwargs)
 
@@ -554,6 +561,7 @@ class _MST(_Telescope):
     apert = 8.  # deg
     area = 113.097  # m^2
     N_pix = 1800
+    # int_time = 0.01  # us
 
     sol_angle = 2. * math.pi*(1. - math.cos(math.radians(apert)/2.))  # str
     sol_angle_pix = sol_angle / N_pix  # str
@@ -623,6 +631,7 @@ class _GridElement(_Telescope):
     apert = 180.  # deg
     # area = 100. # m^2 It is set to one grid cell when Grid is called
     N_pix = 1
+    int_time = 10.  # us
 
     sol_angle = 2. * math.pi    # str
     sol_angle_pix = sol_angle   # str

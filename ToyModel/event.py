@@ -96,8 +96,10 @@ class _Event():
     observatory : Observatory object.
     grid : Grid object (only GridEvent objects). It replaces observatory for
         GridEvent objects
-    projections : list of Projection objects (one for each telescope).
-    signals : list of Signal objects (one for each telescope).
+    projections : List of Projection objects (one for each telescope).
+    signals : List of Signal objects (one for each telescope).
+    images : List of Image objects. Only available if generated via the method
+        images.
     atm_trans : True if the atmospheric transmision is included.
     tel_eff : True if the telescope efficiency is included.
 
@@ -117,6 +119,8 @@ class _Event():
         positions in a 2D plot.
     show_geometry3D : Show the shower track together with the telescope
         positions in a 3D plot.
+    images : Generate shower images.
+    show_images : Show shower images (if already exist).
     """
     event_type = None
 
@@ -334,6 +338,47 @@ class _Event():
 
         grid_event = tm.Event(grid, self.shower, atm_trans, tel_eff, **kwargs)
         return grid_event.show_distribution()
+
+    def images(self, lat_profile=True, NSB=40.):
+        """
+        Generate a time-varying shower image for each telescope assuming a
+        circular camera with square pixels of same solid angle. The list of
+        images is stored in the attribute images of the Event object.
+
+        Parameters
+        ----------
+        lat_profile : Bool indicating wether a NKG lateral profile is used to
+            spread the signal. If False, a linear shower is assumed.
+        NSB : Night sky background in MHz/m$^2$/deg$^2$.
+
+        Returns
+        -------
+        List of Image objects.
+
+        See also
+        --------
+        Image : Constructor of Image object.
+        """
+        images = [tm.Image(signal, lat_profile=lat_profile, NSB=NSB)
+                  for signal in self.signals]
+        self.images = images
+        return images
+
+    def show_images(self):
+        """
+        Show subplots of shower images (if already exist). Each subplot is
+        labelled with the telescope id.
+        """
+        if self.images is None:
+            raise ValueError(
+                'Images must be generated first via images method.')
+        rows = len(self.observatory)//5
+        fig, axes = plt.subplots(rows, 5, figsize=(10, rows*2))
+        plt.tight_layout()
+        for tel, ax in enumerate(axes.flatten()):
+            ax = self.images[tel].show(ax=ax)
+            ax.set_title(tel)
+        #plt.show()
 
 
 class _GridEvent(_Event):

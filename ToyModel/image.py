@@ -8,7 +8,7 @@ from IPython.display import HTML
 
 
 # Constructor #################################################################
-def Image(signal, lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
+def Image(signal, lat_profile=True, N_pix=None, int_time=None, NSB=40.):
     """
     Generate a time-varying shower image in a circular camera with square
     pixels of same solid angle. A Nishimura-Kamata-Greisen lateral profile is
@@ -21,8 +21,9 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
     lat_profile : Bool indicating wether a NKG lateral profile is used to
         spread the signal. If False, a linear shower is assumed.
     N_pix : Number of camera pixels. If not given, the predefined value in the
-        telescope that produces the signal.
-    int_time : Integration time in microseconds of a camera frame.
+        Telescope object is used.
+    int_time : Integration time in microseconds of a camera frame. If not
+        given, the predefined value in the Telescope object is used.
     NSB : Night sky background in MHz/m$^2$/deg$^2$.
 
     Returns
@@ -32,7 +33,6 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
     image = _Image()
     image.NSB = NSB
     image.lat_profile = lat_profile
-    image.int_time = int_time
     image.signal = signal
 
     telescope = signal.telescope
@@ -47,6 +47,11 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
     image.N_pix_r = N_pix_r
     # Image size
     N = 2 * N_pix_r + 1
+
+    # Camera integration time
+    if int_time is None:
+        int_time = telescope.int_time
+    image.int_time = int_time
     # Night sky background per pixel and frame
     NSB_pix = (NSB * 90.**2 / math.pi**2 * telescope.area *
                telescope.sol_angle_pix * int_time)
@@ -54,6 +59,12 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
 
     # Only points included in signal
     points = signal.index
+    if len(points) == 0:
+        image.N_frames = 0
+        image.frames  = np.zeros((0, N, N))
+        return image
+
+    # Parameters of contributing points
     track = signal.track
     projection = signal.projection
     atmosphere = signal.atmosphere
@@ -62,8 +73,9 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
     y = np.array(track.y.loc[points])
     z = np.array(track.z.loc[points])
     s = np.array(profile.s.loc[points])
-    # Shower track step
-    L = np.array(track.dl * np.sin(np.radians(projection.beta.loc[points])))
+    # Shower track half step and apparent size
+    L_half = track.dl / 2.
+    L = np.array(L_half * np.sin(np.radians(projection.beta.loc[points])))
     # Moliere radius
     R = np.array(atmosphere.r_M.loc[points])
     # FoV coordinates
@@ -104,9 +116,9 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
 
     # Approximate theta size of a pixel
     Delta_theta = 2. * Delta_pix / np.sqrt(1. + cos_theta)
-    # Apparent angular size of a cylinder of length L and radius R coaxial to
-    # the shower axis at each point
-    chi1 = np.arctan(L / distance)
+    # Apparent angular size of a cylinder of half length L and radius R coaxial
+    # to the shower axis at each point
+    chi1 = 2. * np.arctan(L / distance)
     chi2 = 2. * np.arctan(R / distance)
     # Appararent size of the cylinder in number of pixels
     n1 = np.array(np.round(chi1 / Delta_theta), int)  # Along shower axis
@@ -153,8 +165,7 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
         # Apparent length of cylinder takes several pixels
         if n1_p > 1:
             # n1_p substeps along the shower axis
-            Lmax = L[point] / 2.
-            L_p = np.linspace(-Lmax, Lmax, n1_p)
+            L_p = np.linspace(-1., 1., n1_p) * L_half / 2.
             # Arrays of lenght = n1_p
             x_p = x_p + L_p * ux
             y_p = y_p + L_p * uy
@@ -184,14 +195,15 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
                 continue
 
         # Apparent width of cylinder takes several pixels
-        Rmax = R[point]
         delta = 1./n2_p
         # n2_p radii are generated
         xx = np.arange(delta/2., 1., delta)  # In units of Moliere radius
-        R_p = Rmax * xx
+        R_p = R[point] * xx
         # Each radius is weighted according to the NKG model
         weight_p = _NKG(s_p, xx)
         Npe_ps = Npe_ps * weight_p / weight_p.sum()
+        # 5 samples are generated for each radius
+        Npe_ps = np.array((Npe_ps * np.full((5, n2_p), 1./5.)).flat)
 
         # Loop over substeps (may be only one)
         for (x_ps, y_ps, z_ps) in zip(x_p, y_p, z_p):
@@ -204,9 +216,6 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
             x_ps = x_ps + Rv_ps * vx + Rw_ps * wx
             y_ps = y_ps + Rv_ps * vy + Rw_ps * wy
             z_ps = z_ps + Rw_ps * wz  # vz = 0 by definition
-            # Fraction of photoelectrons for each polar angle
-            fraction_ps = np.ones(5) / 5
-            Npe_ps = np.array((Npe_ps * fraction_ps[:, np.newaxis]).flat)
 
             distance_ps, alt_ps, az_ps, theta_ps, phi_ps = (
                 telescope.spherical(x_ps, y_ps, z_ps))
@@ -261,7 +270,7 @@ class _Image:
     pass
 
     # Methods #################################################################
-    def show(self, frame=None, NSB=None):
+    def show(self, frame=None, NSB=None, ax=None):
         """
         Show a camera frame or the sum of all them including random background.
 
@@ -270,6 +279,8 @@ class _Image:
         frame : Frame number. If not given, the sum of frames is shown.
         NSB : Night sky background in MHz/m$^2$/deg$^2$. If not given, the one
             defined in Image is used.
+        ax : Input axis into which the plot is generated. In not given, a new
+            subplot axis is created.
 
         Returns
         -------
@@ -281,6 +292,15 @@ class _Image:
         frames = self.frames
         # Image size
         N = 2 * N_pix_r +1
+
+        # If an axis is not given, a new subplot axis is created
+        if ax is None:
+            fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+
+        # If no signal, an empty plot is generated
+        if N_frames == 0:
+            ax.text(0.4, 0.5, 'No signal')
+            return ax
 
         # The NSB defined in image is used
         if NSB is None:
@@ -310,10 +330,8 @@ class _Image:
                 'The frame number must be lower the number of frames')
 
         extent = (-N_pix_r-0.5, N_pix_r+0.5, -N_pix_r-0.5, N_pix_r+0.5)
-        fig, ax = plt.subplots(1, 1, figsize=(5, 5))
         psm = ax.imshow(image, extent=extent)  # cmap=viridis
-        cbar = fig.colorbar(psm)
-        cbar.ax.set_ylabel('Photoelectrons');
+        plt.colorbar(psm, ax=ax, label='Photoelectrons')
         return ax
 
     def animate(self, NSB=None):
@@ -331,9 +349,16 @@ class _Image:
         """
         N_pix = self.N_pix
         N_pix_r = self.N_pix_r
+        N_frames = self.N_frames
         frames = self.frames
         # Image size
         N = 2 * N_pix_r +1
+
+        # If no signal, an empty plot is generated
+        if N_frames == 0:
+            fig = plt.figure(figsize=(5, 5))
+            plt.text(0.4, 0.5, 'No signal')
+            return fig
 
         # The NSB defined in image is used
         if NSB is None:
