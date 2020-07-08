@@ -287,8 +287,8 @@ class _Image:
         frame : Frame number. If not given, the sum of frames is shown.
         NSB : Night sky background in MHz/m$^2$/deg$^2$. If not given, the one
             defined in Image is used.
-        ax : Input axis into which the plot is generated. In not given, a new
-            subplot axis is created.
+        ax : Axes instance where the plot is generated. In not given, a new
+            AxesSubplot object is created.
 
         Returns
         -------
@@ -301,7 +301,7 @@ class _Image:
         # Image size
         N = 2 * N_pix_r +1
 
-        # If an axis is not given, a new subplot axis is created
+        # If an Axes instance is not given, a new AxesSubplot is created
         if ax is None:
             fig, ax = plt.subplots(1, 1, figsize=(5, 5))
 
