@@ -4,7 +4,7 @@ import math
 import numpy as np
 import pandas as pd
 import warnings
-import ToyModel as tm
+import ShowerModel as sm
 import matplotlib.pyplot as plt
 warnings.filterwarnings(
     'ignore',
@@ -64,7 +64,7 @@ def Profile(E=_E, theta=_theta, alt=None, prf_model=_prf_model, X_max=None,
     if isinstance(atmosphere, _Atmosphere):
         pass
     elif atmosphere is None:
-        atmosphere = tm.Atmosphere(**kwargs)
+        atmosphere = sm.Atmosphere(**kwargs)
     else:
         raise ValueError('The input atmosphere is not valid.')
 
@@ -221,7 +221,7 @@ class _Profile(pd.DataFrame):
     """
     DataFrame containing a shower profile discretization.
 
-    Use tm.Profile to construct a Profile object.
+    Use sm.Profile to construct a Profile object.
 
     Columns
     -------
@@ -288,7 +288,7 @@ class _Profile(pd.DataFrame):
         -------
         Fluorescece object.
         """
-        return tm.Fluorescence(self)
+        return sm.Fluorescence(self)
 
     def Cherenkov(self):
         """
@@ -299,7 +299,7 @@ class _Profile(pd.DataFrame):
         -------
         Cherenkov object.
         """
-        return tm.Cherenkov(self)
+        return sm.Cherenkov(self)
 
     def show(self):
         """

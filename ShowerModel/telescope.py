@@ -3,7 +3,7 @@
 import math
 import numpy as np
 import pandas as pd
-import ToyModel as tm  # For projection
+import ShowerModel as sm  # For projection
 
 # Default values for telescope
 _x = 0.  # km
@@ -517,7 +517,7 @@ class _Telescope:
         --------
         Projection.show
         """
-        return tm.Projection(self, track)
+        return sm.Projection(self, track)
 
     def show_projection(self, track, axes=True, max_theta=30., X_mark=None):
         """
@@ -546,7 +546,7 @@ class _Telescope:
         --------
         Projection.show
         """
-        projection = tm.Projection(self, track)
+        projection = sm.Projection(self, track)
         from .tools import show_projection
         return projection, (show_projection(projection, None, False, axes,
                                             max_theta, X_mark))

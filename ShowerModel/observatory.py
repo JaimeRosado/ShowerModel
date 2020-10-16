@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import numpy as np
-import ToyModel as tm
+import ShowerModel as sm
 import matplotlib.pyplot as plt
 
 # Default values for array25
@@ -90,7 +90,7 @@ def Array25(telescope=None, tel_type='MST', x_c=_x, y_c=_y, z_c=_z,
             theta = _theta
         if az is None:
             az = _az
-        telescope = tm.Telescope(x_c, y_c, z_c, theta=theta, alt=alt, az=az,
+        telescope = sm.Telescope(x_c, y_c, z_c, theta=theta, alt=alt, az=az,
                                  tel_type=tel_type)
     else:
         raise ValueError('The input telescope is not valid.')
@@ -204,7 +204,7 @@ def Grid(telescope=None, tel_type='GridElement', x_c=_x, y_c=_y, z_c=_z,
             theta = 0.
             alt = None
             az = 0.
-            telescope = tm.Telescope(z=z_c, theta=theta, alt=None, az=0.,
+            telescope = sm.Telescope(z=z_c, theta=theta, alt=None, az=0.,
                                      tel_type=tel_type, area=cell_area)
         else:
             # Default theta and az values are those of Telescope
@@ -212,7 +212,7 @@ def Grid(telescope=None, tel_type='GridElement', x_c=_x, y_c=_y, z_c=_z,
                 theta = _theta
             if az is None:
                 az = _az
-            telescope = tm.Telescope(z=z_c, theta=theta, alt=None, az=az,
+            telescope = sm.Telescope(z=z_c, theta=theta, alt=None, az=az,
                                      tel_type=tel_type)
     else:
         raise ValueError('The input telescope is not valid.')

@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import numpy as np
-import ToyModel as tm
+import ShowerModel as sm
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
@@ -65,9 +65,9 @@ def Event(observatory, shower, atm_trans=True, tel_eff=True, **kwargs):
     event.projections = []
     event.signals = []
     for telescope in observatory:
-        projection = tm.Projection(telescope, event.track)
+        projection = sm.Projection(telescope, event.track)
         event.projections.append(projection)
-        signal = tm.Signal(
+        signal = sm.Signal(
             telescope, shower, projection, atm_trans, tel_eff, **kwargs)
         event.signals.append(signal)
 
@@ -323,7 +323,7 @@ class _Event():
                 theta = telescope.theta
                 alt = telescope.alt
                 az = telescope.az
-                grid = tm.Grid(telescope, tel_type, x_c, y_c, z_c, theta, alt,
+                grid =sm.Grid(telescope, tel_type, x_c, y_c, z_c, theta, alt,
                                az, size_x, size_y, N_x, N_y)
             else:
                 raise ValueError('The input grid is not valid')
@@ -336,7 +336,7 @@ class _Event():
         kwargs['wvl_fin'] = kwargs.get('wvl_fin', signal.wvl_fin)
         kwargs['wvl_step'] = kwargs.get('wvl_step', signal.wvl_step)
 
-        grid_event = tm.Event(grid, self.shower, atm_trans, tel_eff, **kwargs)
+        grid_event = sm.Event(grid, self.shower, atm_trans, tel_eff, **kwargs)
         return grid_event.show_distribution()
 
     def images(self, lat_profile=True, NSB=40.):
@@ -359,7 +359,7 @@ class _Event():
         --------
         Image : Constructor of Image object.
         """
-        images = [tm.Image(signal, lat_profile=lat_profile, NSB=NSB)
+        images = [sm.Image(signal, lat_profile=lat_profile, NSB=NSB)
                   for signal in self.signals]
         self.images = images
         return images

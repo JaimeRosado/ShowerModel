@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'ToyModel'
+project = 'ShowerModel'
 copyright = '2020, Jaime Rosado'
 author = 'Jaime Rosado'
 

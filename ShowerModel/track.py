@@ -3,7 +3,7 @@
 import math
 import numpy as np
 import pandas as pd
-import ToyModel as tm
+import ShowerModel as sm
 import warnings
 warnings.filterwarnings(
     'ignore',
@@ -52,7 +52,7 @@ def Track(theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0, atmosphere=None,
     if isinstance(atmosphere, _Atmosphere):
         pass
     elif atmosphere is None:
-        atmosphere = tm.Atmosphere(**kwargs)
+        atmosphere = sm.Atmosphere(**kwargs)
     else:
         raise ValueError('The input atmosphereis not valid.')
 
@@ -242,7 +242,7 @@ class _Track(pd.DataFrame):
         --------
         Projection.show
         """
-        return tm.Projection(telescope, self)
+        return sm.Projection(telescope, self)
 
     def show_projection(self, telescope, axes=True, max_theta=30.,
                         X_mark=None):
@@ -272,7 +272,7 @@ class _Track(pd.DataFrame):
         --------
         Projection.show
         """
-        projection = tm.Projection(telescope, self)
+        projection = sm.Projection(telescope, self)
         from .tools import show_projection
         return projection, (show_projection(projection, None, False, axes,
                                             max_theta, X_mark))

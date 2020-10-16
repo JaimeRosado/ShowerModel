@@ -108,7 +108,7 @@ class _Atmosphere(pd.DataFrame):
     """
     DataFrame containing an atmosphere discretization.
 
-    Use tm.Atmosphere to construct an Atmosphere object.
+    Use sm.Atmosphere to construct an Atmosphere object.
 
     Columns
     -------

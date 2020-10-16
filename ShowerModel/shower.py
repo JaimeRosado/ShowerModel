@@ -1,6 +1,6 @@
 # coding: utf-8
 
-import ToyModel as tm
+import ShowerModel as sm
 import matplotlib.pyplot as plt
 
 
@@ -61,7 +61,7 @@ def Shower(E=_E, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
     if isinstance(atmosphere, _Atmosphere):
         pass
     elif atmosphere is None:
-        atmosphere = tm.Atmosphere(**kwargs)
+        atmosphere = sm.Atmosphere(**kwargs)
     else:
         raise ValueError('The input atmosphere is not valid.')
 
@@ -86,10 +86,10 @@ def Shower(E=_E, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
     shower.model = atmosphere.model
 
     # Shower track
-    shower.track = tm.Track(theta, None, az, x0, y0, atmosphere)
+    shower.track = sm.Track(theta, None, az, x0, y0, atmosphere)
 
     # Shower profile
-    profile = tm.Profile(E, theta, None, prf_model, X_max, X0_GH, lambda_GH,
+    profile = sm.Profile(E, theta, None, prf_model, X_max, X0_GH, lambda_GH,
                          atmosphere)
     shower.profile = profile
 
@@ -212,7 +212,7 @@ class _Shower:
         --------
         Projection.show
         """
-        return tm.Projection(telescope, self.track)
+        return sm.Projection(telescope, self.track)
 
     def Signal(self, telescope, atm_trans=True, tel_eff=True, **kwargs):
         """
@@ -232,7 +232,7 @@ class _Shower:
         -------
         Signal object.
         """
-        return tm.Signal(telescope, self, atm_trans, tel_eff, **kwargs)
+        return sm.Signal(telescope, self, atm_trans, tel_eff, **kwargs)
 
     def Event(self, observatory, atm_trans=True, tel_eff=True, **kwargs):
         """
@@ -255,7 +255,7 @@ class _Shower:
         -------
         Event object.
         """
-        return tm.Event(observatory, self, atm_trans, tel_eff, **kwargs)
+        return sm.Event(observatory, self, atm_trans, tel_eff, **kwargs)
 
     def show_projection(self, telescope, shower_size=True, axes=True,
                         max_theta=30., X_mark='X_max'):
@@ -286,7 +286,7 @@ class _Shower:
         """
         if X_mark == 'X_max':
             X_mark = self.X_max
-        projection = tm.Projection(telescope, self.track)
+        projection = sm.Projection(telescope, self.track)
         profile = self.profile
         from .tools import show_projection
         return projection, (show_projection(projection, profile, shower_size,
@@ -346,7 +346,7 @@ class _Shower:
         Signal object.
         (ax1, ax2) : AxesSubplot objects.
         """
-        signal = tm.Signal(telescope, self, atm_trans, tel_eff, **kwargs)
+        signal = sm.Signal(telescope, self, atm_trans, tel_eff, **kwargs)
         ax1, ax2 = signal.show()
         return signal, (ax1, ax2)
 
@@ -469,12 +469,12 @@ class _Shower:
         from .observatory import _Grid
         if not isinstance(grid, _Grid):
             if grid is None:
-                grid = tm.Grid(telescope, tel_type, x_c, y_c, z_c, theta, alt,
+                grid = sm.Grid(telescope, tel_type, x_c, y_c, z_c, theta, alt,
                                az, size_x, size_y, N_x, N_y)
             else:
                 raise ValueError('The input grid is not valid')
 
-        grid_event = tm.Event(grid, self, atm_trans, tel_eff, **kwargs)
+        grid_event = sm.Event(grid, self, atm_trans, tel_eff, **kwargs)
         return grid_event.show_distribution()
 
 
@@ -518,7 +518,7 @@ def _copy(shower, atmosphere=None, **kwargs):
         # object is generated from scratch using those parameters
         if ((h0 != shower.h0) or (h_top != shower.h_top)
                 or (N_steps != shower.N_steps) or (model != shower.model)):
-            atmosphere = tm.Atmosphere(h0, h_top, N_steps, model)
+            atmosphere = sm.Atmosphere(h0, h_top, N_steps, model)
             return Shower(E, theta, az, x0, y0, X_max, atmosphere)
 
         else:
@@ -553,7 +553,7 @@ def _copy(shower, atmosphere=None, **kwargs):
         shower_c.track = shower.track  # New alias
     else:
         # Otherwise a new track is generated from the input parameters
-        shower_c.track = tm.Track(theta, None, az, x0, y0, atmosphere)
+        shower_c.track = sm.Track(theta, None, az, x0, y0, atmosphere)
 
     # If the same profile is used
     if ((E == shower.E) and (theta == shower.theta)
@@ -564,7 +564,7 @@ def _copy(shower, atmosphere=None, **kwargs):
         shower_c.fluorescence = shower.fluorescence
         shower_c.cherenkov = shower.cherenkov
     else:   # Otherwise a new profile is generates from the input parameters
-        shower_c.profile = tm.Profile(E, theta, None, prf_model, X_max, X0_GH,
+        shower_c.profile = sm.Profile(E, theta, None, prf_model, X_max, X0_GH,
                                       lambda_GH, atmosphere)
         # Fluorescence emission
         shower_c.fluorescence = shower_c.profile.Fluorescence()

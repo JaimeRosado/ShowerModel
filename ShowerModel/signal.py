@@ -2,7 +2,7 @@
 
 import numpy as np
 import pandas as pd
-import ToyModel as tm
+import ShowerModel as sm
 import matplotlib.pyplot as plt
 
 
@@ -45,7 +45,7 @@ def Signal(telescope, shower, projection=None, atm_trans=True, tel_eff=True,
     # generated.
     from .projection import _Projection
     if not isinstance(projection, _Projection):
-        projection = tm.Projection(telescope, shower.track)
+        projection = sm.Projection(telescope, shower.track)
     atmosphere = shower.atmosphere
     track = shower.track
     fluorescence = shower.fluorescence
@@ -308,7 +308,7 @@ class _Signal(pd.DataFrame):
         -------
         Image object
         """
-        return tm.Image(self, N_pix, int_time, NSB)
+        return sm.Image(self, N_pix, int_time, NSB)
 
 
 # Auxiliary functions #########################################################
