@@ -1,4 +1,4 @@
-name: toymodel
+name: showermodel
 channels:
   - default
   - conda-forge
