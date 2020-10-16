@@ -43,7 +43,7 @@ def Observatory(*telescopes, obs_type=None):
     return observatory
 
 
-def Array25(telescope=None, tel_type='MST', x_c=_x, y_c=_y, z_c=_z,
+def Array25(telescope=None, tel_type='IACT', x_c=_x, y_c=_y, z_c=_z,
             theta=None, alt=None, az=None, R=0.341, rot_angle=0.):
     """
     Make an array of 25 telescopes based on a layout of MST telescopes of CTA.
@@ -58,7 +58,7 @@ def Array25(telescope=None, tel_type='MST', x_c=_x, y_c=_y, z_c=_z,
     telescope : Existing Telescope object to be used. If None, a new Telescope
         object of type tel_type is generated.
     tel_type : Subclass of Telescope to be used when telescope==None. Default
-        to MST with field of view of 8 degrees, mirror area of 113 m^2 and
+        to IACT with field of view of 8 degrees, mirror area of 113 m^2 and
         1800 pixels. If tel_type==None, the parent class Telescope is used.
     x_c : East coordinate in km of the center of the array.
     y_c : North coordinate in km of the center of the array.

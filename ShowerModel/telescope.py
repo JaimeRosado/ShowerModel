@@ -11,7 +11,7 @@ _y = 0.  # km
 _z = 0.  # km
 _theta = 0.  # deg
 _az = 0.  # deg
-_tel_type = 'MST'
+_tel_type = 'IACT'
 
 
 # Constructor #################################################################
@@ -31,8 +31,8 @@ def Telescope(x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
         theta is used. If given, theta is overwritten.
     az : Azimuth angle (from north, clockwise) in degrees of the telescope
         pointing direction.
-    tel_type : Subclass of Telescope to be used, default to MST. If None, the
-        parent class Telescope is used. Presently only the MST and GridElement
+    tel_type : Subclass of Telescope to be used, default to IACT. If None, the
+        parent class Telescope is used. Presently only the IACT and GridElement
         subclasses are available. More subclasses to be implemented.
     efficiency : DataFrame containing detection efficieny data. If None, the
         default efficiency of the selected tel_type. If given, it must have two
@@ -52,8 +52,8 @@ def Telescope(x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
     Telescope object.
     Array25 : Make an array of 25 telescopes based on a layout of CTA.
     """
-    if tel_type == 'MST':
-        telescope = _MST()
+    if tel_type == 'IACT':
+        telescope = _IACT()
     elif tel_type == 'GridElement':
         telescope = _GridElement()
     else:
@@ -148,7 +148,7 @@ class _Telescope:
     Class attributes
     ----------------
     tel_type : Name of the subclass of Telescope. Presently only the parent
-        class Telescope and the MST and GridElement subclasses are available.
+        class Telescope and the IACT and GridElement subclasses are available.
         More subclasses to be implemented.
     apert : Angular diameter in degrees of the telescope field of view.
     area : Detection area in m^2 (e.g., mirror area of an IACT).
@@ -553,11 +553,11 @@ class _Telescope:
 
 
 # Subclasses ##################################################################
-# Presently only the MST and grid_elem subclasses are available.
+# Presently only the IACT and grid_elem subclasses are available.
 # More subclasses to be implemented.
-class _MST(_Telescope):
-    # Default values of MST
-    tel_type = 'MST'
+class _IACT(_Telescope):
+    # Default values of IACT
+    tel_type = 'IACT'
     apert = 8.  # deg
     area = 113.097  # m^2
     N_pix = 1800
