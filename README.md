@@ -20,7 +20,7 @@ conda activate showermodel
 
 * To update the environment (e.g. when dependencies get updated), use:
 ```
-conda env update -n toymodel -f environment.yml
+conda env update -n showermodel -f environment.yml
 ```
 
 Install ShowerModel, run the following command from the ShowerModel root directory:
