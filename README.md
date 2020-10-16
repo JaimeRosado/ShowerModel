@@ -1,8 +1,8 @@
-# ToyModel
+# ShowerModel
 A Python package for modelling cosmic-ray showers, their light production and their detection
 
 --------
-* Code : https://github.com/JaimeRosado/ToyModel
+* Code : https://github.com/JaimeRosado/ShowerModel
 * License: GPL-3.0
 --------
 
@@ -12,10 +12,10 @@ A Python package for modelling cosmic-ray showers, their light production and th
 
 * Create and activate the conda environment:
 ```
-git clone https://github.com/JaimeRosado/ToyModel.git
-cd ToyModel
+git clone https://github.com/JaimeRosado/ShowerModel.git
+cd ShowerModel
 conda env create -f environment.yml
-conda activate toymodel
+conda activate showermodel
 ```
 
 * To update the environment (e.g. when dependencies get updated), use:
@@ -23,7 +23,7 @@ conda activate toymodel
 conda env update -n toymodel -f environment.yml
 ```
 
-Install ToyModel, run the following command from the ToyModel root directory:
+Install ShowerModel, run the following command from the ShowerModel root directory:
 ```
 conda develop .
 ```
