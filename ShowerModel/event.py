@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import numpy as np
+import math
 import ShowerModel as sm
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -70,6 +71,8 @@ def Event(observatory, shower, atm_trans=True, tel_eff=True, **kwargs):
         signal = sm.Signal(
             telescope, shower, projection, atm_trans, tel_eff, **kwargs)
         event.signals.append(signal)
+        
+    event.images = None
 
     return event
 
@@ -99,7 +102,7 @@ class _Event():
     projections : List of Projection objects (one for each telescope).
     signals : List of Signal objects (one for each telescope).
     images : List of Image objects. Only available if generated via the method
-        images.
+        make_images.
     atm_trans : True if the atmospheric transmision is included.
     tel_eff : True if the telescope efficiency is included.
 
@@ -119,7 +122,7 @@ class _Event():
         positions in a 2D plot.
     show_geometry3D : Show the shower track together with the telescope
         positions in a 3D plot.
-    images : Generate shower images.
+    make_images : Generate shower images.
     show_images : Show shower images (if already exist).
     """
     event_type = None
@@ -339,7 +342,7 @@ class _Event():
         grid_event = sm.Event(grid, self.shower, atm_trans, tel_eff, **kwargs)
         return grid_event.show_distribution()
 
-    def images(self, lat_profile=True, NSB=40.):
+    def make_images(self, lat_profile=True, NSB=40.):
         """
         Generate a time-varying shower image for each telescope assuming a
         circular camera with square pixels of same solid angle. The list of
@@ -364,20 +367,27 @@ class _Event():
         self.images = images
         return images
 
-    def show_images(self):
+    def show_images(self, col=5, size=2):
         """
         Show subplots of shower images (if already exist). Each subplot is
         labelled with the telescope id.
+        
+        Parameters
+        ----------
+        col : Number of columns of the figure. Default to 5.
+        size : Subplot size in cm. Default to 2.
         """
         if self.images is None:
             raise ValueError(
-                'Images must be generated first via images method.')
-        rows = len(self.observatory)//5
-        fig, axes = plt.subplots(rows, 5, figsize=(10, rows*2))
+                'Images must be generated first via make_images method.')
+        rows = math.ceil(len(self.observatory)/col)
+        fig, axes = plt.subplots(rows, col, figsize=(col*size, rows*size))
         plt.tight_layout()
+        N = len(self.observatory)
         for tel, ax in enumerate(axes.flatten()):
-            ax = self.images[tel].show(ax=ax)
-            ax.set_title(tel)
+            if tel < N:
+                ax = self.images[tel].show(ax=ax)
+                ax.set_title(tel)
         #plt.show()
 
 
