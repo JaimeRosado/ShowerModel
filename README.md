@@ -1,5 +1,7 @@
 # ShowerModel
-A Python package for modelling cosmic-ray showers, their light production and their detection
+A Python package for modelling cosmic-ray showers, their light production and their detection.
+
+See presentation vieo: https://drive.google.com/file/d/14AGV91mQXDwecGy2qxgNEmWeIcxKy_I0/view?usp=sharing
 
 --------
 * Code : https://github.com/JaimeRosado/ShowerModel
