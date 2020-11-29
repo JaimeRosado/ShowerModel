@@ -1,4 +1,4 @@
-![ShowerModel logo](https://github.com/JaimeRosado/ShowerModel/blob/master/docs/source/ShoweModel_logo_medium.jpg)
+![ShowerModel logo](https://github.com/JaimeRosado/ShowerModel/blob/master/docs/source/ShowerModel_logo_medium.jpg)
 
 A Python package for modelling cosmic-ray showers, their light production and their detection.
 
