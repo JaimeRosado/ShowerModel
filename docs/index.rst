@@ -7,6 +7,11 @@ Welcome to ShowerModel's documentation!
 =======================================
 A Python package for modelling cosmic-ray showers, their light production and its detection.
 
+.. _showermodel logo:
+
+.. figure:: logo_showermodel.png
+
+
 .. _showermodel_guide:
 .. toctree::
     :maxdepth: 1
