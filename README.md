@@ -1,4 +1,4 @@
-![ShowerModel logo](https://github.com/JaimeRosado/ShowerModel/blob/master/docs/source/ShowerModel_logo_medium.jpg)
+![ShowerModel logo](docs/logo_showermodel.png)
 
 A Python package for modelling cosmic-ray showers, their light production and their detection.
 
@@ -29,5 +29,5 @@ conda env update -n showermodel -f environment.yml
 
 Install ShowerModel, run the following command from the ShowerModel root directory:
 ```
-conda develop .
+pip install -e .
 ```
