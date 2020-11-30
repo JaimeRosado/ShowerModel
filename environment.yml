@@ -1,10 +1,16 @@
-name: showermodel-dev2
+name: showermodel
 channels:
   - default
   - conda-forge
 dependencies:
+# core
   - python
+  - pip
   - jupyter
   - ipython
+# development
+  - sphinx
+  - sphinx-automodapi
+  - sphinx_rtd_theme
 
 
