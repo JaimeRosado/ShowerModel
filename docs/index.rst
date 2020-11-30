@@ -10,7 +10,8 @@ A Python package for modelling cosmic-ray showers, their light production and it
 .. _showermodel logo:
 
 .. figure:: logo_showermodel.png
-
+    :scale: 50 %
+    :align: center
 
 .. _showermodel_guide:
 .. toctree::
