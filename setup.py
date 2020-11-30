@@ -18,7 +18,8 @@ setup(
         "numpy",
         "pandas",
         "matplotlib",
-        "scipy"
+        "scipy",
+        "ipython"
     ],
     name='ShowerModel',
     version='0.1.0',
