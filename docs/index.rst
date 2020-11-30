@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to ShowerModel's documentation!
-====================================
+=======================================
 A Python package for modelling cosmic-ray showers, their light production and its detection.
 
 .. _showermodel_guide:
