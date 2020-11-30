@@ -2,11 +2,15 @@ name: showermodel
 channels:
   - default
   - conda-forge
-
 dependencies:
-  - conda-build
-  - numpy
-  - pandas
-  - matplotlib
-  - scipy
+# core
+  - python
+  - pip
+  - jupyter
   - ipython
+# development
+  - sphinx
+  - sphinx-automodapi
+  - sphinx_rtd_theme
+
+

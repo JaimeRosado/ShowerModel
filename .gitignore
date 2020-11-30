@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+ShowerModel/_version.py
 
 # C extensions
 *.so
@@ -127,3 +128,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Docs build
+docs/_build

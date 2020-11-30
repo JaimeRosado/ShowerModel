@@ -1,11 +1,11 @@
 ShowerModel package
-================
+===================
 
 Submodules
 ----------
 
 ShowerModel.atmosphere module
---------------------------
+-----------------------------
 
 .. automodule:: ShowerModel.atmosphere
    :members:
@@ -13,7 +13,7 @@ ShowerModel.atmosphere module
    :show-inheritance:
 
 ShowerModel.cherenkov module
--------------------------
+----------------------------
 
 .. automodule:: ShowerModel.cherenkov
    :members:
@@ -21,7 +21,7 @@ ShowerModel.cherenkov module
    :show-inheritance:
 
 ShowerModel.event module
----------------------
+------------------------
 
 .. automodule:: ShowerModel.event
    :members:
@@ -29,7 +29,7 @@ ShowerModel.event module
    :show-inheritance:
 
 ShowerModel.fluorescence module
-----------------------------
+-------------------------------
 
 .. automodule:: ShowerModel.fluorescence
    :members:
@@ -37,7 +37,7 @@ ShowerModel.fluorescence module
    :show-inheritance:
 
 ShowerModel.image module
----------------------
+------------------------
 
 .. automodule:: ShowerModel.image
    :members:
@@ -45,7 +45,7 @@ ShowerModel.image module
    :show-inheritance:
 
 ShowerModel.observatory module
----------------------------
+------------------------------
 
 .. automodule:: ShowerModel.observatory
    :members:
@@ -53,7 +53,7 @@ ShowerModel.observatory module
    :show-inheritance:
 
 ShowerModel.profile module
------------------------
+--------------------------
 
 .. automodule:: ShowerModel.profile
    :members:
@@ -61,7 +61,7 @@ ShowerModel.profile module
    :show-inheritance:
 
 ShowerModel.projection module
---------------------------
+-----------------------------
 
 .. automodule:: ShowerModel.projection
    :members:
@@ -69,7 +69,7 @@ ShowerModel.projection module
    :show-inheritance:
 
 ShowerModel.shower module
-----------------------
+-------------------------
 
 .. automodule:: ShowerModel.shower
    :members:
@@ -77,7 +77,7 @@ ShowerModel.shower module
    :show-inheritance:
 
 ShowerModel.signal module
-----------------------
+-------------------------
 
 .. automodule:: ShowerModel.signal
    :members:
@@ -85,7 +85,7 @@ ShowerModel.signal module
    :show-inheritance:
 
 ShowerModel.telescope module
--------------------------
+----------------------------
 
 .. automodule:: ShowerModel.telescope
    :members:
@@ -93,7 +93,7 @@ ShowerModel.telescope module
    :show-inheritance:
 
 ShowerModel.tools module
----------------------
+------------------------
 
 .. automodule:: ShowerModel.tools
    :members:
@@ -101,7 +101,7 @@ ShowerModel.tools module
    :show-inheritance:
 
 ShowerModel.track module
----------------------
+------------------------
 
 .. automodule:: ShowerModel.track
    :members:
