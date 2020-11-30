@@ -10,3 +10,11 @@ dependencies:
   - matplotlib
   - scipy
   - ipython
+  # dev dependencies
+  - sphinx
+  - numpydoc
+  - sphinx_rtd_theme
+  - sphinx-argparse
+  - sphinx-automodapi
+
+
