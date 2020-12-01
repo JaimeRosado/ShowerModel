@@ -5,9 +5,13 @@ channels:
 dependencies:
 # core
   - python
-  - pip
+  - conda-build
   - jupyter
   - ipython
+  - matplotlib
+  - numpy
+  - pandas
+  - scipy
 # development
   - sphinx
   - sphinx-automodapi

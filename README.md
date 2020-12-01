@@ -10,7 +10,25 @@ A Python package for modelling cosmic-ray showers, their light production and th
 
 ## Install
 
-* You will need to install miniconda or anaconda first.
+* Install miniconda or anaconda first.
+
+### As user
+
+```
+SHOWERMODEL_VER=0.1.3
+wget https://raw.githubusercontent.com/JaimeRosado/ShowerModel/v$SHOWERMODEL_VER/environment.yml
+conda env create -n showermodel -f environment.yml
+conda activate showermodel
+pip install ShowerModel
+rm environment.yml
+```
+**Note**: If `pip install ShowerModel` fails as it is, you probably need to use `--user` option. 
+This may happen in Windows installations.
+```
+pip install --user ShowerModel
+```
+
+### As developer
 
 * Create and activate the conda environment:
 ```
@@ -25,10 +43,21 @@ conda activate showermodel
 conda env update -n showermodel -f environment.yml
 ```
 
-Install ShowerModel, run the following command from the ShowerModel root directory:
+To install `ShowerModel`, run the following command from the ShowerModel root directory:
 ```
 pip install -e .
 ```
+
+Alternatively, you can also install `ShowerModel` (using conda-build) by running the following command from the ShowerModel root directory:
+```
+conda develop .
+```
+
+Test your installation by running any of the notebooks in this repository.
+Otherwise open an Issue with your error.
+
+Installation, versioning and docs-web deploying methods are base on 
+the [*ctapipe* repository](https://github.com/cta-observatory/ctapipe).
 
 ## Further information
 See our poster and presentation video from ADASS XXX conference https://adass2020.es/:
