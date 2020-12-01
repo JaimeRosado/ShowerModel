@@ -1,4 +1,4 @@
-showermodel package
+ShowerModel package
 ===================
 
 Submodules
