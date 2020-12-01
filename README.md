@@ -43,15 +43,18 @@ conda activate showermodel
 conda env update -n showermodel -f environment.yml
 ```
 
-To install ShowerModel, run the following command from the ShowerModel root directory:
+To install `ShowerModel`, run the following command from the ShowerModel root directory:
 ```
 pip install -e .
 ```
 
-You can also install `ShowerModel` (using conda-build) by running the following command from the ShowerModel root directory:
+Alternatively, you can also install `ShowerModel` (using conda-build) by running the following command from the ShowerModel root directory:
 ```
 conda develop .
 ```
+
+Test your installation by running any of the notebooks in this repository.
+Otherwise open an Issue with your error.
 
 Installation, versioning and docs-web deploying methods are base on 
 the [*ctapipe* repository](https://github.com/cta-observatory/ctapipe).
