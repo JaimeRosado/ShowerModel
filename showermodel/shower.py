@@ -1,6 +1,6 @@
 # coding: utf-8
 
-import ShowerModel as sm
+import showermodel as sm
 import matplotlib.pyplot as plt
 
 
@@ -15,7 +15,7 @@ def Shower(E=_E, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
            lambda_GH=None, atmosphere=None, **kwargs):
     """
     Make a discretization of both the track and profile of a shower as well as
-    its fluorecence and Cherenkov light production.
+    its fluorescence and Cherenkov light production.
 
     Parameters
     ----------
@@ -27,7 +27,7 @@ def Shower(E=_E, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
         position of the source.
     x0 : East coordinate in km of shower impact point at ground.
     y0 : West coordinate in km of shower impact point at ground.
-    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame cointaining a
+    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame containing a
         numerical energy deposit profile. If 'Greisen', the Greisen function
         for electromagnetic showers is used. If 'Gaisser-Hillas', the
         Gaisser-Hillas function for hadron-induced showers is used.
@@ -111,7 +111,7 @@ def Shower(E=_E, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
 class _Shower:
     """
     Object containing a discretization of the atmosphere, both the track and
-    profile of a shower as well as its fluorecence and Cherenkov light
+    profile of a shower as well as its fluorescence and Cherenkov light
     production.
 
     Use Shower to construct a Shower object.
@@ -134,7 +134,7 @@ class _Shower:
         position of the source.
     x0 : East coordinate in km of shower impact point at ground.
     y0 : North coordinate in km of shower impact point at ground.
-    prf_model : 'Greisen', 'Gaisser-Hillas' or DataFrame cointaining the input
+    prf_model : 'Greisen', 'Gaisser-Hillas' or DataFrame containing the input
         energy deposit profile.
     X_max : Slant depth in g/cm^2 at shower maximum.
     X0_GH : X0 parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
@@ -176,7 +176,7 @@ class _Shower:
         Copy a Shower object, but with optional changes.
 
         Depending on the input arguments, some attributes (or all them) will be
-        aliases of those of the orginal Shower object.
+        aliases of those of the original Shower object.
 
         Parameters
         ----------
@@ -221,11 +221,11 @@ class _Shower:
         Parameters
         ----------
         telescope : Telescope object.
-        atm_trans : True if the atmospheric transmision is included.
+        atm_trans : True if the atmospheric transmission is included.
         tel_eff : True if the telescope efficiency is included. If False, 100%
-            efficiency is assumed for a given wavelenght interval.
+            efficiency is assumed for a given wavelength interval.
         **kwargs {wvl_ini, wvl_fin, wvl_step}: Optional keyword arguments to
-            modify the wavelenght interval when tel_eff==False. If None, the
+            modify the wavelength interval when tel_eff==False. If None, the
             wavelength interval defined in the Telescope object is used.
 
         Results
@@ -246,9 +246,9 @@ class _Shower:
             calculate the signals.
         tel_eff : True if the telescope efficiency is included to calculate
             the signals. If False, 100% efficiency is assumed for a given
-            wavelenght interval.
+            wavelength interval.
         **kwargs {wvl_ini, wvl_fin, wvl_step}: Optional keyword arguments to
-            modify the wavelenght interval when tel_eff==False. If None, the
+            modify the wavelength interval when tel_eff==False. If None, the
             wavelength interval defined in each telescope is used.
 
         Results
@@ -336,9 +336,9 @@ class _Shower:
         telescope : Telescope object.
         atm_trans : True if the atmospheric transmision is included.
         tel_eff : True if the telescope efficiency is included. If False, 100%
-            efficiency is assumed for a given wavelenght interval.
+            efficiency is assumed for a given wavelength interval.
         **kwargs {wvl_ini, wvl_fin, wvl_step}: Optional keyword arguments to
-            modify the wavelenght interval when tel_eff==False. If None, the
+            modify the wavelength interval when tel_eff==False. If None, the
             wavelength interval defined in the Telescope object is used.
 
         Results
@@ -523,7 +523,7 @@ def _copy(shower, atmosphere=None, **kwargs):
 
         else:
             # If the atmospheric parameters are the same as the original
-            # atmosphere a new Shower object is genereated with an alias of the
+            # atmosphere a new Shower object is generated with an alias of the
             # original atmosphere
             shower_c = _Shower()
             shower_c.atmosphere = shower.atmosphere  # New alias

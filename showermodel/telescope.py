@@ -3,7 +3,7 @@
 import math
 import numpy as np
 import pandas as pd
-import ShowerModel as sm  # For projection
+import showermodel as sm  # For projection
 
 # Default values for telescope
 _x = 0.  # km

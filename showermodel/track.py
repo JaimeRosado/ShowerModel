@@ -3,7 +3,7 @@
 import math
 import numpy as np
 import pandas as pd
-import ShowerModel as sm
+import showermodel as sm
 import warnings
 warnings.filterwarnings(
     'ignore',
