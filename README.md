@@ -19,8 +19,14 @@ SHOWERMODEL_VER=0.1.2
 wget https://raw.githubusercontent.com/JaimeRosado/ShowerModel/v$SHOWERMODEL_VER/environment.yml
 conda env create -n showermodel -f environment.yml
 conda activate showermodel
-pip install ShowerModel==$SHOWERMODEL_VER
+pip install ShowerModel
 rm environment.yml
+```
+**Note**: If `pip install ShowerModel` fails as it is, you probably need to use `--user` option. 
+This may happen in Windows installations.
+
+```
+pip install --user ShowerModel
 ```
 
 ### As developer
