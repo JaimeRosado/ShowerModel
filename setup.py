@@ -16,17 +16,17 @@ setup(
     packages=find_packages(),
     python_requires=">=3.7",
     install_requires=[
-        "numpy~=1.19",
-        "pandas>=1.0.0",
-        "matplotlib~=3.3",
-        "scipy~=1.5",
-        "ipython~=7.12",
+        "numpy",
+        "pandas",
+        "matplotlib",
+        "scipy",
+        "ipython",
         "setuptools_scm>=3.4"
     ],
     package_data={
         'showermodel': [
             'extra/averaged_profile_5sh_100TeV.dat',
-            'extra/Edep_prodile_1000GeV_1000sh_0deg.dat'
+            'extra/Edep_profile_1000GeV_1000sh_0deg.dat'
         ],
     },
     # here are optional dependencies (as "tag" : "dependency spec")
