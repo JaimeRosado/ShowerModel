@@ -3,14 +3,20 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ShowerModel's documentation!
+ShowerModel
 =======================================
-A Python package for modelling cosmic-ray showers, their light production and its detection.
 
 .. _showermodel logo:
 
+A Python package for modelling cosmic-ray showers, their light production and its detection.
+
 .. figure:: logo_showermodel.png
     :align: center
+
+* Code: https://github.com/JaimeRosado/ShowerModel/
+* Docs: https://jaimerosado.github.io/ShowerModel/
+* License: BSD-3
+* Python 3.7 or later
 
 .. _showermodel_guide:
 .. toctree::
@@ -21,6 +27,8 @@ A Python package for modelling cosmic-ray showers, their light production and it
     tutorials/index
     ShowerModel
     modules
+    bibliography
+
 
 Indices and tables
 ==================
