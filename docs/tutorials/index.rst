@@ -3,7 +3,10 @@
 Tutorials
 ************
 
-See the following use cases:
+See the following use cases. You can play with them using Binder without any further installation:
+
+.. image:: https://mybinder.org/badge_logo.svg
+ :target: https://mybinder.org/v2/gh/JaimeRosado/ShowerModel/master?filepath=notebooks
 
 .. toctree::
 
