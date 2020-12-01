@@ -24,7 +24,6 @@ rm environment.yml
 ```
 **Note**: If `pip install ShowerModel` fails as it is, you probably need to use `--user` option. 
 This may happen in Windows installations.
-
 ```
 pip install --user ShowerModel
 ```
@@ -47,6 +46,11 @@ conda env update -n showermodel -f environment.yml
 To install ShowerModel, run the following command from the ShowerModel root directory:
 ```
 pip install -e .
+```
+
+You can also install `ShowerModel` (using conda-build) by running the following command from the ShowerModel root directory:
+```
+conda develop .
 ```
 
 Installation, versioning and docs-web deploying methods are base on 

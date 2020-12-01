@@ -5,6 +5,7 @@ channels:
 dependencies:
 # core
   - python
+  - conda-build
   - pip
   - jupyter
   - ipython
