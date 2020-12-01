@@ -2,7 +2,7 @@
 
 import numpy as np
 import math
-import ShowerModel as sm
+import showermodel as sm
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
@@ -21,8 +21,8 @@ def Event(observatory, shower, atm_trans=True, tel_eff=True, **kwargs):
         to transport photons.
     tel_eff : Bool indicating whether the telescope efficiency is included to
         calculate the signals. If False, 100% efficiency is assumed for a given
-        wavelenght interval.
-    **kwargs {wvl_ini, wvl_fin, wvl_step}: Options to modify the wavelenght
+        wavelength interval.
+    **kwargs {wvl_ini, wvl_fin, wvl_step}: Options to modify the wavelength
         interval when tel_eff==False. If None, the wavelength interval defined
         in each telescope is used.
 
@@ -148,7 +148,7 @@ class _Event():
 
         Returns
         -------
-        (ax1, ax2) : PolarAxesSubpot objects.
+        (ax1, ax2) : PolarAxesSubplot objects.
         """
         if X_mark == 'X_max':
             X_mark = self.shower.X_max
@@ -290,7 +290,7 @@ class _Event():
         Parameters
         ----------
         grid : Existing Grid object to be used. If None, a new Grid object is
-            generated from the specificed dimensions and the characteristics of
+            generated from the specified dimensions and the characteristics of
             the telescope with tel_index=0 of the observatory. If given,
             size_x, size_y, N_x, N_y are not used.
         size_x : Size of the grid in km across the x direction.
@@ -298,12 +298,12 @@ class _Event():
         N_x : Number of cells across the x direction.
         N_y : Number of cells across the y direction.
         atm_trans : Bool indicating whether the atmospheric transmision is
-            included to tranport photons. If None, this option is set to be the
+            included to transport photons. If None, this option is set to be the
             same as the original Event object.
         tel_eff : Bool indicating whether the telescope efficiency is included
             to calculate the signals. If None, this option is set to be the
             same as the original Event object.
-        **kwargs {wvl_ini, wvl_fin, wvl_step}: Options to modify the wavelenght
+        **kwargs {wvl_ini, wvl_fin, wvl_step}: Options to modify the wavelength
             interval when tel_eff==False. If None, the wavelength interval of
             the grid telescopes is used.
 
@@ -350,7 +350,7 @@ class _Event():
 
         Parameters
         ----------
-        lat_profile : Bool indicating wether a NKG lateral profile is used to
+        lat_profile : Bool indicating whether a NKG lateral profile is used to
             spread the signal. If False, a linear shower is assumed.
         NSB : Night sky background in MHz/m$^2$/deg$^2$.
 
@@ -468,7 +468,7 @@ def _show_distribution(grid_event):
         return ax1, ax2, cbar
 
     else:  # 1D grid
-        # Logaritmic scale plot
+        # Logarithmic scale plot
         fig, ax = plt.subplots(1, 1, figsize=(5, 5))
         plt.yscale('log')
 
