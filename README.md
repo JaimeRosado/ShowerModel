@@ -15,7 +15,7 @@ A Python package for modelling cosmic-ray showers, their light production and th
 ### As user
 
 ```
-SHOWERMODEL_VER=0.1.2
+SHOWERMODEL_VER=0.1.3
 wget https://raw.githubusercontent.com/JaimeRosado/ShowerModel/v$SHOWERMODEL_VER/environment.yml
 conda env create -n showermodel -f environment.yml
 conda activate showermodel
