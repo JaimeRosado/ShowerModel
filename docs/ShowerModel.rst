@@ -1,109 +1,109 @@
-ShowerModel package
+showermodel package
 ===================
 
 Submodules
 ----------
 
-ShowerModel.atmosphere module
+showermodel.atmosphere module
 -----------------------------
 
-.. automodule:: ShowerModel.atmosphere
+.. automodule:: showermodel.atmosphere
    :members:
    :undoc-members:
    :show-inheritance:
 
-ShowerModel.cherenkov module
+showermodel.cherenkov module
 ----------------------------
 
-.. automodule:: ShowerModel.cherenkov
+.. automodule:: showermodel.cherenkov
    :members:
    :undoc-members:
    :show-inheritance:
 
-ShowerModel.event module
+showermodel.event module
 ------------------------
 
-.. automodule:: ShowerModel.event
+.. automodule:: showermodel.event
    :members:
    :undoc-members:
    :show-inheritance:
 
-ShowerModel.fluorescence module
+showermodel.fluorescence module
 -------------------------------
 
-.. automodule:: ShowerModel.fluorescence
+.. automodule:: showermodel.fluorescence
    :members:
    :undoc-members:
    :show-inheritance:
 
-ShowerModel.image module
+showermodel.image module
 ------------------------
 
-.. automodule:: ShowerModel.image
+.. automodule:: showermodel.image
    :members:
    :undoc-members:
    :show-inheritance:
 
-ShowerModel.observatory module
+showermodel.observatory module
 ------------------------------
 
-.. automodule:: ShowerModel.observatory
+.. automodule:: showermodel.observatory
    :members:
    :undoc-members:
    :show-inheritance:
 
-ShowerModel.profile module
+showermodel.profile module
 --------------------------
 
-.. automodule:: ShowerModel.profile
+.. automodule:: showermodel.profile
    :members:
    :undoc-members:
    :show-inheritance:
 
-ShowerModel.projection module
+showermodel.projection module
 -----------------------------
 
-.. automodule:: ShowerModel.projection
+.. automodule:: showermodel.projection
    :members:
    :undoc-members:
    :show-inheritance:
 
-ShowerModel.shower module
+showermodel.shower module
 -------------------------
 
-.. automodule:: ShowerModel.shower
+.. automodule:: showermodel.shower
    :members:
    :undoc-members:
    :show-inheritance:
 
-ShowerModel.signal module
+showermodel.signal module
 -------------------------
 
-.. automodule:: ShowerModel.signal
+.. automodule:: showermodel.signal
    :members:
    :undoc-members:
    :show-inheritance:
 
-ShowerModel.telescope module
+showermodel.telescope module
 ----------------------------
 
-.. automodule:: ShowerModel.telescope
+.. automodule:: showermodel.telescope
    :members:
    :undoc-members:
    :show-inheritance:
 
-ShowerModel.tools module
+showermodel.tools module
 ------------------------
 
-.. automodule:: ShowerModel.tools
+.. automodule:: showermodel.tools
    :members:
    :undoc-members:
    :show-inheritance:
 
-ShowerModel.track module
+showermodel.track module
 ------------------------
 
-.. automodule:: ShowerModel.track
+.. automodule:: showermodel.track
    :members:
    :undoc-members:
    :show-inheritance:
@@ -112,7 +112,7 @@ ShowerModel.track module
 Module contents
 ---------------
 
-.. automodule:: ShowerModel
+.. automodule:: showermodel
    :members:
    :undoc-members:
    :show-inheritance:

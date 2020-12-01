@@ -25,5 +25,5 @@ setup(
     ],
     # here are optional dependencies (as "tag" : "dependency spec")
     extras_require={"docs": docs_require},
-    use_scm_version={"write_to": os.path.join("ShowerModel", "_version.py")},
+    use_scm_version={"write_to": os.path.join("showermodel", "_version.py")},
 )

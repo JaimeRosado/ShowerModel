@@ -12,12 +12,12 @@
 #
 # import os
 # import sys
-# sys.path.insert(0, os.path.abspath('./../ShowerModel'))
+# sys.path.insert(0, os.path.abspath('.'))
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'ShowerModel'
+project = 'showermodel'
 copyright = '2020, Jaime Rosado and Daniel Morcuende'
 author = 'Jaime Rosado'
 

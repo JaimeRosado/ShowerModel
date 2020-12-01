@@ -4,7 +4,7 @@ import math
 import numpy as np
 import pandas as pd
 import warnings
-import ShowerModel as sm
+import showermodel as sm
 import matplotlib.pyplot as plt
 warnings.filterwarnings(
     'ignore',

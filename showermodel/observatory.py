@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import numpy as np
-import ShowerModel as sm
+import showermodel as sm
 import matplotlib.pyplot as plt
 
 # Default values for array25
