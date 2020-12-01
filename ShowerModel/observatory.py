@@ -13,7 +13,7 @@ def Observatory(*telescopes, obs_type=None):
     """
     Make an observatory from a list of telescopes.
 
-    Parameteres
+    Parameters
     -----------
     *telescopes : Arbitrary number of Telescope objects.
     obs_type : Name assigned to the Observatory object, default None.
