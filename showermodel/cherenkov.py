@@ -13,17 +13,17 @@ warnings.filterwarnings(
 # Constructor
 def Cherenkov(profile):
     """
-    Calculate the Cherenkov light production from a shower profile
-    discretization according to the parameterization described in
-    F. Nerling et al., Astropart. Phys. 24(2006)241.
+Calculate the Cherenkov light production from a shower profile
+discretization according to the parameterization described in
+F. Nerling et al., Astropart. Phys. 24(2006)241.
 
-    Parameters
-    ----------
-    profile : Profile object.
+Parameters
+----------
+profile : Profile object.
 
-    Returns
-    -------
-    Cherenkov object.
+Returns
+-------
+Cherenkov object.
     """
     cherenkov = _Cherenkov(columns=['N_ph', 'a', 'theta_c', 'b', 'theta_cc'])
     cherenkov.profile = profile
