@@ -39,7 +39,7 @@ def Atmosphere(h0=_h0, h_top=_h_top, N_steps=_N_steps, model=_model):
     Atmosphere object.
     Track : Constructor of Track object.
     Profile: Constructor of Profile object.
-    Shower : Contructor of Shower object.
+    Shower : Constructor of Shower object.
     """
     atmosphere = _Atmosphere(
         columns=['h', 'X_vert', 'rho', 'temp', 'P', 'P_w', 'E_th', 'r_M'])
@@ -51,11 +51,11 @@ def Atmosphere(h0=_h0, h_top=_h_top, N_steps=_N_steps, model=_model):
             return ATM  # Outputs the default atmosphere if already generated
         except Exception:
             # If the default atmosphere is to be generated,
-            # it will be asigned to the global variable ATM
+            # it will be assigned to the global variable ATM
             ATM = atmosphere
 
     # The output DataFrame includes the input parameters h0, h_top, N_steps,
-    # model as atributes
+    # model as attributes
     atmosphere.h0 = h0
     atmosphere.h_top = h_top
     atmosphere.N_steps = N_steps
@@ -141,7 +141,7 @@ class _Atmosphere(pd.DataFrame):
     Atmosphere : Constructor of Atmosphere object.
     Track : Constructor of Track object.
     Profile : Constructor of Profile object.
-    Shower : Contructor of Shower object.
+    Shower : Constructor of Shower object.
     """
 
     def h_to_Xv(self, h):
