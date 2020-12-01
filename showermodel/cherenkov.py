@@ -14,7 +14,7 @@ warnings.filterwarnings(
 def Cherenkov(profile):
     """
     Calculate the Cherenkov light production from a shower profile
-    discretization according toe the parameterization described in
+    discretization according to the parameterization described in
     F. Nerling et al., Astropart. Phys. 24(2006)241.
 
     Parameters
