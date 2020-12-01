@@ -6,9 +6,12 @@ dependencies:
 # core
   - python
   - conda-build
-  - pip
   - jupyter
   - ipython
+  - matplotlib
+  - numpy
+  - pandas
+  - scipy
 # development
   - sphinx
   - sphinx-automodapi
