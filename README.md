@@ -5,13 +5,14 @@ ShowerModel
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JaimeRosado/ShowerModel/master?filepath=notebooks)
 
+[![DOI](https://zenodo.org/badge/259611899.svg)](https://zenodo.org/badge/latestdoi/259611899)
+
 A Python package for modelling cosmic-ray showers, their light production and their detection.
 
 --------
 * Code : https://github.com/JaimeRosado/ShowerModel
 * Docs: https://jaimerosado.github.io/ShowerModel
 * License: GPL-3.0
-* [![DOI](https://zenodo.org/badge/259611899.svg)](https://zenodo.org/badge/latestdoi/259611899)
 --------
 
 ## Install
