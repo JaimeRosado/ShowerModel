@@ -1,0 +1,1386 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Use case 2: Shower profiles &mdash; ShowerModel 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Use case 3: Signal production and ground distribution" href="UC3_Signal_production_and_ground_distribution.html" />
+    <link rel="prev" title="Use case 1: Shower tracks" href="UC1_Track_visualization.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> ShowerModel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="UC0_Playing_around_with_ShowerModel.html">Use case 0: Playing around with ShowerModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC1_Track_visualization.html">Use case 1: Shower tracks</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Use case 2: Shower profiles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Construction-of-an-atmospheric-profile">Construction of an atmospheric profile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Construction-of-shower-profiles">Construction of shower profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Fluorescence-and-Cherenkov-light-production">Fluorescence and Cherenkov light production</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Shower-objects"><code class="docutils literal notranslate"><span class="pre">Shower</span></code> objects</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="UC3_Signal_production_and_ground_distribution.html">Use case 3: Signal production and ground distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC4_Observatory_events.html">Use case 4: Observatory events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC5_Camera_images.html">Use case 5: Camera images</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ShowerModel.html">ShowerModel package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ShowerModel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Tutorials</a> &raquo;</li>
+        
+      <li>Use case 2: Shower profiles</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/tutorials/UC2_Shower_profile.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="Use-case-2:-Shower-profiles">
+<h1>Use case 2: Shower profiles<a class="headerlink" href="#Use-case-2:-Shower-profiles" title="Permalink to this headline">¶</a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">showermodel</span> <span class="k">as</span> <span class="nn">sm</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</pre></div>
+</div>
+</div>
+<p>This notebook illustrates how to use the following classes and their methods: - <code class="docutils literal notranslate"><span class="pre">Atmosphere</span></code> : calculation of an atmospheric profile. - <code class="docutils literal notranslate"><span class="pre">Profile</span></code> : calculation of a shower longitudinal profile. - <code class="docutils literal notranslate"><span class="pre">Fluorescence</span></code> : calculation of the fluorescence production. - <code class="docutils literal notranslate"><span class="pre">Cherenkov</span></code> : calculation of the Cherenkov light production.</p>
+<p>These classes, along with the <code class="docutils literal notranslate"><span class="pre">Track</span></code> class described in UC1, are wrapped by the <code class="docutils literal notranslate"><span class="pre">Shower</span></code> class, which is also described here.</p>
+<div class="section" id="Construction-of-an-atmospheric-profile">
+<h2>Construction of an atmospheric profile<a class="headerlink" href="#Construction-of-an-atmospheric-profile" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">The default <code class="docutils literal notranslate"><span class="pre">Atmosphere</span></code> object uses the U.S. standard atmosphere, corresponding to model 1 in CORSIKA. The atmospheric model 17 of CORSIKA is also available. More models are to be implemented.</div>
+<div class="line">The observation level, atmosphere discretization, etc. can be defined by the user.</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Default Atmosphere object</span>
+<span class="c1"># atmosphere = sm.Atmosphere()</span>
+
+<span class="c1"># Setting the observation level, the top of the atmosphere, the atmospheric model and the number of discretization steps</span>
+<span class="n">atmosphere</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">Atmosphere</span><span class="p">(</span><span class="n">h0</span><span class="o">=</span><span class="mf">1.8</span><span class="p">,</span> <span class="n">h_top</span><span class="o">=</span><span class="mf">100.</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="mi">17</span><span class="p">,</span> <span class="n">N_steps</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Help on <code class="docutils literal notranslate"><span class="pre">Atmosphere</span></code> constructor.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># sm.Atmosphere?</span>
+</pre></div>
+</div>
+</div>
+<p>The generated <code class="docutils literal notranslate"><span class="pre">Atmosphere</span></code> object is a subclass of <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> and it stores all the relevant parameters of the atmospheric profile.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">atmosphere</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>h</th>
+      <th>X_vert</th>
+      <th>rho</th>
+      <th>temp</th>
+      <th>P</th>
+      <th>P_w</th>
+      <th>E_th</th>
+      <th>r_M</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>1.881833</td>
+      <td>821.965364</td>
+      <td>1.018359e-03</td>
+      <td>275.794943</td>
+      <td>806.348022</td>
+      <td>0.0</td>
+      <td>23.426743</td>
+      <td>0.094323</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>2.045500</td>
+      <td>805.440347</td>
+      <td>1.001041e-03</td>
+      <td>274.925426</td>
+      <td>790.136980</td>
+      <td>0.0</td>
+      <td>23.628520</td>
+      <td>0.095954</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>2.209167</td>
+      <td>789.196339</td>
+      <td>9.840185e-04</td>
+      <td>274.040868</td>
+      <td>774.201608</td>
+      <td>0.0</td>
+      <td>23.832034</td>
+      <td>0.097614</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>2.372833</td>
+      <td>773.228562</td>
+      <td>9.672851e-04</td>
+      <td>273.141007</td>
+      <td>758.537220</td>
+      <td>0.0</td>
+      <td>24.037301</td>
+      <td>0.099303</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>2.536500</td>
+      <td>757.532320</td>
+      <td>9.508363e-04</td>
+      <td>272.225579</td>
+      <td>743.139206</td>
+      <td>0.0</td>
+      <td>24.244334</td>
+      <td>0.101021</td>
+    </tr>
+    <tr>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <td>595</td>
+      <td>99.263500</td>
+      <td>0.001372</td>
+      <td>1.269746e-09</td>
+      <td>369.184938</td>
+      <td>0.001346</td>
+      <td>0.0</td>
+      <td>20984.958249</td>
+      <td>75648.450808</td>
+    </tr>
+    <tr>
+      <td>596</td>
+      <td>99.427167</td>
+      <td>0.001351</td>
+      <td>1.241879e-09</td>
+      <td>371.814407</td>
+      <td>0.001326</td>
+      <td>0.0</td>
+      <td>21219.097993</td>
+      <td>77345.963977</td>
+    </tr>
+    <tr>
+      <td>597</td>
+      <td>99.590833</td>
+      <td>0.001331</td>
+      <td>1.214623e-09</td>
+      <td>374.502880</td>
+      <td>0.001306</td>
+      <td>0.0</td>
+      <td>21455.850152</td>
+      <td>79081.568486</td>
+    </tr>
+    <tr>
+      <td>598</td>
+      <td>99.754500</td>
+      <td>0.001312</td>
+      <td>1.187966e-09</td>
+      <td>377.251681</td>
+      <td>0.001287</td>
+      <td>0.0</td>
+      <td>21695.243874</td>
+      <td>80856.119088</td>
+    </tr>
+    <tr>
+      <td>599</td>
+      <td>99.918167</td>
+      <td>0.001292</td>
+      <td>1.161894e-09</td>
+      <td>380.062164</td>
+      <td>0.001268</td>
+      <td>0.0</td>
+      <td>21937.308633</td>
+      <td>82670.489712</td>
+    </tr>
+  </tbody>
+</table>
+<p>600 rows × 8 columns</p>
+</div></div>
+</div>
+<p>It also has some useful attributes and methods.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Observation level in km a.s.l.:&quot;</span><span class="p">,</span> <span class="n">atmosphere</span><span class="o">.</span><span class="n">h0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Height (km a.s.l.) corresponding to a vertical depth of 50 g/cm2:&quot;</span><span class="p">,</span> <span class="n">atmosphere</span><span class="o">.</span><span class="n">Xv_to_h</span><span class="p">(</span><span class="mf">50.</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Observation level in km a.s.l.: 1.8
+Height (km a.s.l.) corresponding to a vertical depth of 50 g/cm2: 20.699903736887787
+</pre></div></div>
+</div>
+<p>Help on <code class="docutils literal notranslate"><span class="pre">Atmosphere</span></code> objects.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># atmosphere?</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Construction-of-shower-profiles">
+<h2>Construction of shower profiles<a class="headerlink" href="#Construction-of-shower-profiles" title="Permalink to this headline">¶</a></h2>
+<p>The default <code class="docutils literal notranslate"><span class="pre">Profile</span></code> object assumes a Greisen function for a vertical shower induced by a gamma ray of 10 TeV in the default atmosphere. The depth of maximum is obtained from the Heitler model.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># profile = sm.Profile()</span>
+</pre></div>
+</div>
+</div>
+<div class="line-block">
+<div class="line">To set the shower parameters, the energy of the gamma ray should be given in MeV, the depth of maximum in g/cm<span class="math notranslate nohighlight">\(^2\)</span> and both the zenith and azimuth angles in degrees.</div>
+<div class="line">In addition, an <code class="docutils literal notranslate"><span class="pre">Atmosphere</span></code> object (or the parameters needed to construct it) can be input so that the shower profile is calculated for the specified atmospheric profile and discretization. This <code class="docutils literal notranslate"><span class="pre">Atmosphere</span></code> object is stored as an attribute of the <code class="docutils literal notranslate"><span class="pre">Profile</span></code> object.</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Greisen profile for a 1000 GeV shower (energy in MeV) with zenith angle of 20 degrees in the above-defined atmosphere</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">E</span><span class="o">=</span><span class="mf">1000000.</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">20.</span><span class="p">,</span> <span class="n">X_max</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span> <span class="n">atmosphere</span><span class="o">=</span><span class="n">atmosphere</span><span class="p">)</span>
+
+<span class="c1"># Equivalent one-step procedure (without generating previously the atmosphere)</span>
+<span class="c1"># profile = sm.Profile(E=1000000, theta=20., X_max=300., h0=1.8, h_top=100., model=17, N_steps=600)</span>
+
+<span class="c1"># The atmosphere is stored as an attribute of profile</span>
+<span class="c1"># profile.atmosphere</span>
+</pre></div>
+</div>
+</div>
+<p>A Gaisser-Hillas profile can also be generated introducing the parameters <code class="docutils literal notranslate"><span class="pre">X_max</span></code>, <code class="docutils literal notranslate"><span class="pre">X0_GH</span></code> and <code class="docutils literal notranslate"><span class="pre">lambda_GH</span></code>. If <code class="docutils literal notranslate"><span class="pre">X0_GH</span></code> and <code class="docutils literal notranslate"><span class="pre">lambda_GH</span></code> are not given, they are interpolated from Auger data at the input shower energy.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Gaisser-Hillas profile for a 1 EeV proton shower. A default value for lambda is used</span>
+<span class="c1"># profile = sm.Profile(E=1.e12, theta=20., prf_model=&#39;Gaisser-Hillas&#39;, X_max=500., X0_GH=-10.)</span>
+</pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Profile</span></code> objects can also be constructed from a numerical energy deposit profile (e.g., obtained by CORSIKA). To do that, a <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> object has to be generated with two columns: slant depth in g/cm2 and dE/dX in MeV.cm2/g</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Numerical energy deposit profile generated by CORSIKA: average of 1000 vertical showers induced by 1000 GeV gamma rays</span>
+<span class="n">prf_model</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="s1">&#39;../extra/Edep_profile_1000GeV_1000sh_0deg.dat&#39;</span><span class="p">,</span> <span class="n">skiprows</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;dE_dX&#39;</span><span class="p">])</span>
+<span class="n">prf_model</span><span class="o">.</span><span class="n">dE_dX</span> <span class="o">*=</span> <span class="mf">1000.</span><span class="o">/</span><span class="mf">10.</span>  <span class="c1"># Original data is given in GeV in steps of 10 g/cm2</span>
+
+<span class="n">profile2</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">E</span><span class="o">=</span><span class="mf">1000000.</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">prf_model</span><span class="o">=</span><span class="n">prf_model</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Profile</span></code> objects have a method to plot both the number of charged particles (with energy above 1 MeV) and the energy deposit profile in MeV.cm<span class="math notranslate nohighlight">\(^2\)</span>/g as a function of slant depth in g/cm<span class="math notranslate nohighlight">\(^2\)</span></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">profile</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_UC2_Shower_profile_24_0.png" src="../_images/tutorials_UC2_Shower_profile_24_0.png" />
+</div>
+</div>
+<p>The generated plots can be stored in <code class="docutils literal notranslate"><span class="pre">AxesSubplot</span></code> objects for later modification.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Example of comparison of two profiles in the same plot</span>
+<span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">profile2</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">profile2</span><span class="o">.</span><span class="n">N_ch</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">);</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">profile2</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">profile2</span><span class="o">.</span><span class="n">E_dep</span><span class="o">/</span><span class="n">profile2</span><span class="o">.</span><span class="n">dX</span><span class="p">,</span> <span class="s1">&#39;b--&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_UC2_Shower_profile_26_0.png" src="../_images/tutorials_UC2_Shower_profile_26_0.png" />
+</div>
+</div>
+<p>Help on <code class="docutils literal notranslate"><span class="pre">Profile</span></code> constructor.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># sm.Profile?</span>
+</pre></div>
+</div>
+</div>
+<p>Help on <code class="docutils literal notranslate"><span class="pre">Profile</span></code> objects.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># profile?</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Fluorescence-and-Cherenkov-light-production">
+<h2>Fluorescence and Cherenkov light production<a class="headerlink" href="#Fluorescence-and-Cherenkov-light-production" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">One can construct <code class="docutils literal notranslate"><span class="pre">Fluorescence</span></code> and <code class="docutils literal notranslate"><span class="pre">Cherenkov</span></code> objects that contain calculations of both light components in the 290 - 430 nm range, based on available models for a 1D shower profile.</div>
+<div class="line">Cherenkov -&gt; F. Nerling et al., Astropart. Phys. 24(2006)241.</div>
+<div class="line">Fluorescence -&gt; D. Morcuende et al., Astropart. Phys. 107(2019)26 and references therein.</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">fluorescence</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">Fluorescence</span><span class="p">(</span><span class="n">profile</span><span class="p">)</span>
+<span class="n">cherenkov</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">Cherenkov</span><span class="p">(</span><span class="n">profile</span><span class="p">)</span>
+
+<span class="c1"># Equivalent methods of Profile</span>
+<span class="c1"># fluorescence = profile.Fluorescence()</span>
+<span class="c1"># cherenkov = profile.Cherenkov()</span>
+</pre></div>
+</div>
+</div>
+<p>The generated objects are subclasses of <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># fluorescence</span>
+<span class="n">cherenkov</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>N_ph</th>
+      <th>a</th>
+      <th>theta_c</th>
+      <th>b</th>
+      <th>theta_cc</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>9469.041850</td>
+      <td>1.202737</td>
+      <td>5.314228</td>
+      <td>0.065348</td>
+      <td>9.091585</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>11720.851089</td>
+      <td>1.198439</td>
+      <td>5.286685</td>
+      <td>0.063783</td>
+      <td>9.429516</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>14419.088354</td>
+      <td>1.194075</td>
+      <td>5.259285</td>
+      <td>0.062232</td>
+      <td>9.766305</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>17631.012370</td>
+      <td>1.189646</td>
+      <td>5.232027</td>
+      <td>0.060696</td>
+      <td>10.101912</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>21429.502389</td>
+      <td>1.185151</td>
+      <td>5.204910</td>
+      <td>0.059176</td>
+      <td>10.436295</td>
+    </tr>
+    <tr>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <td>595</td>
+      <td>0.000694</td>
+      <td>0.424894</td>
+      <td>0.086438</td>
+      <td>0.055107</td>
+      <td>0.908373</td>
+    </tr>
+    <tr>
+      <td>596</td>
+      <td>0.000676</td>
+      <td>0.424894</td>
+      <td>0.085859</td>
+      <td>0.055107</td>
+      <td>0.902287</td>
+    </tr>
+    <tr>
+      <td>597</td>
+      <td>0.000658</td>
+      <td>0.424894</td>
+      <td>0.085284</td>
+      <td>0.055107</td>
+      <td>0.896241</td>
+    </tr>
+    <tr>
+      <td>598</td>
+      <td>0.000641</td>
+      <td>0.424894</td>
+      <td>0.084712</td>
+      <td>0.055107</td>
+      <td>0.890236</td>
+    </tr>
+    <tr>
+      <td>599</td>
+      <td>0.000624</td>
+      <td>0.424894</td>
+      <td>0.084144</td>
+      <td>0.055107</td>
+      <td>0.884271</td>
+    </tr>
+  </tbody>
+</table>
+<p>600 rows × 5 columns</p>
+</div></div>
+</div>
+<p>These objects include methods to plot the light production as a function of slant depth.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">fluorescence</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
+<span class="n">cherenkov</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_UC2_Shower_profile_37_0.png" src="../_images/tutorials_UC2_Shower_profile_37_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_UC2_Shower_profile_37_1.png" src="../_images/tutorials_UC2_Shower_profile_37_1.png" />
+</div>
+</div>
+<p>The fluorescence light production is evaluated at 34 bands.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">fluorescence</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_UC2_Shower_profile_39_0.png" src="../_images/tutorials_UC2_Shower_profile_39_0.png" />
+</div>
+</div>
+<p>Help on <code class="docutils literal notranslate"><span class="pre">Fluorescence</span></code> and <code class="docutils literal notranslate"><span class="pre">Cherenkov</span></code> objects.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># fluorescence?</span>
+<span class="c1"># cherenkov?</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Shower-objects">
+<h2><code class="docutils literal notranslate"><span class="pre">Shower</span></code> objects<a class="headerlink" href="#Shower-objects" title="Permalink to this headline">¶</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">Shower</span></code> object contains a <code class="docutils literal notranslate"><span class="pre">Track</span></code> object, a <code class="docutils literal notranslate"><span class="pre">Profile</span></code> object and both <code class="docutils literal notranslate"><span class="pre">Fluorescence</span></code> and <code class="docutils literal notranslate"><span class="pre">Cherenkov</span></code> objects corresponding to a given shower and atmospheric profile. This can be generated in one step introducing all the needed parameters (or keeping the default ones).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Default Shower object</span>
+<span class="c1"># shower = sm.Shower()</span>
+
+<span class="c1"># Setting the impact point, energy, zenith and azimuth angles, X_max and atmospheric profile</span>
+<span class="n">shower</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">Shower</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">20.</span><span class="p">,</span> <span class="n">az</span><span class="o">=</span> <span class="mf">30.</span><span class="p">,</span> <span class="n">X_max</span><span class="o">=</span><span class="mf">300.</span><span class="p">,</span> <span class="n">h0</span><span class="o">=</span><span class="mf">1.8</span><span class="p">,</span> <span class="n">h_top</span><span class="o">=</span><span class="mf">100.</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="mi">17</span><span class="p">,</span> <span class="n">N_steps</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The constituent objects are attributes of <code class="docutils literal notranslate"><span class="pre">Shower</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">shower</span><span class="o">.</span><span class="n">atmosphere</span>  <span class="c1"># Equivalent to shower.profile.atmosphere</span>
+<span class="c1"># shower.track</span>
+<span class="c1"># shower.profile</span>
+<span class="c1"># shower.fluorescence</span>
+<span class="c1"># shower.cherenkov</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>h</th>
+      <th>X_vert</th>
+      <th>rho</th>
+      <th>temp</th>
+      <th>P</th>
+      <th>P_w</th>
+      <th>E_th</th>
+      <th>r_M</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>1.881833</td>
+      <td>821.965364</td>
+      <td>1.018359e-03</td>
+      <td>275.794943</td>
+      <td>806.348022</td>
+      <td>0.0</td>
+      <td>23.426743</td>
+      <td>0.094323</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>2.045500</td>
+      <td>805.440347</td>
+      <td>1.001041e-03</td>
+      <td>274.925426</td>
+      <td>790.136980</td>
+      <td>0.0</td>
+      <td>23.628520</td>
+      <td>0.095954</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>2.209167</td>
+      <td>789.196339</td>
+      <td>9.840185e-04</td>
+      <td>274.040868</td>
+      <td>774.201608</td>
+      <td>0.0</td>
+      <td>23.832034</td>
+      <td>0.097614</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>2.372833</td>
+      <td>773.228562</td>
+      <td>9.672851e-04</td>
+      <td>273.141007</td>
+      <td>758.537220</td>
+      <td>0.0</td>
+      <td>24.037301</td>
+      <td>0.099303</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>2.536500</td>
+      <td>757.532320</td>
+      <td>9.508363e-04</td>
+      <td>272.225579</td>
+      <td>743.139206</td>
+      <td>0.0</td>
+      <td>24.244334</td>
+      <td>0.101021</td>
+    </tr>
+    <tr>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <td>595</td>
+      <td>99.263500</td>
+      <td>0.001372</td>
+      <td>1.269746e-09</td>
+      <td>369.184938</td>
+      <td>0.001346</td>
+      <td>0.0</td>
+      <td>20984.958249</td>
+      <td>75648.450808</td>
+    </tr>
+    <tr>
+      <td>596</td>
+      <td>99.427167</td>
+      <td>0.001351</td>
+      <td>1.241879e-09</td>
+      <td>371.814407</td>
+      <td>0.001326</td>
+      <td>0.0</td>
+      <td>21219.097993</td>
+      <td>77345.963977</td>
+    </tr>
+    <tr>
+      <td>597</td>
+      <td>99.590833</td>
+      <td>0.001331</td>
+      <td>1.214623e-09</td>
+      <td>374.502880</td>
+      <td>0.001306</td>
+      <td>0.0</td>
+      <td>21455.850152</td>
+      <td>79081.568486</td>
+    </tr>
+    <tr>
+      <td>598</td>
+      <td>99.754500</td>
+      <td>0.001312</td>
+      <td>1.187966e-09</td>
+      <td>377.251681</td>
+      <td>0.001287</td>
+      <td>0.0</td>
+      <td>21695.243874</td>
+      <td>80856.119088</td>
+    </tr>
+    <tr>
+      <td>599</td>
+      <td>99.918167</td>
+      <td>0.001292</td>
+      <td>1.161894e-09</td>
+      <td>380.062164</td>
+      <td>0.001268</td>
+      <td>0.0</td>
+      <td>21937.308633</td>
+      <td>82670.489712</td>
+    </tr>
+  </tbody>
+</table>
+<p>600 rows × 8 columns</p>
+</div></div>
+</div>
+<p>Some attributes of <code class="docutils literal notranslate"><span class="pre">Track</span></code>, <code class="docutils literal notranslate"><span class="pre">Profile</span></code> and <code class="docutils literal notranslate"><span class="pre">Atmosphere</span></code> can also be accessed via attributes of <code class="docutils literal notranslate"><span class="pre">Shower</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Depth of maximum:&quot;</span><span class="p">,</span> <span class="n">shower</span><span class="o">.</span><span class="n">X_max</span><span class="p">)</span>  <span class="c1"># Equivalent to shower.profile.X_max</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Coordinates of ground interaction point:&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">shower</span><span class="o">.</span><span class="n">x0</span><span class="p">,</span> <span class="n">shower</span><span class="o">.</span><span class="n">y0</span><span class="p">))</span>  <span class="c1"># Equivalent to (shower.track.x0, shower.track.y0)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Depth of maximum: 300.0
+Coordinates of ground interaction point: (0.5, 0.1)
+</pre></div></div>
+</div>
+<p>There are some inherited methods as well.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">shower</span><span class="o">.</span><span class="n">show_profile</span><span class="p">();</span>
+<span class="n">shower</span><span class="o">.</span><span class="n">show_light_production</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_UC2_Shower_profile_50_0.png" src="../_images/tutorials_UC2_Shower_profile_50_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_UC2_Shower_profile_50_1.png" src="../_images/tutorials_UC2_Shower_profile_50_1.png" />
+</div>
+</div>
+<p>Remarkably, there is a method of <code class="docutils literal notranslate"><span class="pre">Shower</span></code> to visualize the shower track projection with additional options with respect to the equivalent method of <code class="docutils literal notranslate"><span class="pre">Projection</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">shower</span><span class="o">.</span><span class="n">show_projection</span><span class="p">(</span><span class="n">sm</span><span class="o">.</span><span class="n">Telescope</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">y</span><span class="o">=-</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">alt</span><span class="o">=</span><span class="mf">70.</span><span class="p">,</span> <span class="n">az</span><span class="o">=</span><span class="mf">40.</span><span class="p">),</span> <span class="n">max_theta</span><span class="o">=</span><span class="mf">6.</span><span class="p">);</span>
+
+<span class="c1"># Equivalent procedure</span>
+<span class="c1"># telescope = sm.Telescope(x=0.1, y=-0.2, z=0.1, alt=70., az=40.)</span>
+<span class="c1"># projection = shower.Projection(telescope)</span>
+<span class="c1"># projection.show(max_theta=6., X_mark=shower.X_max);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_UC2_Shower_profile_52_0.png" src="../_images/tutorials_UC2_Shower_profile_52_0.png" />
+</div>
+</div>
+<div class="line-block">
+<div class="line">Note 1: <code class="docutils literal notranslate"><span class="pre">X_mark</span></code> is set to <code class="docutils literal notranslate"><span class="pre">X_max</span></code> by default.</div>
+<div class="line">Note 2: Size of track points are proportional to shower size (i.e., column <code class="docutils literal notranslate"><span class="pre">N_ch</span></code> of the <code class="docutils literal notranslate"><span class="pre">Profile</span></code> object).</div>
+</div>
+<p>There is also a method to make copies of a <code class="docutils literal notranslate"><span class="pre">Shower</span></code> object with optional changes.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Identical copy</span>
+<span class="c1"># shower2 = shower.copy()</span>
+
+<span class="c1"># Same atmosphere and track, but different profile</span>
+<span class="n">shower2</span> <span class="o">=</span> <span class="n">shower</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">E</span><span class="o">=</span><span class="mf">10000000.</span><span class="p">,</span> <span class="n">X_max</span><span class="o">=</span><span class="mf">400.</span><span class="p">,</span><span class="n">prf_model</span><span class="o">=</span><span class="s1">&#39;Gaisser-Hillas&#39;</span><span class="p">)</span>
+<span class="n">shower2</span><span class="o">.</span><span class="n">show_profile</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_UC2_Shower_profile_55_0.png" src="../_images/tutorials_UC2_Shower_profile_55_0.png" />
+</div>
+</div>
+<p>Help on <code class="docutils literal notranslate"><span class="pre">Shower</span></code>constructor.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># sm.Shower?</span>
+</pre></div>
+</div>
+</div>
+<p>Help on <code class="docutils literal notranslate"><span class="pre">Shower</span></code> objects.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># shower2?</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="UC3_Signal_production_and_ground_distribution.html" class="btn btn-neutral float-right" title="Use case 3: Signal production and ground distribution" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="UC1_Track_visualization.html" class="btn btn-neutral float-left" title="Use case 1: Shower tracks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Jaime Rosado and Daniel Morcuende
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

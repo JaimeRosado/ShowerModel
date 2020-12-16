@@ -1,0 +1,792 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ShowerModel package &mdash; ShowerModel 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Modules" href="modules.html" />
+    <link rel="prev" title="Use case 5: Camera images" href="tutorials/UC5_Camera_images.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> ShowerModel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ShowerModel package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-showermodel.atmosphere">showermodel.atmosphere module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-showermodel.cherenkov">showermodel.cherenkov module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-showermodel.event">showermodel.event module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-showermodel.fluorescence">showermodel.fluorescence module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-showermodel.image">showermodel.image module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-showermodel.observatory">showermodel.observatory module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-showermodel.profile">showermodel.profile module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-showermodel.projection">showermodel.projection module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-showermodel.shower">showermodel.shower module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-showermodel.signal">showermodel.signal module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-showermodel.telescope">showermodel.telescope module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-showermodel.tools">showermodel.tools module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-showermodel.track">showermodel.track module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-showermodel">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ShowerModel package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-showermodel.atmosphere">showermodel.atmosphere module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-showermodel.cherenkov">showermodel.cherenkov module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-showermodel.event">showermodel.event module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-showermodel.fluorescence">showermodel.fluorescence module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-showermodel.image">showermodel.image module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-showermodel.observatory">showermodel.observatory module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-showermodel.profile">showermodel.profile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-showermodel.projection">showermodel.projection module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-showermodel.shower">showermodel.shower module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-showermodel.signal">showermodel.signal module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-showermodel.telescope">showermodel.telescope module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-showermodel.tools">showermodel.tools module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-showermodel.track">showermodel.track module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-showermodel">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bibliography.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ShowerModel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>ShowerModel package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/ShowerModel.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="showermodel-package">
+<h1>ShowerModel package<a class="headerlink" href="#showermodel-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-showermodel.atmosphere">
+<span id="showermodel-atmosphere-module"></span><h2>showermodel.atmosphere module<a class="headerlink" href="#module-showermodel.atmosphere" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="showermodel.atmosphere.Atmosphere">
+<code class="sig-prename descclassname">showermodel.atmosphere.</code><code class="sig-name descname">Atmosphere</code><span class="sig-paren">(</span><em class="sig-param">h0=2.2</em>, <em class="sig-param">h_top=112.8292</em>, <em class="sig-param">N_steps=550</em>, <em class="sig-param">model=1</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.atmosphere.Atmosphere" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an atmosphere discretization.</p>
+<p>Atmosphere() makes the default Atmosphere object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>h0</strong> (<em>Ground level in km above sea level.</em>) – </p></li>
+<li><p><strong>h_top</strong> (<em>Top level of the atmosphere in km above sea level.</em>) – </p></li>
+<li><p><strong>N_steps</strong> (<em>Number of discretization steps.</em>) – </p></li>
+<li><p><strong>model</strong> (<em>CORSIKA atmospheric model. Presently either 1</em><em> or </em><em>17. More models to</em>) – be implemented.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>atmosphere</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Atmosphere object.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#showermodel.atmosphere.Atmosphere" title="showermodel.atmosphere.Atmosphere"><code class="xref py py-func docutils literal notranslate"><span class="pre">Atmosphere()</span></code></a></p>
+<dl class="simple">
+<dt><code class="xref py py-func docutils literal notranslate"><span class="pre">Track()</span></code></dt><dd><p>Constructor of Track object.</p>
+</dd>
+<dt><code class="xref py py-func docutils literal notranslate"><span class="pre">Profile()</span></code></dt><dd><p>Constructor of Profile object.</p>
+</dd>
+<dt><code class="xref py py-func docutils literal notranslate"><span class="pre">Shower()</span></code></dt><dd><p>Constructor of Shower object.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-showermodel.cherenkov">
+<span id="showermodel-cherenkov-module"></span><h2>showermodel.cherenkov module<a class="headerlink" href="#module-showermodel.cherenkov" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="showermodel.cherenkov.Cherenkov">
+<code class="sig-prename descclassname">showermodel.cherenkov.</code><code class="sig-name descname">Cherenkov</code><span class="sig-paren">(</span><em class="sig-param">profile</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.cherenkov.Cherenkov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the Cherenkov light production from a shower profile
+discretization according to the parameterization described in
+F. Nerling et al., Astropart. Phys. 24(2006)241.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>profile</strong> (<em>Profile object.</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Cherenkov object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-showermodel.event">
+<span id="showermodel-event-module"></span><h2>showermodel.event module<a class="headerlink" href="#module-showermodel.event" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="showermodel.event.Event">
+<code class="sig-prename descclassname">showermodel.event.</code><code class="sig-name descname">Event</code><span class="sig-paren">(</span><em class="sig-param">observatory</em>, <em class="sig-param">shower</em>, <em class="sig-param">atm_trans=True</em>, <em class="sig-param">tel_eff=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.event.Event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an Event object containing the characteristics of a shower,
+an observatory and the signal produced by the shower in each telescope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observatory</strong> (<em>Observatory object</em><em> (</em><em>may be a Grid object</em><em>)</em><em></em>) – </p></li>
+<li><p><strong>shower</strong> (<em>Shower object.</em>) – </p></li>
+<li><p><strong>atm_trans</strong> (<em>Bool indicating whether the atmospheric transmision is included</em>) – to transport photons.</p></li>
+<li><p><strong>tel_eff</strong> (<em>Bool indicating whether the telescope efficiency is included to</em>) – calculate the signals. If False, 100% efficiency is assumed for a given
+wavelength interval.</p></li>
+<li><p><strong>{wvl_ini</strong><strong>, </strong><strong>wvl_fin</strong><strong>, </strong><strong>wvl_step}</strong> (<em>**kwargs</em>) – interval when tel_eff==False. If None, the wavelength interval defined
+in each telescope is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Event object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-showermodel.fluorescence">
+<span id="showermodel-fluorescence-module"></span><h2>showermodel.fluorescence module<a class="headerlink" href="#module-showermodel.fluorescence" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="showermodel.fluorescence.Fluorescence">
+<code class="sig-prename descclassname">showermodel.fluorescence.</code><code class="sig-name descname">Fluorescence</code><span class="sig-paren">(</span><em class="sig-param">profile</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.fluorescence.Fluorescence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the fluorescence photon production from a shower profile
+discretization using the parameterization described in
+D. Morcuende et al., Astropart. Phys. 107(2019)26 and references therein.</p>
+<p>Parameters
+profile : Profile object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Fluorescence object.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#showermodel.fluorescence.Fluorescence" title="showermodel.fluorescence.Fluorescence"><code class="xref py py-func docutils literal notranslate"><span class="pre">Fluorescence()</span></code></a></p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-showermodel.image">
+<span id="showermodel-image-module"></span><h2>showermodel.image module<a class="headerlink" href="#module-showermodel.image" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="showermodel.image.Image">
+<code class="sig-prename descclassname">showermodel.image.</code><code class="sig-name descname">Image</code><span class="sig-paren">(</span><em class="sig-param">signal</em>, <em class="sig-param">lat_profile=True</em>, <em class="sig-param">N_pix=None</em>, <em class="sig-param">int_time=None</em>, <em class="sig-param">NSB=40.0</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.image.Image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a time-varying shower image in a circular camera with square
+pixels of same solid angle. A Nishimura-Kamata-Greisen lateral profile is
+used to spread the signal contribution from each shower point to several
+pixels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>Signal object used generate the shower image.</em>) – </p></li>
+<li><p><strong>lat_profile</strong> (<em>Bool indicating wether a NKG lateral profile is used to</em>) – spread the signal. If False, a linear shower is assumed.</p></li>
+<li><p><strong>N_pix</strong> (<em>Number of camera pixels. If not given</em><em>, </em><em>the predefined value in the</em>) – Telescope object is used.</p></li>
+<li><p><strong>int_time</strong> (<em>Integration time in microseconds of a camera frame. If not</em>) – given, the predefined value in the Telescope object is used.</p></li>
+<li><p><strong>NSB</strong> (<em>Night sky background in MHz/m$^2$/deg$^2$.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Image object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-showermodel.observatory">
+<span id="showermodel-observatory-module"></span><h2>showermodel.observatory module<a class="headerlink" href="#module-showermodel.observatory" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="showermodel.observatory.Array25">
+<code class="sig-prename descclassname">showermodel.observatory.</code><code class="sig-name descname">Array25</code><span class="sig-paren">(</span><em class="sig-param">telescope=None</em>, <em class="sig-param">tel_type='IACT'</em>, <em class="sig-param">x_c=0.0</em>, <em class="sig-param">y_c=0.0</em>, <em class="sig-param">z_c=0.0</em>, <em class="sig-param">theta=None</em>, <em class="sig-param">alt=None</em>, <em class="sig-param">az=None</em>, <em class="sig-param">R=0.341</em>, <em class="sig-param">rot_angle=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.observatory.Array25" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an array of 25 telescopes based on a layout of MST telescopes of CTA.
+The pointing directions of all the telescopes are set equally, but they can
+be modified individually (along with other porperties) later on.</p>
+<p>The telescope index is sorted first by radius and then by azimuth, so that
+tel_index=0 corresponds to the central telescope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>telescope</strong> (<em>Existing Telescope object to be used. If None</em><em>, </em><em>a new Telescope</em>) – object of type tel_type is generated.</p></li>
+<li><p><strong>tel_type</strong> (<em>Subclass of Telescope to be used when telescope==None. Default</em>) – to IACT with field of view of 8 degrees, mirror area of 113 m^2 and
+1800 pixels. If tel_type==None, the parent class Telescope is used.</p></li>
+<li><p><strong>x_c</strong> (<em>East coordinate in km of the center of the array.</em>) – </p></li>
+<li><p><strong>y_c</strong> (<em>North coordinate in km of the center of the array.</em>) – </p></li>
+<li><p><strong>z_c</strong> (<em>Height of the array in km above ground level.</em>) – </p></li>
+<li><p><strong>theta</strong> (<em>Zenith angle in degrees of the telescope pointing directions.</em>) – </p></li>
+<li><p><strong>alt</strong> (<em>Altitude in degrees of the telescope pointing directions. If None</em><em>,</em>) – theta is used. If given, theta is overwritten.</p></li>
+<li><p><strong>az</strong> (<em>Azimuth angle</em><em> (</em><em>from north</em><em>, </em><em>clockwise</em><em>) </em><em>in degrees of the telescope</em>) – pointing directions.</p></li>
+<li><p><strong>R</strong> (<em>Radius in km of the array.</em>) – </p></li>
+<li><p><strong>rot_angle</strong> (<em>Rotation angle in degrees of the array</em><em> (</em><em>clockwise</em><em>)</em><em></em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Observatory object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="showermodel.observatory.Grid">
+<code class="sig-prename descclassname">showermodel.observatory.</code><code class="sig-name descname">Grid</code><span class="sig-paren">(</span><em class="sig-param">telescope=None</em>, <em class="sig-param">tel_type='GridElement'</em>, <em class="sig-param">x_c=0.0</em>, <em class="sig-param">y_c=0.0</em>, <em class="sig-param">z_c=0.0</em>, <em class="sig-param">theta=None</em>, <em class="sig-param">alt=None</em>, <em class="sig-param">az=None</em>, <em class="sig-param">size_x=2.0</em>, <em class="sig-param">size_y=2.0</em>, <em class="sig-param">N_x=10</em>, <em class="sig-param">N_y=10</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.observatory.Grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a rectangular grid of telescopes across the x and y directions.
+The pointing directions of all the telescopes are set equally, but they can
+be modified individually (along with other porperties) later on.</p>
+<p>The telescope index is sorted first by y (from max to min) and then by x
+(from min to max), so that tel_index=0 corresponds to the telescope placed
+at the corner with minimum x and maximum y.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>telescope</strong> (<em>Existing Telescope object to be used.</em>) – If None, a new Telescope object of type tel_type is generated.</p></li>
+<li><p><strong>tel_type</strong> (<em>Subclass of Telescope to be used when telescope==None. Default</em>) – to GridElement with 100% detection efficiency, FoV of 180 degrees
+around zenith and area of one grid cell. If tel_type==None, the parent
+class Telescope is used.</p></li>
+<li><p><strong>x_c</strong> (<em>East coordinate in km of the center of the grid.</em>) – </p></li>
+<li><p><strong>y_c</strong> (<em>North coordinate in km of the center of the grid.</em>) – </p></li>
+<li><p><strong>z_c</strong> (<em>Height of the grid in km above ground level.</em>) – </p></li>
+<li><p><strong>theta</strong> (<em>Zenith angle in degrees of the telescope pointing directions.</em>) – </p></li>
+<li><p><strong>alt</strong> (<em>Altitude in degrees of the telescope pointing directions. If None</em><em>,</em>) – theta is used. If given, theta is overwritten.</p></li>
+<li><p><strong>az</strong> (<em>Azimuth angle in degrees of the telescope pointing directions.</em>) – </p></li>
+<li><p><strong>size_x</strong> (<em>Size of the grid in km across the x direction.</em>) – </p></li>
+<li><p><strong>size_y</strong> (<em>Size of the grid in km across the y direction.</em>) – </p></li>
+<li><p><strong>N_x</strong> (<em>Number of cells across the x direction.</em>) – </p></li>
+<li><p><strong>N_y</strong> (<em>Number of cells across the y direction.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Observatory object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="showermodel.observatory.Observatory">
+<code class="sig-prename descclassname">showermodel.observatory.</code><code class="sig-name descname">Observatory</code><span class="sig-paren">(</span><em class="sig-param">*telescopes</em>, <em class="sig-param">obs_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.observatory.Observatory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an observatory from a list of telescopes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*telescopes</strong> (<em>Arbitrary number of Telescope objects.</em>) – </p></li>
+<li><p><strong>obs_type</strong> (<em>Name assigned to the Observatory object</em><em>, </em><em>default None.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>observatory</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Observatory object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-showermodel.profile">
+<span id="showermodel-profile-module"></span><h2>showermodel.profile module<a class="headerlink" href="#module-showermodel.profile" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="showermodel.profile.Profile">
+<code class="sig-prename descclassname">showermodel.profile.</code><code class="sig-name descname">Profile</code><span class="sig-paren">(</span><em class="sig-param">E=10000000.0</em>, <em class="sig-param">theta=0.0</em>, <em class="sig-param">alt=None</em>, <em class="sig-param">prf_model='Greisen'</em>, <em class="sig-param">X_max=None</em>, <em class="sig-param">X0_GH=None</em>, <em class="sig-param">lambda_GH=None</em>, <em class="sig-param">atmosphere=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.profile.Profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a shower profile discretization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>E</strong> (<em>Energy of the primary particle in MeV.</em>) – </p></li>
+<li><p><strong>theta</strong> (<em>Zenith angle in degrees of the apparent position of the source.</em>) – </p></li>
+<li><p><strong>alt</strong> (<em>Altitude in degrees of the apparent position of the source. If None</em><em>,</em>) – theta is used. If given, theta is overwritten.</p></li>
+<li><p><strong>prf_model</strong> (<em>'Greisen'</em><em>, </em><em>'Gaisser-Hillas'</em><em> or </em><em>DataFrame cointaining a</em>) – numerical energy deposit profile. If ‘Greisen’, the Greisen function
+for electromagnetic showers is used. If ‘Gaisser-Hillas’, the
+Gaisser-Hillas function for hadron-induced showers is used.
+If DataFrame, it must have two columns with the slant depth in g/cm2
+and dE/dX in MeV.cm2/g.</p></li>
+<li><p><strong>X_max</strong> (<em>Slant depth in g/cm^2 at shower maximum. If None and prf_model is</em>) – ‘Greisen’ or ‘Gaisser-Hillas’, a typical value of X_max for gamma or
+proton showers is used. If None and a numerical energy deposit profile
+is input, lambda_r = 36.7 g/cm^2 is the radiation length and
+E_c = 81 MeV is the critical energy.</p></li>
+<li><p><strong>X0_GH</strong> (<em>X0 parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.</em>) – If None, a typical value for the input energy is used.</p></li>
+<li><p><strong>lambda_GH</strong> (<em>lambda parameter in g/cm2 to be used when</em>) – prf_model==’Gaisser-Hillas’. If None, a typical value for the input
+energy is used.</p></li>
+<li><p><strong>atmosphere</strong> (<em>Existing Atmosphere object to be used.</em>) – If None, a new Atmosphere object is generated.</p></li>
+<li><p><strong>{h0</strong><strong>, </strong><strong>h_top</strong><strong>, </strong><strong>N_steps</strong><strong>, </strong><strong>model}</strong> (<em>**kwargs</em>) – Atmosphere object when atmosphere==None. If None, the default
+Atmosphere object is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>profile</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Profile object.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#showermodel.profile.Profile" title="showermodel.profile.Profile"><code class="xref py py-func docutils literal notranslate"><span class="pre">Profile()</span></code></a></p>
+<dl class="simple">
+<dt><code class="xref py py-func docutils literal notranslate"><span class="pre">Shower()</span></code></dt><dd><p>Contructor of Shower object.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-showermodel.projection">
+<span id="showermodel-projection-module"></span><h2>showermodel.projection module<a class="headerlink" href="#module-showermodel.projection" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="showermodel.projection.Projection">
+<code class="sig-prename descclassname">showermodel.projection.</code><code class="sig-name descname">Projection</code><span class="sig-paren">(</span><em class="sig-param">telescope</em>, <em class="sig-param">track</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.projection.Projection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain the projection of a shower track viewed from the telescope position
+in both horizontal coordiantes system (alt/az) and FoV coordinates system
+(theta/phi) and determine the fraction of the track within the telescope
+field of view.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>telescope</strong> (<em>Telescope object.</em>) – </p></li>
+<li><p><strong>track</strong> (<em>Track object</em><em> or </em><em>Shower object.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Projection object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-showermodel.shower">
+<span id="showermodel-shower-module"></span><h2>showermodel.shower module<a class="headerlink" href="#module-showermodel.shower" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="showermodel.shower.Shower">
+<code class="sig-prename descclassname">showermodel.shower.</code><code class="sig-name descname">Shower</code><span class="sig-paren">(</span><em class="sig-param">E=10000000.0</em>, <em class="sig-param">theta=0.0</em>, <em class="sig-param">alt=None</em>, <em class="sig-param">az=0.0</em>, <em class="sig-param">x0=0.0</em>, <em class="sig-param">y0=0.0</em>, <em class="sig-param">prf_model='Greisen'</em>, <em class="sig-param">X_max=None</em>, <em class="sig-param">N_ch_max=None</em>, <em class="sig-param">X0_GH=None</em>, <em class="sig-param">lambda_GH=None</em>, <em class="sig-param">atmosphere=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.shower.Shower" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a discretization of both the track and profile of a shower as well as
+its fluorescence and Cherenkov light production.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>E</strong> (<em>Energy of the primary particle.</em>) – </p></li>
+<li><p><strong>theta</strong> (<em>Zenith angle in degrees of the apparent position of the source.</em>) – </p></li>
+<li><p><strong>alt</strong> (<em>Altitude in degrees of the apparent position of the source. If None</em><em>,</em>) – theta is used. If given, theta is overwritten.</p></li>
+<li><p><strong>az</strong> (<em>Azimuth angle</em><em> (</em><em>from north</em><em>, </em><em>clockwise</em><em>) </em><em>in degrees of the apparent</em>) – position of the source.</p></li>
+<li><p><strong>x0</strong> (<em>East coordinate in km of shower impact point at ground.</em>) – </p></li>
+<li><p><strong>y0</strong> (<em>West coordinate in km of shower impact point at ground.</em>) – </p></li>
+<li><p><strong>prf_model</strong> (<em>{'Greisen'</em><em>, </em><em>'Gaisser-Hillas'}</em><em> or </em><em>DataFrame containing a</em>) – numerical energy deposit profile. If ‘Greisen’, the Greisen function
+for electromagnetic showers is used. If ‘Gaisser-Hillas’, the
+Gaisser-Hillas function for hadron-induced showers is used.
+If DataFrame, it must have two columns with the slant depth in g/cm2
+and dE/dX in MeV.cm2/g.</p></li>
+<li><p><strong>X_max</strong> (<em>Slant depth in g/cm^2 at shower maximum. If None and prf_model is</em>) – ‘Greisen’ or ‘Gaisser-Hillas’, a typical value of X_max for gamma or
+proton showers is used. If None and a numerical energy deposit profile
+is input, lambda_r = 36.7 g/cm^2 is the radiation length E_c = 81 MeV
+is the critical energy.</p></li>
+<li><p><strong>X0_GH</strong> (<em>X0 parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.</em>) – If None, a typical value for the input energy is used.</p></li>
+<li><p><strong>lambda_GH</strong> (<em>lambda parameter in g/cm2 to be used when</em>) – prf_model==’Gaisser-Hillas’. If None, a typical value for the input
+energy is used.</p></li>
+<li><p><strong>atmosphere</strong> (<em>Existing Atmosphere object to be used. If None</em><em>, </em><em>a new</em>) – Atmosphere object is generated.</p></li>
+<li><p><strong>{h0</strong><strong>, </strong><strong>h_top</strong><strong>, </strong><strong>N_steps</strong><strong>, </strong><strong>model}</strong> (<em>**kwargs</em>) – Atmosphere object when atmosphere==None. If None, the default
+Atmosphere object is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>shower</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Shower object.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#showermodel.shower.Shower" title="showermodel.shower.Shower"><code class="xref py py-func docutils literal notranslate"><span class="pre">Shower()</span></code></a></p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-showermodel.signal">
+<span id="showermodel-signal-module"></span><h2>showermodel.signal module<a class="headerlink" href="#module-showermodel.signal" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="showermodel.signal.Signal">
+<code class="sig-prename descclassname">showermodel.signal.</code><code class="sig-name descname">Signal</code><span class="sig-paren">(</span><em class="sig-param">telescope</em>, <em class="sig-param">shower</em>, <em class="sig-param">projection=None</em>, <em class="sig-param">atm_trans=True</em>, <em class="sig-param">tel_eff=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.signal.Signal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the signal produced by a shower detected by a telescope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>telescope</strong> (<em>Telescope object.</em>) – </p></li>
+<li><p><strong>shower</strong> (<em>Shower object.</em>) – </p></li>
+<li><p><strong>projection</strong> (<em>Projection object. If None</em><em>, </em><em>it will generated from telescope</em>) – and shower.</p></li>
+<li><p><strong>atm_trans</strong> (<em>True if the atmospheric transmision is included to transport</em>) – photons.</p></li>
+<li><p><strong>tel_eff</strong> (<em>True if the telescope efficiency is included to calculate the</em>) – signal. If False, 100% efficiency is assumed for a given wavelenght
+interval.</p></li>
+<li><p><strong>{wvl_ini</strong><strong>, </strong><strong>wvl_fin</strong><strong>, </strong><strong>wvl_step}</strong> (<em>**kwargs</em>) – interval when tel_eff==False. If None, the wavelength interval defined
+in the telescope is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Signal object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-showermodel.telescope">
+<span id="showermodel-telescope-module"></span><h2>showermodel.telescope module<a class="headerlink" href="#module-showermodel.telescope" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="showermodel.telescope.Telescope">
+<code class="sig-prename descclassname">showermodel.telescope.</code><code class="sig-name descname">Telescope</code><span class="sig-paren">(</span><em class="sig-param">x=0.0</em>, <em class="sig-param">y=0.0</em>, <em class="sig-param">z=0.0</em>, <em class="sig-param">theta=0.0</em>, <em class="sig-param">alt=None</em>, <em class="sig-param">az=0.0</em>, <em class="sig-param">tel_type='IACT'</em>, <em class="sig-param">efficiency=None</em>, <em class="sig-param">apert=None</em>, <em class="sig-param">area=None</em>, <em class="sig-param">N_pix=None</em>, <em class="sig-param">int_time=None</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.telescope.Telescope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a Telescope object with the specified characteristics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>East coordinate of the telescope in km.</em>) – </p></li>
+<li><p><strong>y</strong> (<em>North coordinate of the telescope in km.</em>) – </p></li>
+<li><p><strong>z</strong> (<em>Height of the telescope in km above ground level.</em>) – </p></li>
+<li><p><strong>theta</strong> (<em>Zenith angle in degrees of the telescope pointing direction.</em>) – </p></li>
+<li><p><strong>alt</strong> (<em>Altitude in degrees of the telescope pointing direction. If None</em><em>,</em>) – theta is used. If given, theta is overwritten.</p></li>
+<li><p><strong>az</strong> (<em>Azimuth angle</em><em> (</em><em>from north</em><em>, </em><em>clockwise</em><em>) </em><em>in degrees of the telescope</em>) – pointing direction.</p></li>
+<li><p><strong>tel_type</strong> (<em>Subclass of Telescope to be used</em><em>, </em><em>default to IACT. If None</em><em>, </em><em>the</em>) – parent class Telescope is used. Presently only the IACT and GridElement
+subclasses are available. More subclasses to be implemented.</p></li>
+<li><p><strong>efficiency</strong> (<em>DataFrame containing detection efficieny data. If None</em><em>, </em><em>the</em>) – default efficiency of the selected tel_type. If given, it must have two
+columns with wavelength in nm (with constant discretization step) and
+efficiency (decimal fraction).</p></li>
+<li><p><strong>apert</strong> (<em>Angular diameter in degrees of the telescope field of view.</em>) – </p></li>
+<li><p><strong>area</strong> (<em>Detection area in m^2</em><em> (</em><em>e.g.</em><em>, </em><em>mirror area of an IACT</em><em>)</em><em></em>) – </p></li>
+<li><p><strong>N_pix</strong> (<em>Number of camera pixels.</em>) – </p></li>
+<li><p><strong>int_time</strong> (<em>Integration time in microseconds of camera frames.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Telescope object of subclass tel_type.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#showermodel.telescope.Telescope" title="showermodel.telescope.Telescope"><code class="xref py py-func docutils literal notranslate"><span class="pre">Telescope()</span></code></a></p>
+<dl class="simple">
+<dt><code class="xref py py-func docutils literal notranslate"><span class="pre">Array25()</span></code></dt><dd><p>Make an array of 25 telescopes based on a layout of CTA.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-showermodel.tools">
+<span id="showermodel-tools-module"></span><h2>showermodel.tools module<a class="headerlink" href="#module-showermodel.tools" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="showermodel.tools.rotate">
+<code class="sig-prename descclassname">showermodel.tools.</code><code class="sig-name descname">rotate</code><span class="sig-paren">(</span><em class="sig-param">vx</em>, <em class="sig-param">vy</em>, <em class="sig-param">vz</em>, <em class="sig-param">rot_angle</em>, <em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">z</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.tools.rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate the vector (x,y,z) by an angle rot_angle (positive or negative)
+around the axis (vx,vy,vz), where v is a unit vector.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="showermodel.tools.show_geometry">
+<code class="sig-prename descclassname">showermodel.tools.</code><code class="sig-name descname">show_geometry</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">observatory</em>, <em class="sig-param">mode</em>, <em class="sig-param">x_min</em>, <em class="sig-param">x_max</em>, <em class="sig-param">y_min</em>, <em class="sig-param">y_max</em>, <em class="sig-param">X_mark</em>, <em class="sig-param">shower_size</em>, <em class="sig-param">signal_size</em>, <em class="sig-param">tel_index</em>, <em class="sig-param">xy_proj</em>, <em class="sig-param">pointing</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.tools.show_geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show a shower track together with the telescope positions of an observatory
+in an either 2D or 3D plot.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="showermodel.tools.show_projection">
+<code class="sig-prename descclassname">showermodel.tools.</code><code class="sig-name descname">show_projection</code><span class="sig-paren">(</span><em class="sig-param">projection</em>, <em class="sig-param">profile</em>, <em class="sig-param">shower_size</em>, <em class="sig-param">axes</em>, <em class="sig-param">max_theta</em>, <em class="sig-param">X_mark</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.tools.show_projection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show the projection of the shower track viewed by the telescope in both
+horizontal and FoV coordinates systems.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="showermodel.tools.xy_to_phi">
+<code class="sig-prename descclassname">showermodel.tools.</code><code class="sig-name descname">xy_to_phi</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.tools.xy_to_phi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the angle phi in degrees [-90, 270) of the xy projection of a
+vector, where phi is defined from the x axis towards the y axis
+(anticlockwise).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="showermodel.tools.zr_to_theta">
+<code class="sig-prename descclassname">showermodel.tools.</code><code class="sig-name descname">zr_to_theta</code><span class="sig-paren">(</span><em class="sig-param">z</em>, <em class="sig-param">r</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.tools.zr_to_theta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the angle theta in degrees [0, 180] of a vector with vertical
+projection z and modulus r, where theta is defined from the z axis.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-showermodel.track">
+<span id="showermodel-track-module"></span><h2>showermodel.track module<a class="headerlink" href="#module-showermodel.track" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="showermodel.track.Track">
+<code class="sig-prename descclassname">showermodel.track.</code><code class="sig-name descname">Track</code><span class="sig-paren">(</span><em class="sig-param">theta=0.0</em>, <em class="sig-param">alt=None</em>, <em class="sig-param">az=0.0</em>, <em class="sig-param">x0=0.0</em>, <em class="sig-param">y0=0.0</em>, <em class="sig-param">atmosphere=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#showermodel.track.Track" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a shower track discretization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta</strong> (<em>Zenith angle in degrees of the apparent position of the source.</em>) – </p></li>
+<li><p><strong>alt</strong> (<em>Altitude in degrees of the apperent position of the source. If None</em><em>,</em>) – theta is used. If given, theta is overwritten.</p></li>
+<li><p><strong>az</strong> (<em>Azimuth angle</em><em> (</em><em>from north</em><em>, </em><em>clockwise</em><em>) </em><em>in degrees of the apparent</em>) – position of the source.</p></li>
+<li><p><strong>x0</strong> (<em>East coordinate in km of shower impact point at ground.</em>) – </p></li>
+<li><p><strong>y0</strong> (<em>West coordinate in km of shower impact point at ground.</em>) – </p></li>
+<li><p><strong>atmosphere</strong> (<em>Existing Atmosphere object to be used. If None</em><em>, </em><em>a new</em>) – Atmosphere object is generated.</p></li>
+<li><p><strong>{h0</strong><strong>, </strong><strong>h_top</strong><strong>, </strong><strong>N_steps</strong><strong>, </strong><strong>model}</strong> (<em>**kwargs</em>) – Atmosphere object when atm==None. If None, the default Atmosphere
+object is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>track</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Track object.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#showermodel.track.Track" title="showermodel.track.Track"><code class="xref py py-func docutils literal notranslate"><span class="pre">Track()</span></code></a></p>
+<dl class="simple">
+<dt><code class="xref py py-func docutils literal notranslate"><span class="pre">Shower()</span></code></dt><dd><p>Contructor of Shower object.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-showermodel">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-showermodel" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="modules.html" class="btn btn-neutral float-right" title="Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tutorials/UC5_Camera_images.html" class="btn btn-neutral float-left" title="Use case 5: Camera images" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Jaime Rosado and Daniel Morcuende
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

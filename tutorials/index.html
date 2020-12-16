@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorials &mdash; ShowerModel 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Use case 0: Playing around with ShowerModel" href="UC0_Playing_around_with_ShowerModel.html" />
+    <link rel="prev" title="Introduction" href="../introduction/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> ShowerModel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="UC0_Playing_around_with_ShowerModel.html">Use case 0: Playing around with ShowerModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC1_Track_visualization.html">Use case 1: Shower tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC2_Shower_profile.html">Use case 2: Shower profiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC3_Signal_production_and_ground_distribution.html">Use case 3: Signal production and ground distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC4_Observatory_events.html">Use case 4: Observatory events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC5_Camera_images.html">Use case 5: Camera images</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ShowerModel.html">ShowerModel package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ShowerModel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Tutorials</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/tutorials/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="tutorials">
+<span id="id1"></span><h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h1>
+<p>See the following use cases. You can play with them using Binder without any further installation:</p>
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/JaimeRosado/ShowerModel/master?filepath=notebooks"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" /></a>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="UC0_Playing_around_with_ShowerModel.html">Use case 0: Playing around with ShowerModel</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="UC0_Playing_around_with_ShowerModel.html#Shower-generation">Shower generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC0_Playing_around_with_ShowerModel.html#Observatory-events">Observatory events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC0_Playing_around_with_ShowerModel.html#Camera-images">Camera images</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="UC1_Track_visualization.html">Use case 1: Shower tracks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="UC1_Track_visualization.html#Construction-of-a-shower-track">Construction of a shower track</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC1_Track_visualization.html#Calculation-of-the-shower-track-projection-relative-to-a-telescope-position">Calculation of the shower track projection relative to a telescope position</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC1_Track_visualization.html#Shower-track-visualtization">Shower track visualtization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC1_Track_visualization.html#Example-of-track-‘search’">Example of track ‘search’</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="UC2_Shower_profile.html">Use case 2: Shower profiles</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="UC2_Shower_profile.html#Construction-of-an-atmospheric-profile">Construction of an atmospheric profile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC2_Shower_profile.html#Construction-of-shower-profiles">Construction of shower profiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC2_Shower_profile.html#Fluorescence-and-Cherenkov-light-production">Fluorescence and Cherenkov light production</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC2_Shower_profile.html#Shower-objects"><code class="docutils literal notranslate"><span class="pre">Shower</span></code> objects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="UC3_Signal_production_and_ground_distribution.html">Use case 3: Signal production and ground distribution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="UC3_Signal_production_and_ground_distribution.html#Setting-telescope-characteristics">Setting telescope characteristics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC3_Signal_production_and_ground_distribution.html#Signal-production">Signal production</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC3_Signal_production_and_ground_distribution.html#Example-of-signal-calculation-in-‘fluorescence-mode’">Example of signal calculation in ‘fluorescence mode’</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC3_Signal_production_and_ground_distribution.html#Photon-distribution-at-observation-level">Photon distribution at observation level</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="UC4_Observatory_events.html">Use case 4: Observatory events</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="UC4_Observatory_events.html#Construction-of-an-Observatory-object">Construction of an <code class="docutils literal notranslate"><span class="pre">Observatory</span></code> object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC4_Observatory_events.html#Predefined-Observatory-objects:-Circular-array-of-25-telescopes">Predefined <code class="docutils literal notranslate"><span class="pre">Observatory</span></code> objects: Circular array of 25 telescopes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC4_Observatory_events.html#Predefined-Observatory-objects:-Rectangular-grid-of-telescopes">Predefined <code class="docutils literal notranslate"><span class="pre">Observatory</span></code> objects: Rectangular grid of telescopes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC4_Observatory_events.html#Event-objects"><code class="docutils literal notranslate"><span class="pre">Event</span></code> objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC4_Observatory_events.html#Special-methods-of-Event-objects">Special methods of <code class="docutils literal notranslate"><span class="pre">Event</span></code> objects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="UC5_Camera_images.html">Use case 5: Camera images</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="UC5_Camera_images.html#Construction-of-an-Image-object">Construction of an <code class="docutils literal notranslate"><span class="pre">Image</span></code> object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC5_Camera_images.html#Image-visualization">Image visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC5_Camera_images.html#Figures-with-several-camera-images">Figures with several camera images</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="UC0_Playing_around_with_ShowerModel.html" class="btn btn-neutral float-right" title="Use case 0: Playing around with ShowerModel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../introduction/index.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Jaime Rosado and Daniel Morcuende
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

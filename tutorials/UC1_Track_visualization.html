@@ -1,0 +1,1160 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Use case 1: Shower tracks &mdash; ShowerModel 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Use case 2: Shower profiles" href="UC2_Shower_profile.html" />
+    <link rel="prev" title="Use case 0: Playing around with ShowerModel" href="UC0_Playing_around_with_ShowerModel.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> ShowerModel
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="UC0_Playing_around_with_ShowerModel.html">Use case 0: Playing around with ShowerModel</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Use case 1: Shower tracks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Construction-of-a-shower-track">Construction of a shower track</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Calculation-of-the-shower-track-projection-relative-to-a-telescope-position">Calculation of the shower track projection relative to a telescope position</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Shower-track-visualtization">Shower track visualtization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Example-of-track-‘search’">Example of track ‘search’</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="UC2_Shower_profile.html">Use case 2: Shower profiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC3_Signal_production_and_ground_distribution.html">Use case 3: Signal production and ground distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC4_Observatory_events.html">Use case 4: Observatory events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UC5_Camera_images.html">Use case 5: Camera images</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ShowerModel.html">ShowerModel package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ShowerModel</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Tutorials</a> &raquo;</li>
+        
+      <li>Use case 1: Shower tracks</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/tutorials/UC1_Track_visualization.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="Use-case-1:-Shower-tracks">
+<h1>Use case 1: Shower tracks<a class="headerlink" href="#Use-case-1:-Shower-tracks" title="Permalink to this headline">¶</a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">showermodel</span> <span class="k">as</span> <span class="nn">sm</span>
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">ShowerModel</span></code> package includes tools to make geometric calculations and to visualize the projection of linear shower tracks in the local coordinate system of a telescope. This notebook describes the use of the classes <code class="docutils literal notranslate"><span class="pre">Track</span></code>, <code class="docutils literal notranslate"><span class="pre">Telescope</span></code> and <code class="docutils literal notranslate"><span class="pre">Projection</span></code>.</p>
+<div class="section" id="Construction-of-a-shower-track">
+<h2>Construction of a shower track<a class="headerlink" href="#Construction-of-a-shower-track" title="Permalink to this headline">¶</a></h2>
+<p>The default <code class="docutils literal notranslate"><span class="pre">Track</span></code> object corresponds to a vertical shower with impact point at the origin of coordinates. By default, the track is discretized in 550 steps between the ground level at 2.20 km a.s.l. and the top of the asmosphere at 112.83 km a.s.l. All these parameters can be modified when constructing a <code class="docutils literal notranslate"><span class="pre">Track</span></code> object.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Default Track object</span>
+<span class="c1"># track = sm.Track()</span>
+
+<span class="c1"># Track with impact point at 0.5 km east, 0.1 km north, zenith angle of 20 degrees and azimuth angle of 30 degrees</span>
+<span class="c1"># track = sm.Track(x0=0.5, y0=0.1, theta=20., az=30.)  # alt=70. can be used instead of theta=20.</span>
+
+<span class="c1"># Setting ground level and top of the atmosphere (km asl), and the number of discretization steps</span>
+<span class="n">track</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">Track</span><span class="p">(</span><span class="n">theta</span><span class="o">=</span><span class="mf">20.</span><span class="p">,</span> <span class="n">h0</span><span class="o">=</span><span class="mf">1.8</span><span class="p">,</span> <span class="n">h_top</span><span class="o">=</span><span class="mf">100.</span><span class="p">,</span> <span class="n">N_steps</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Help on <code class="docutils literal notranslate"><span class="pre">Track</span></code> constructor.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># sm.Track?</span>
+</pre></div>
+</div>
+</div>
+<p>The generated <code class="docutils literal notranslate"><span class="pre">Track</span></code> object is a subclass of <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> and stores the (x, y, z) coordinates in km of each track point and the travel time in microseconds assuming the speed of light.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">track</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>x</th>
+      <th>y</th>
+      <th>z</th>
+      <th>t</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.029785</td>
+      <td>0.081833</td>
+      <td>348.282762</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0.0</td>
+      <td>0.089355</td>
+      <td>0.245500</td>
+      <td>347.701807</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>0.0</td>
+      <td>0.148924</td>
+      <td>0.409167</td>
+      <td>347.120851</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>0.0</td>
+      <td>0.208494</td>
+      <td>0.572833</td>
+      <td>346.539896</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>0.0</td>
+      <td>0.268064</td>
+      <td>0.736500</td>
+      <td>345.958940</td>
+    </tr>
+    <tr>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <td>595</td>
+      <td>0.0</td>
+      <td>35.473813</td>
+      <td>97.463500</td>
+      <td>2.614299</td>
+    </tr>
+    <tr>
+      <td>596</td>
+      <td>0.0</td>
+      <td>35.533383</td>
+      <td>97.627167</td>
+      <td>2.033344</td>
+    </tr>
+    <tr>
+      <td>597</td>
+      <td>0.0</td>
+      <td>35.592953</td>
+      <td>97.790833</td>
+      <td>1.452388</td>
+    </tr>
+    <tr>
+      <td>598</td>
+      <td>0.0</td>
+      <td>35.652522</td>
+      <td>97.954500</td>
+      <td>0.871433</td>
+    </tr>
+    <tr>
+      <td>599</td>
+      <td>0.0</td>
+      <td>35.712092</td>
+      <td>98.118167</td>
+      <td>0.290478</td>
+    </tr>
+  </tbody>
+</table>
+<p>600 rows × 4 columns</p>
+</div></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">Track</span></code> object has also some useful attributes and methods.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">track</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">Track</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">20.</span><span class="p">,</span> <span class="n">az</span><span class="o">=</span><span class="mf">120.</span><span class="p">,</span> <span class="n">h0</span><span class="o">=</span><span class="mf">1.8</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unit vector parallel to shower axis (upwards):&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">ux</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">uy</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">uz</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Coordinates of ground impact point:&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">x0</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">y0</span><span class="p">,</span> <span class="mf">0.</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Coordinates of shower point at 3.5 km a.s.l.:&quot;</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">h_to_xyz</span><span class="p">(</span><span class="mf">3.5</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Travel time in us of shower front at 27 km above observation level:&quot;</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">z_to_t</span><span class="p">(</span><span class="mf">27.</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Unit vector parallel to shower axis (upwards): (0.29619813272602386, -0.17101007166283427, 0.9396926207859084)
+Coordinates of ground impact point: (0.5, 0.1, 0.0)
+Coordinates of shower point at 3.5 km a.s.l.: (1.0358526974630378, -0.2093746991262718, 1.7)
+Travel time in us of shower front at 27 km above observation level: 298.272204399376
+</pre></div></div>
+</div>
+<p>Help on <code class="docutils literal notranslate"><span class="pre">Track</span></code> objects.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># track?</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Calculation-of-the-shower-track-projection-relative-to-a-telescope-position">
+<h2>Calculation of the shower track projection relative to a telescope position<a class="headerlink" href="#Calculation-of-the-shower-track-projection-relative-to-a-telescope-position" title="Permalink to this headline">¶</a></h2>
+<p>The default <code class="docutils literal notranslate"><span class="pre">Telescope</span></code> object corresponds to a telescope positioned at the origin of coordinates, pointing at zenith direction and with an angular aperture of 8 degrees. These parameters can be modified by the user (see also UC3).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Telescope positioned at 0.1 km east and 0.2 km south</span>
+<span class="c1"># telescope = sm.Telescope(x=0.1, y=-0.2)</span>
+
+<span class="c1"># Setting the pointing direction and aperture</span>
+<span class="n">telescope</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">Telescope</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">y</span><span class="o">=-</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">20.</span><span class="p">,</span> <span class="n">az</span><span class="o">=</span><span class="mf">120.</span><span class="p">,</span> <span class="n">apert</span><span class="o">=</span><span class="mf">10.</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Help on <code class="docutils literal notranslate"><span class="pre">Telescope</span></code> constructor.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># sm.Telescope?</span>
+</pre></div>
+</div>
+</div>
+<p>Help on <code class="docutils literal notranslate"><span class="pre">Telescope</span></code> objects.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># telescope?</span>
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Projection</span></code> constructor calculates the coordinates (alt/az and theta/phi) of a shower track relative to a telescope position.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">projection</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">Projection</span><span class="p">(</span><span class="n">telescope</span><span class="p">,</span> <span class="n">track</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Equivalent methods of <code class="docutils literal notranslate"><span class="pre">Track</span></code> and <code class="docutils literal notranslate"><span class="pre">Telescope</span></code> objects are also available.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Equivalent method of Track objects</span>
+<span class="c1"># projection = track.Projection(telescope)</span>
+
+<span class="c1"># Equivalent method of Telescope object</span>
+<span class="c1"># projection = telescope.Projection(track)</span>
+</pre></div>
+</div>
+</div>
+<p>The generated <code class="docutils literal notranslate"><span class="pre">Projection</span></code> object is a subclass of <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">projection</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>distance</th>
+      <th>alt</th>
+      <th>az</th>
+      <th>theta</th>
+      <th>phi</th>
+      <th>beta</th>
+      <th>time</th>
+      <th>FoV</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.515540</td>
+      <td>0.103984</td>
+      <td>56.887513</td>
+      <td>81.003132</td>
+      <td>306.074599</td>
+      <td>81.003132</td>
+      <td>1.447039</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0.588703</td>
+      <td>20.151143</td>
+      <td>63.697352</td>
+      <td>59.876772</td>
+      <td>306.074599</td>
+      <td>59.876772</td>
+      <td>0.974510</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>0.720876</td>
+      <td>34.150606</td>
+      <td>69.578691</td>
+      <td>44.939486</td>
+      <td>306.074599</td>
+      <td>44.939486</td>
+      <td>0.698813</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>0.886033</td>
+      <td>43.201629</td>
+      <td>74.608921</td>
+      <td>35.078197</td>
+      <td>306.074599</td>
+      <td>35.078197</td>
+      <td>0.533135</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>1.068993</td>
+      <td>49.134256</td>
+      <td>78.897894</td>
+      <td>28.446219</td>
+      <td>306.074599</td>
+      <td>28.446219</td>
+      <td>0.426844</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <td>545</td>
+      <td>117.162399</td>
+      <td>69.891810</td>
+      <td>119.345934</td>
+      <td>0.249013</td>
+      <td>306.074599</td>
+      <td>0.249013</td>
+      <td>0.000030</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>546</td>
+      <td>117.377224</td>
+      <td>69.892011</td>
+      <td>119.347125</td>
+      <td>0.248557</td>
+      <td>306.074599</td>
+      <td>0.248557</td>
+      <td>0.000023</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>547</td>
+      <td>117.592049</td>
+      <td>69.892210</td>
+      <td>119.348311</td>
+      <td>0.248103</td>
+      <td>306.074599</td>
+      <td>0.248103</td>
+      <td>0.000017</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>548</td>
+      <td>117.806874</td>
+      <td>69.892409</td>
+      <td>119.349493</td>
+      <td>0.247651</td>
+      <td>306.074599</td>
+      <td>0.247651</td>
+      <td>0.000010</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>549</td>
+      <td>118.021699</td>
+      <td>69.892607</td>
+      <td>119.350671</td>
+      <td>0.247200</td>
+      <td>306.074599</td>
+      <td>0.247200</td>
+      <td>0.000003</td>
+      <td>True</td>
+    </tr>
+  </tbody>
+</table>
+<p>550 rows × 8 columns</p>
+</div></div>
+</div>
+<div class="line-block">
+<div class="line">Note 1: <code class="docutils literal notranslate"><span class="pre">beta</span></code> is the angular distance (in degrees) of each shower point relative to the apparent position of the cosmic-ray source.</div>
+<div class="line">Note 2: <code class="docutils literal notranslate"><span class="pre">time</span></code> is the arrival time (in microseconds) of light emitted from each shower point and reaching the telescope.</div>
+</div>
+<p>There are some useful attributes and methods of both <code class="docutils literal notranslate"><span class="pre">Telescope</span></code> and <code class="docutils literal notranslate"><span class="pre">Projection</span></code> objects.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Angular aperture in degrees of the telescope:&quot;</span><span class="p">,</span> <span class="n">telescope</span><span class="o">.</span><span class="n">apert</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unit vector parallel to the telescope pointing direction:&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">telescope</span><span class="o">.</span><span class="n">ux</span><span class="p">,</span> <span class="n">telescope</span><span class="o">.</span><span class="n">uy</span><span class="p">,</span> <span class="n">telescope</span><span class="o">.</span><span class="n">uz</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Position angle (from north) of the right-hand direction from the telescope point of view:&quot;</span><span class="p">,</span> <span class="n">telescope</span><span class="o">.</span><span class="n">phi_right</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;FoV coordinates theta/phi corresponding to alt=72., az=120. relative to telescope:&quot;</span><span class="p">,</span>
+      <span class="n">telescope</span><span class="o">.</span><span class="n">altaz_to_thetaphi</span><span class="p">(</span><span class="mf">72.</span><span class="p">,</span> <span class="mf">120.</span><span class="p">))</span>  <span class="c1"># Equivalent to projection.altaz_to_thetaphi(72., 120.)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;theta/phi coordinates of the apparent position of the cosmic-ray source:&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">projection</span><span class="o">.</span><span class="n">theta_inf</span><span class="p">,</span> <span class="n">projection</span><span class="o">.</span><span class="n">phi_inf</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Angular distance of the ground interaction point relative to the apparent position of the cosmic-ray source:&quot;</span><span class="p">,</span>
+      <span class="n">projection</span><span class="o">.</span><span class="n">beta_0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Angular aperture in degrees of the telescope: 10.0
+Unit vector parallel to the telescope pointing direction: (0.29619813272602386, -0.17101007166283427, 0.9396926207859084)
+Position angle (from north) of the right-hand direction from the telescope point of view: 151.51876171866053
+FoV coordinates theta/phi corresponding to alt=72., az=120. relative to telescope: (1.9999999999999472, 61.51876171866053)
+theta/phi coordinates of the apparent position of the cosmic-ray source: (0.0, 255.55500518658698)
+Angular distance of the ground interaction point relative to the apparent position of the cosmic-ray source: 93.01201998391794
+</pre></div></div>
+</div>
+<p>Help on <code class="docutils literal notranslate"><span class="pre">Projection</span></code> constructor.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># sm.Projection?</span>
+</pre></div>
+</div>
+</div>
+<p>Help on <code class="docutils literal notranslate"><span class="pre">Projection</span></code> object.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># projection?</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Shower-track-visualtization">
+<h2>Shower track visualtization<a class="headerlink" href="#Shower-track-visualtization" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Projection</span></code> objects have also a method to visualize the shower track in both zenith projection or the telescope field of view projection. The generated plots can be stored in <code class="docutils literal notranslate"><span class="pre">PolarAxesSubplot</span></code> objects for later modification.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Just show the plots</span>
+<span class="n">projection</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
+
+<span class="c1"># Store the plots in PolarAxesSubplot objects</span>
+<span class="c1"># ax1, ax2 = projection.show()</span>
+
+<span class="c1"># Equivalent method of Track objects</span>
+<span class="c1"># projection, (ax1, ax2) = track.show_projection(telescope)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_UC1_Track_visualization_36_0.png" src="../_images/tutorials_UC1_Track_visualization_36_0.png" />
+</div>
+</div>
+<p>There are some plot options.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Maximum offset angle in the FoV plot</span>
+<span class="n">projection</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">max_theta</span><span class="o">=</span><span class="mf">5.</span><span class="p">);</span>  <span class="c1"># telescope.apert = 10.</span>
+
+<span class="c1"># No axes and blue mark at slanth depth of 400 g/cm2 (it depends on atmosphere model, see UC2)</span>
+<span class="n">projection</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">X_mark</span><span class="o">=</span><span class="mf">400.</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_UC1_Track_visualization_38_0.png" src="../_images/tutorials_UC1_Track_visualization_38_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_UC1_Track_visualization_38_1.png" src="../_images/tutorials_UC1_Track_visualization_38_1.png" />
+</div>
+</div>
+<p>Help on <code class="docutils literal notranslate"><span class="pre">projection.show</span></code> method.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># projection.show?</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Example-of-track-‘search’">
+<h2>Example of track ‘search’<a class="headerlink" href="#Example-of-track-‘search’" title="Permalink to this headline">¶</a></h2>
+<p>These tools can be used to determine the telescope pointing direction to observe different parts of a shower track.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">track</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">Track</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="mf">0.54</span><span class="p">,</span> <span class="n">y0</span><span class="o">=-</span><span class="mf">0.56</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">13.</span><span class="p">,</span> <span class="n">az</span><span class="o">=</span><span class="mf">47.</span><span class="p">)</span>
+<span class="n">telescope</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">Telescope</span><span class="p">(</span><span class="n">x</span><span class="o">=-</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">y</span><span class="o">=-</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mf">0.35</span><span class="p">)</span>  <span class="c1"># Telescope placed on the top of a hill</span>
+<span class="n">projection</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">Projection</span><span class="p">(</span><span class="n">telescope</span><span class="p">,</span> <span class="n">track</span><span class="p">)</span>
+<span class="n">projection</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;(alt &lt; 20.)&#39;</span><span class="p">)</span>  <span class="c1"># Lower part of the shower</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>distance</th>
+      <th>alt</th>
+      <th>az</th>
+      <th>theta</th>
+      <th>phi</th>
+      <th>beta</th>
+      <th>time</th>
+      <th>FoV</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.912424</td>
+      <td>-15.864816</td>
+      <td>120.402620</td>
+      <td>105.864816</td>
+      <td>239.597380</td>
+      <td>101.803373</td>
+      <td>3.654242</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0.893350</td>
+      <td>-3.098245</td>
+      <td>117.543020</td>
+      <td>93.098245</td>
+      <td>242.456980</td>
+      <td>88.730309</td>
+      <td>2.902046</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>0.921338</td>
+      <td>9.550158</td>
+      <td>114.780749</td>
+      <td>80.449842</td>
+      <td>245.219251</td>
+      <td>75.785934</td>
+      <td>2.306823</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Setting the new pointing</span>
+<span class="n">telescope</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">Telescope</span><span class="p">(</span><span class="n">x</span><span class="o">=-</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">y</span><span class="o">=-</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">alt</span><span class="o">=-</span><span class="mf">3.</span><span class="p">,</span> <span class="n">az</span><span class="o">=</span><span class="mf">117.</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="UC2_Shower_profile.html" class="btn btn-neutral float-right" title="Use case 2: Shower profiles" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="UC0_Playing_around_with_ShowerModel.html" class="btn btn-neutral float-left" title="Use case 0: Playing around with ShowerModel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Jaime Rosado and Daniel Morcuende
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
