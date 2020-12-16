@@ -5,6 +5,8 @@ ShowerModel
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JaimeRosado/ShowerModel/master?filepath=notebooks)
 
+[![DOI](https://zenodo.org/badge/259611899.svg)](https://zenodo.org/badge/latestdoi/259611899)
+
 A Python package for modelling cosmic-ray showers, their light production and their detection.
 
 --------
@@ -43,7 +45,7 @@ conda env create -f environment.yml
 conda activate showermodel
 ```
 
-* To update the environment (e.g. when dependencies get updated), use:
+* To update the environment (e.g., when dependencies get updated), use:
 ```
 conda env update -n showermodel -f environment.yml
 ```
@@ -65,6 +67,6 @@ Installation, versioning and docs-web deploying methods are base on
 the [*ctapipe* repository](https://github.com/cta-observatory/ctapipe).
 
 ## Further information
-See our poster and presentation video from ADASS XXX conference https://adass2020.es/:
+See our presentation video and poster from ADASS XXX conference https://adass2020.es/:
 * https://drive.google.com/file/d/14AGV91mQXDwecGy2qxgNEmWeIcxKy_I0/view?usp=sharing
 * https://adass2020.es/static/ftp/P4-176/P4-176.pdf
