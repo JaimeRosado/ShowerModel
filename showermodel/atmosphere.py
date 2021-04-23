@@ -34,11 +34,6 @@ def Atmosphere(h0=_h0, h_top=_h_top, N_steps=_N_steps, model=_model):
         CORSIKA atmospheric model. Presently either 1 or 17. More models to
         be implemented.
 
-    Columns
-    -------
-    prb : hola
-        Es solo una prueba.
-
     Returns
     -------
     atmosphere : Atmosphere object.
@@ -121,8 +116,7 @@ class _Atmosphere(pd.DataFrame):
 
     Columns
     -------
-    h : float
-        Height in km above sea level.
+    h : Height in km above sea level.
     X_vert : Vertical depth in g/cm^2.
     rho : Mass density in g/cm^3.
     temp : Temperature in K.
@@ -160,11 +154,13 @@ class _Atmosphere(pd.DataFrame):
 
         Parameters
         ----------
-        h : Scalar or array-type.
+        h : float or array_like
+            Height in km.
 
         Returns
         -------
-        Xv : Scalar or array-type.
+        Xv : float or array_like
+            Vertical depth in g/cm^2.
         """
         Xv, rho = self._get_Xv_rho(h)
         return Xv
@@ -175,11 +171,13 @@ class _Atmosphere(pd.DataFrame):
 
         Parameters
         ----------
-        h : Scalar or array-type.
+        h : float or array_like
+            Height in km.
 
         Returns
         -------
-        rho : Scalar or array-type.
+        rho : float or array_like
+            Mass density in g/cm^3.
         """
         Xv, rho = self._get_Xv_rho(h)
         return rho
@@ -197,11 +195,13 @@ class _Atmosphere(pd.DataFrame):
 
         Parameters
         ----------
-        Xv : Scalar or array-type.
+        Xv : float or array_like
+            Vertical depth in g/cm^2.
 
         Returns
         -------
-        h : Scalar or array-type.
+        h : float or array_like
+            Height in km.
         """
         if Xv == 0:
             return self.h_top
@@ -226,14 +226,18 @@ def _get_Xv_rho(h, model):
 
     Parameters
     ----------
-    h : Scalar or array-type.
-    model : CORSIKA atmospheric model. Presently either 1 or 17. More models to
+    h : float or array_like
+        Height in km.
+    model : int
+        CORSIKA atmospheric model. Presently either 1 or 17. More models to
         be implemented.
 
     Returns
     -------
-    Xv : Scalar or array-type.
-    rho : Scalar or array-type.
+    Xv : float or array_like
+        Vertical depth in g/cm^2.
+    rho : float or array_like
+        Mass density in g/cm^3.
     """
     # Some atmospheric models used in CORSIKA.
     # Each row contains the model parameters for a different atmospheric layer:
