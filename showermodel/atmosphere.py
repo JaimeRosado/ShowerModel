@@ -34,13 +34,18 @@ def Atmosphere(h0=_h0, h_top=_h_top, N_steps=_N_steps, model=_model):
         CORSIKA atmospheric model. Presently either 1 or 17. More models to
         be implemented.
 
+    Columns
+    -------
+    prb : hola
+        Es solo una prueba.
+
     Returns
     -------
     atmosphere : Atmosphere object.
 
     See also
     --------
-    Atmosphere object.
+    _Atmosphere : Atmosphere class.
     Track : Constructor of Track object.
     Profile: Constructor of Profile object.
     Shower : Constructor of Shower object.
@@ -116,7 +121,8 @@ class _Atmosphere(pd.DataFrame):
 
     Columns
     -------
-    h : Height in km above sea level.
+    h : float
+        Height in km above sea level.
     X_vert : Vertical depth in g/cm^2.
     rho : Mass density in g/cm^3.
     temp : Temperature in K.
