@@ -23,33 +23,44 @@ def Telescope(x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
 
     Parameters
     ----------
-    x : East coordinate of the telescope in km.
-    y : North coordinate of the telescope in km.
-    z : Height of the telescope in km above ground level.
-    theta : Zenith angle in degrees of the telescope pointing direction.
-    alt : Altitude in degrees of the telescope pointing direction. If None,
+    x : float
+        East coordinate of the telescope in km.
+    y : float
+        North coordinate of the telescope in km.
+    z : float
+        Height of the telescope in km above ground level.
+    theta : float
+        Zenith angle in degrees of the telescope pointing direction.
+    alt : float
+        Altitude in degrees of the telescope pointing direction. If None,
         theta is used. If given, theta is overwritten.
-    az : Azimuth angle (from north, clockwise) in degrees of the telescope
+    az : float
+        Azimuth angle (from north, clockwise) in degrees of the telescope
         pointing direction.
-    tel_type : Subclass of Telescope to be used, default to IACT. If None, the
+    tel_type : str
+        Subclass of Telescope to be used, default to IACT. If None, the
         parent class Telescope is used. Presently only the IACT and GridElement
         subclasses are available. More subclasses to be implemented.
-    efficiency : DataFrame containing detection efficieny data. If None, the
-        default efficiency of the selected tel_type. If given, it must have two
-        columns with wavelength in nm (with constant discretization step) and
-        efficiency (decimal fraction).
-    apert : Angular diameter in degrees of the telescope field of view.
-    area : Detection area in m^2 (e.g., mirror area of an IACT).
-    N_pix : Number of camera pixels.
-    int_time : Integration time in microseconds of camera frames.
+    efficiency : DataFrame
+        If None, the default efficiency of the selected tel_type. If given,
+        the DataFrame should have two columns with wavelength in nm
+        (with constant discretization step) and efficiency (decimal fraction).
+    apert : float
+        Angular diameter in degrees of the telescope field of view.
+    area : float
+        Detection area in m^2 (e.g., mirror area of an IACT).
+    N_pix : int
+        Number of camera pixels.
+    int_time : float
+        Integration time in microseconds of camera frames.
 
     Returns
     -------
-    Telescope object of subclass tel_type.
+    telescope : Telescope object.
 
     See also
     --------
-    Telescope object.
+    _Telescope : Telescope class.
     Array25 : Make an array of 25 telescopes based on a layout of CTA.
     """
     if tel_type == 'IACT':
@@ -147,48 +158,77 @@ class _Telescope:
 
     Class attributes
     ----------------
-    tel_type : Name of the subclass of Telescope. Presently only the parent
+    tel_type : str
+        Name of the subclass of Telescope. Presently only the parent
         class Telescope and the IACT and GridElement subclasses are available.
         More subclasses to be implemented.
-    apert : Angular diameter in degrees of the telescope field of view.
-    area : Detection area in m^2 (e.g., mirror area of an IACT).
-    N_pix : Number of camera pixels.
-    int_time : Integration time in microseconds of camera frames.
-    sol_angle : Telescope field of view in stereoradians.
-    sol_angle_pix : Pixel field of view in steresorians.
-    apert_pix : Angular diameter in degrees of the pixel FoV.
-    wvl_ini : Initial wavelength in nm of the detection efficiency data.
-    wvl_fin : Final wavelength in nm of the detection efficiency data.
-    wvl_step : Step size in nm of the detection efficiency data.
-    wvl_fluo : Array containing the wavelengths of the 34 fluorescence bands
+    apert : float
+        Angular diameter in degrees of the telescope field of view.
+    area : float
+        Detection area in m^2 (e.g., mirror area of an IACT).
+    N_pix : int
+        Number of camera pixels.
+    int_time : float
+        Integration time in microseconds of camera frames.
+    sol_angle : float
+        Telescope field of view in stereoradians.
+    sol_angle_pix : float
+        Pixel field of view in steresorians.
+    apert_pix : float
+        Angular diameter in degrees of the pixel FoV.
+    wvl_ini : float
+        Initial wavelength in nm of the detection efficiency data.
+    wvl_fin : float
+        Final wavelength in nm of the detection efficiency data.
+    wvl_step : float
+        Step size in nm of the detection efficiency data.
+    wvl_fluo : ndarray
+        Array containing the wavelengths of the 34 fluorescence bands
         included in the model.
-    eff_fluo : Array containing the detection efficiency at these 34
+    eff_fluo : ndarray
+        Array containing the detection efficiency at these 34
         wavelenghts.
-    wvl_cher : Array containing the range of wavelengths in nm defined by
+    wvl_cher : ndarray
+        Array containing the range of wavelengths in nm defined by
         wvl_ini, wvl_fin and wvl_step
-    eff_cher : Array containing the detection efficiency data in this range
+    eff_cher : ndarray
+        Array containing the detection efficiency data in this range
         used to compute the Cherenkov signal.
 
     Object attributes
     -----------------
-    x : East coordinate of the telescope in km.
-    y : North coordinate of the telescope in km.
-    z : Height of the telescope in km above ground level.
-    theta : Zenith angle in degrees of the telescope pointing direction.
-    alt : Altitude in degrees of the telescope pointing direction.
-    az : Azimuth angle (from north, clockwise) in degrees of the telescope
+    x : float
+        East coordinate of the telescope in km.
+    y : float
+        North coordinate of the telescope in km.
+    z : float
+        Height of the telescope in km above ground level.
+    theta : float
+        Zenith angle in degrees of the telescope pointing direction.
+    alt : float
+        Altitude in degrees of the telescope pointing direction.
+    az : float
+        Azimuth angle (from north, clockwise) in degrees of the telescope
         pointing direction.
-    ux : x coordinate of a unit vector parallel to the telescope pointing
+    ux : float
+        x coordinate of a unit vector parallel to the telescope pointing
         direction.
-    uy : y coordinate of a unit vector parallel to the telescope pointing
+    uy : float
+        y coordinate of a unit vector parallel to the telescope pointing
         direction.
-    uz : z coordinate of a unit vector parallel to the telescope pointing
+    uz : float
+        z coordinate of a unit vector parallel to the telescope pointing
         direction.
-    sin_theta = Sine of theta (cosine of alt).
-    cos_theta = Cosine of theta (sine of alt).
-    sin_az = Sine of az.
-    cos_az = Cosine of az.
-    phi_right : Position angle phi in degrees of the right-hand direction from
+    sin_theta = float
+        Sine of theta (cosine of alt).
+    cos_theta = float
+        Cosine of theta (sine of alt).
+    sin_az = float
+        Sine of az.
+    cos_az = float
+        Cosine of az.
+    phi_right : float
+        Position angle phi in degrees of the right-hand direction from
         the telescope point of view.
 
     Methods
@@ -211,7 +251,7 @@ class _Telescope:
 
     See also
     --------
-    Telescope object.
+    _Telescope : Telescope class.
     """
     # Default values of the class. They may be redefined in subclasses
     tel_type = None   # Generic telescope
@@ -250,7 +290,8 @@ class _Telescope:
 
         Parameters
         ----------
-        **kwargs {x, y, z, ...}: Optional changes to the original telescope
+        **kwargs {x, y, z, ...}
+            Optional changes to the original telescope
             attributes, including class attributes.
 
         Returns
@@ -288,12 +329,12 @@ class _Telescope:
 
         Parameters
         ----------
-        alt : Scalar or array-like.
-        az : Scalar or array-like.
+        alt : float or array_like.
+        az : float or array_like.
 
         Returns
         -------
-        theta, phi : Scalars or array-like objects.
+        theta, phi : float or array_like.
 
         See also
         --------
@@ -330,13 +371,13 @@ class _Telescope:
 
         Parameters
         ----------
-        x_hor : Scalar or array-like.
-        y_hor : Scalar or array-like.
-        z_hor : Scalar or array-like.
+        x_hor : float or array_like.
+        y_hor : float or array_like.
+        z_hor : float or array_like.
 
         Returns
         -------
-        x_FoV, y_FoV, z_FoV : Scalars or array-like objects.
+        x_FoV, y_FoV, z_FoV : float or array_like.
 
         See also
         --------
@@ -364,12 +405,12 @@ class _Telescope:
 
         Parameters
         ----------
-        theta : Scalar or array-like.
-        phi : Scalar or array-like.
+        theta : float or array_like.
+        phi : float or array_like.
 
         Returns
         -------
-        alt, az : Scalars or array-like objects.
+        alt, az : float or array_like.
 
         See also
         --------
@@ -405,13 +446,13 @@ class _Telescope:
 
         Parameters
         ----------
-        x_FoV : Scalar or array-like.
-        y_FoV : Scalar or array-like.
-        z_FoV : Scalar or array-like.
+        x_FoV : float or array_like.
+        y_FoV : float or array_like.
+        z_FoV : float or array_like.
 
         Returns
         -------
-        x_hor, y_hor, z_hor : Scalars or array-like objects.
+        x_hor, y_hor, z_hor : float or array_like.
 
         See also
         --------
@@ -455,11 +496,11 @@ class _Telescope:
 
         Parameters
         ----------
-        x, y, z : Scalars or array-like objects.
+        x, y, z : float or array_like.
 
         Returns
         -------
-        distance, alt, az, theta, phi : Scalars or array-like objects.
+        distance, alt, az, theta, phi : float or array_like.
         """
         x_hor, y_hor, z_hor = self.abs_to_rel(x, y, z)
         distance = np.sqrt(x_hor**2 + y_hor**2 + z_hor**2)
@@ -530,11 +571,13 @@ class _Telescope:
         Parameters
         ----------
         track : Track object or Shower object.
-        axes : Bool indicating whether the axes of both coordinate systems of
-            reference are visualized or not.
-        max_theta : Maximum offset angle in degrees relative to the telescope
+        axes : bool, default True
+            Show the axes of both coordinate systems of reference.
+        max_theta : float, default 30 degrees
+            Maximum offset angle in degrees relative to the telescope
             pointing direction.
-        X_mark : Reference slant depth in g/cm^2 of the shower track to be
+        X_mark : float
+            Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure. If None, no mark is included.
 
         Returns

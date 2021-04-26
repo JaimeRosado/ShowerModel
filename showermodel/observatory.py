@@ -15,8 +15,10 @@ def Observatory(*telescopes, obs_type=None):
 
     Parameters
     -----------
-    *telescopes : Arbitrary number of Telescope objects.
-    obs_type : Name assigned to the Observatory object, default None.
+    *telescopes : list
+        Arbitrary number of Telescope objects.
+    obs_type : str or None
+        Name assigned to the Observatory object, default None.
 
     Returns
     -------
@@ -47,6 +49,7 @@ def Array25(telescope=None, tel_type='IACT', x_c=_x, y_c=_y, z_c=_z,
             theta=None, alt=None, az=None, R=0.341, rot_angle=0.):
     """
     Make an array of 25 telescopes based on a layout of MST telescopes of CTA.
+
     The pointing directions of all the telescopes are set equally, but they can
     be modified individually (along with other porperties) later on.
 
@@ -55,25 +58,34 @@ def Array25(telescope=None, tel_type='IACT', x_c=_x, y_c=_y, z_c=_z,
 
     Parameters
     ----------
-    telescope : Existing Telescope object to be used. If None, a new Telescope
-        object of type tel_type is generated.
-    tel_type : Subclass of Telescope to be used when telescope==None. Default
+    telescope : Telescope object
+        If None, a new Telescope object of type tel_type is generated.
+    tel_type : str
+        Subclass of Telescope to be used when telescope==None. Default
         to IACT with field of view of 8 degrees, mirror area of 113 m^2 and
         1800 pixels. If tel_type==None, the parent class Telescope is used.
-    x_c : East coordinate in km of the center of the array.
-    y_c : North coordinate in km of the center of the array.
-    z_c : Height of the array in km above ground level.
-    theta : Zenith angle in degrees of the telescope pointing directions.
-    alt : Altitude in degrees of the telescope pointing directions. If None,
+    x_c : float
+        East coordinate in km of the center of the array.
+    y_c : float
+        North coordinate in km of the center of the array.
+    z_c : float
+        Height of the array in km above ground level.
+    theta : float
+        Zenith angle in degrees of the telescope pointing directions.
+    alt : float
+        Altitude in degrees of the telescope pointing directions. If None,
         theta is used. If given, theta is overwritten.
-    az : Azimuth angle (from north, clockwise) in degrees of the telescope
+    az : float
+        Azimuth angle (from north, clockwise) in degrees of the telescope
         pointing directions.
-    R : Radius in km of the array.
-    rot_angle : Rotation angle in degrees of the array (clockwise).
+    R : float
+        Radius in km of the array.
+    rot_angle : float
+        Rotation angle in degrees of the array (clockwise).
 
     Returns
     -------
-    Observatory object.
+    observatory : Observatory object.
     """
     from .telescope import _Telescope
     if isinstance(telescope, _Telescope):
@@ -146,6 +158,7 @@ def Grid(telescope=None, tel_type='GridElement', x_c=_x, y_c=_y, z_c=_z,
          theta=None, alt=None, az=None, size_x=2., size_y=2., N_x=10, N_y=10):
     """
     Make a rectangular grid of telescopes across the x and y directions.
+
     The pointing directions of all the telescopes are set equally, but they can
     be modified individually (along with other porperties) later on.
 
@@ -155,27 +168,38 @@ def Grid(telescope=None, tel_type='GridElement', x_c=_x, y_c=_y, z_c=_z,
 
     Parameters
     ----------
-    telescope : Existing Telescope object to be used.
+    telescope : Telescope object.
         If None, a new Telescope object of type tel_type is generated.
-    tel_type : Subclass of Telescope to be used when telescope==None. Default
+    tel_type : str
+        Subclass of Telescope to be used when telescope==None. Default
         to GridElement with 100% detection efficiency, FoV of 180 degrees
         around zenith and area of one grid cell. If tel_type==None, the parent
         class Telescope is used.
-    x_c : East coordinate in km of the center of the grid.
-    y_c : North coordinate in km of the center of the grid.
-    z_c : Height of the grid in km above ground level.
-    theta : Zenith angle in degrees of the telescope pointing directions.
-    alt : Altitude in degrees of the telescope pointing directions. If None,
+    x_c : float
+        East coordinate in km of the center of the grid.
+    y_c : float
+        North coordinate in km of the center of the grid.
+    z_c : float
+        Height of the grid in km above ground level.
+    theta : float
+        Zenith angle in degrees of the telescope pointing directions.
+    alt : float
+        Altitude in degrees of the telescope pointing directions. If None,
         theta is used. If given, theta is overwritten.
-    az : Azimuth angle in degrees of the telescope pointing directions.
-    size_x : Size of the grid in km across the x direction.
-    size_y : Size of the grid in km across the y direction.
-    N_x : Number of cells across the x direction.
-    N_y : Number of cells across the y direction.
+    az : float
+        Azimuth angle in degrees of the telescope pointing directions.
+    size_x : float
+        Size of the grid in km across the x direction.
+    size_y : float
+        Size of the grid in km across the y direction.
+    N_x : int
+        Number of cells across the x direction.
+    N_y : int
+        Number of cells across the y direction.
 
     Returns
     -------
-    Observatory object.
+    observatory : Observatory object.
     """
     # Range of x, y values
     x = np.linspace(x_c-size_x/2., x_c+size_x/2., N_x + 1)  # From min to max
@@ -254,26 +278,42 @@ class _Observatory(list):
 
     Attributes
     ----------
-    obs_type : Name of the subclass of Observatory.
+    obs_type : str
+        Name of the subclass of Observatory.
         Presently only the parent class Observatory and the Array25 and Grid
         subclasses are available. More subclasses to be implemented.
-    N_tel : Number of telescopes.
-    x_c : East coordinate in km of the center of the grid.
-    y_c : North coordinate in km of the center of the grid.
-    z_c : Height of the grid in km above ground level.
-    size_x : Size of the observatory in km across the x direction.
-    size_y : Size of the observatory in km across the y direction.
-    R : Radius of the observatory in km (only Array25 objects).
-    rot_angle : Rotation angle in degrees (clock-wise) of the array
+    N_tel : int
+        Number of telescopes.
+    x_c : float
+        East coordinate in km of the center of the grid.
+    y_c : float
+        North coordinate in km of the center of the grid.
+    z_c : float
+        Height of the grid in km above ground level.
+    size_x : float
+        Size of the observatory in km across the x direction.
+    size_y : float
+        Size of the observatory in km across the y direction.
+    R : float
+        Radius of the observatory in km (only Array25 objects).
+    rot_angle : float
+        Rotation angle in degrees (clock-wise) of the array
         (only Array25 objects).
-    N_x : Number of cells across the x direction (only Grid objects).
-    N_y : Number of cells across the y direction (only Grid objects).
-    cell_area : Area in m^2 of one cell (only Grid objects).
-    tel_type : Name of the subclass of Telescope.
-    tel_apert : Angular diameter in degrees of the telescope FoV.
-    tel_area : Detection area of each telescope in m^2
+    N_x : int
+        Number of cells across the x direction (only Grid objects).
+    N_y : int
+        Number of cells across the y direction (only Grid objects).
+    cell_area : float
+        Area in m^2 of one cell (only Grid objects).
+    tel_type : str
+        Name of the subclass of Telescope.
+    tel_apert : float
+        Angular diameter in degrees of the telescope FoV.
+    tel_area : float
+        Detection area of each telescope in m^2
         (e.g., mirror area of an IACT).
-    tel_N_pix : Number of camera pixels.
+    tel_N_pix : int
+        Number of camera pixels.
 
     Note: Attributes inherited from Telescope (i.e., tel_type, tel_apert,
     tel_area and tel_N_pix) are not updated when telescopes are modified

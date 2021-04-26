@@ -12,20 +12,21 @@ warnings.filterwarnings(
 # Constructor #################################################################
 def Fluorescence(profile):
     """
-    Calculate the fluorescence photon production from a shower profile
-    discretization using the parameterization described in
-    D. Morcuende et al., Astropart. Phys. 107(2019)26 and references therein.
+    Calculate the fluorescence photon production from a shower profile.
+
+    The parameterization described in D. Morcuende et al., Astropart. Phys.
+    107(2019)26 and references therein is used.
 
     Parameters
-    profile : Profile object
+    profile : Profile object.
 
     Returns
     -------
-    Fluorescence object.
+    fluorescence : Fluorescence object.
 
     See also
     --------
-    Fluorescence object
+    _Fluorescence : Fluorescence class.
     """
     # Parameters of the fluorescence model (34 bands)
     #     wvl(nm),   Irel,   PP0,  PPw,     a
@@ -105,9 +106,11 @@ class _Fluorescence(pd.DataFrame):
 
     Columns
     -------
-    296 : Number of fluorescence photons in the band centered at 296 nm.
+    296 : float
+        Number of fluorescence photons in the band centered at 296 nm.
     ...
-    428 : Number of fluorescence photons in the band centered at 428 nm.
+    428 : float
+        Number of fluorescence photons in the band centered at 428 nm.
 
     Atributes
     ---------
@@ -126,7 +129,7 @@ class _Fluorescence(pd.DataFrame):
 
         Returns
         -------
-        AxesSubplot object.
+        ax : AxesSubplot object.
         """
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(5, 5))
         ax.plot(self.profile.X, self.sum(axis=1), 'b-')

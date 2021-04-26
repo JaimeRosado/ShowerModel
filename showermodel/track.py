@@ -26,18 +26,23 @@ def Track(theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0, atmosphere=None,
 
     Parameters
     ----------
-    theta : Zenith angle in degrees of the apparent position of the source.
-    alt : Altitude in degrees of the apperent position of the source. If None,
+    theta : float
+        Zenith angle in degrees of the apparent position of the source.
+    alt : float
+        Altitude in degrees of the apperent position of the source. If None,
         theta is used. If given, theta is overwritten.
-    az : Azimuth angle (from north, clockwise) in degrees of the apparent
+    az : float
+        Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
-    x0 : East coordinate in km of shower impact point at ground.
-    y0 : West coordinate in km of shower impact point at ground.
-    atmosphere : Existing Atmosphere object to be used. If None, a new
-        Atmosphere object is generated.
-    **kwargs {h0, h_top, N_steps, model} : Options to construct the new
-        Atmosphere object when atm==None. If None, the default Atmosphere
-        object is used.
+    x0 : float
+        East coordinate in km of shower impact point at ground.
+    y0 : float
+        West coordinate in km of shower impact point at ground.
+    atmosphere : Atmosphere object
+        If None, a new Atmosphere object is generated.
+    **kwargs {h0, h_top, N_steps, model}
+        Options to construct the new Atmosphere object when atm==None.
+        If None, the default Atmosphere object is used.
 
     Returns
     -------
@@ -45,7 +50,7 @@ def Track(theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0, atmosphere=None,
 
     See also
     --------
-    Track object.
+    _Track : Track class.
     Shower : Contructor of Shower object.
     """
     from .atmosphere import _Atmosphere
@@ -126,40 +131,63 @@ class _Track(pd.DataFrame):
 
     Columns
     -------
-    x : East coordinate in km.
-    y : North coordinate in km.
-    z : Height in km from ground level.
-    t : Travel time in microseconds. t=0 at the top of the atmosphere. The
+    x : float
+        East coordinate in km.
+    y : float
+        North coordinate in km.
+    z : float
+        Height in km from ground level.
+    t : float
+        Travel time in microseconds. t=0 at the top of the atmosphere. The
         shower is assumed to propates with the speed of light.
 
     Attributes
     ----------
-    atmosphere : Atmosphere discretization used to construct the shower track.
-    theta : Zenith angle in degrees of the apparent position of the source.
-    alt : Altitude in degrees of the apparent position of the source.
-    az : Azimuth angle (from north, clockwise) in degrees of the apparent
+    atmosphere : Atmosphere object.
+    theta : float
+        Zenith angle in degrees of the apparent position of the source.
+    alt : float
+        Altitude in degrees of the apparent position of the source.
+    az : float
+        Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
-    ux : East coordinate of a unit vector parallel to  the shower axis
+    ux : float
+        East coordinate of a unit vector parallel to  the shower axis
         (upwards).
-    uy : North coordinate of a unit vector parallel to the shower axis
+    uy : float
+        North coordinate of a unit vector parallel to the shower axis
         (upwards).
-    uz : Vertical coordinate of a unit vector parallel to the shower axis
+    uz : float
+        Vertical coordinate of a unit vector parallel to the shower axis
         (upwards).
-    vx : East coordinate of a unit vector perpendicular to shower axis and
+    vx : float
+        East coordinate of a unit vector perpendicular to shower axis and
         parallel to horizontal plane.
-    vy : North coordinate of a unit vector perpendicular to shower axis and
+    vy : float
+        North coordinate of a unit vector perpendicular to shower axis and
         parallel to horizontal plane.
-    vz : (=0. always) vertical coordinate of vector v.
-    wx : East coordinate of a unit vector perpendicular to both u and v.
-    wy : North coordinate of a unit vector perpendicular to both u and v.
-    wz : Vertical coordinate of a unit vector perpendicular to both u and v.
-    x0 : East coordinate in km of shower impact point at ground.
-    y0 : North coordinate in km of shower impact point at ground.
-    t0 : Travel time in microseconds at ground level.
-    x_top : East coordinate in km of shower at the top of the atmosphere.
-    y_top : North coordinate in km of shower at the top of the atmosphere.
-    z_top : Height in km of the top of the atmosphere from ground level.
-    dl : Size in km of discretization step along the shower axis.
+    vz : =0. always
+        Vertical coordinate of vector v.
+    wx : float
+        East coordinate of a unit vector perpendicular to both u and v.
+    wy : float
+        North coordinate of a unit vector perpendicular to both u and v.
+    wz : float
+        Vertical coordinate of a unit vector perpendicular to both u and v.
+    x0 : float
+        East coordinate in km of shower impact point at ground.
+    y0 : float
+        North coordinate in km of shower impact point at ground.
+    t0 : float
+        Travel time in microseconds at ground level.
+    x_top : float
+        East coordinate in km of shower at the top of the atmosphere.
+    y_top : float
+        North coordinate in km of shower at the top of the atmosphere.
+    z_top : float
+        Height in km of the top of the atmosphere from ground level.
+    dl : float
+        Size in km of discretization step along the shower axis.
 
     Methods
     -------
@@ -182,11 +210,11 @@ class _Track(pd.DataFrame):
 
         Parameters
         ----------
-        h : Scalar or array-like.
+        h : float or array_like.
 
         Returns
         -------
-        x, y, z : Scalars or array-like objects.
+        x, y, z : float or array_like.
         """
         h = np.array(h)
         z = h - self.atmosphere.h0
@@ -200,11 +228,11 @@ class _Track(pd.DataFrame):
 
         Parameters
         ----------
-        z : Scalar or array-like.
+        z : float or array_like.
 
         Returns
         -------
-        t : Scalar or array-like.
+        t : float or array_like.
         """
         return (self.z_top - z) / self.uz / 0.2998
 
@@ -214,11 +242,11 @@ class _Track(pd.DataFrame):
 
         Parameters
         ----------
-        X : Scalar or array-like.
+        X : float or array_like.
 
         Returns
         -------
-        x, y, z : Scalars or array-like objects.
+        x, y, z : float or array_like.
         """
         Xv = X * self.uz
         h = self.atmosphere.Xv_to_h(Xv)
@@ -256,11 +284,13 @@ class _Track(pd.DataFrame):
         Parameters
         ----------
         telescope : Telescope object.
-        axes : Bool indicating whether the axes of both coordinate systems of
-            reference are visualized or not.
-        max_theta : Maximum offset angle in degrees relative to the telescope
+        axes : bool, default True
+            Show the axes of both coordinate systems of reference.
+        max_theta : float
+            Maximum offset angle in degrees relative to the telescope
             pointing direction.
-        X_mark : Reference slant depth in g/cm^2 of the shower track to be
+        X_mark : float
+            Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure. If None, no mark is included.
 
         Returns
@@ -285,14 +315,20 @@ class _Track(pd.DataFrame):
 
         Parameters
         ----------
-        x_min : Lower limit of the coordinate x in km.
-        x_max : Upper limit of the coordinate x in km.
-        y_min : Lower limit of the coordinate y in km.
-        y_max : Upper limit of the coordinate y in km.
-        X_mark : Reference slant depth in g/cm^2 of the shower track to be
+        x_min : float
+            Lower limit of the coordinate x in km.
+        x_max : float
+            Upper limit of the coordinate x in km.
+        y_min : float
+            Lower limit of the coordinate y in km.
+        y_max : float
+            Upper limit of the coordinate y in km.
+        X_mark : float
+            Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure. If None, no mark is included.
-        tel_index : Bool indicating whether the telescope indexes are shown
-            together the telescope position points.
+        tel_index : bool, default False
+            Show the telescope indexes together the telescope
+            position points.
 
         Returns
         -------
@@ -311,16 +347,22 @@ class _Track(pd.DataFrame):
 
         Parameters
         ----------
-        x_min : Lower limit of the coordinate x in km.
-        x_max : Upper limit of the coordinate x in km.
-        y_min : Lower limit of the coordinate y in km.
-        y_max : Upper limit of the coordinate y in km.
-        X_mark : Reference slant depth in g/cm^2 of the shower track to be
+        x_min : float
+            Lower limit of the coordinate x in km.
+        x_max : float
+            Upper limit of the coordinate x in km.
+        y_min : float
+            Lower limit of the coordinate y in km.
+        y_max : float
+            Upper limit of the coordinate y in km.
+        X_mark : float
+            Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure, default to X_max. If X_mark is set to None,
             no mark is included.
-        xy_proj : Bool indicating whether the xy projection of the shower track
-            is shown.
-        pointing : Bool indicating whether the telescope axes are shown.
+        xy_proj : bool, default True
+            Show the xy projection of the shower track.
+        pointing : book, default False
+            Show the telescope axes.
 
         Returns
         -------

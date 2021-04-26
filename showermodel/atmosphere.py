@@ -116,22 +116,35 @@ class _Atmosphere(pd.DataFrame):
 
     Columns
     -------
-    h : Height in km above sea level.
-    X_vert : Vertical depth in g/cm^2.
-    rho : Mass density in g/cm^3.
-    temp : Temperature in K.
-    P : Pressure in hPa.
-    P_w : Partial pressure of water vapor in hPa.
-    E_th : Cherenkov energy threshold in MeV at 350 nm.
-    r_M : Moliere radius in km.
+    h : float
+        Height in km above sea level.
+    X_vert : float
+        Vertical depth in g/cm^2.
+    rho : float
+        Mass density in g/cm^3.
+    temp : float
+        Temperature in K.
+    P : float
+        Pressure in hPa.
+    P_w : float
+        Partial pressure of water vapor in hPa.
+    E_th : float
+        Cherenkov energy threshold in MeV at 350 nm.
+    r_M : float
+        Moliere radius in km.
 
     Attributes
     ----------
-    h0 : Ground level in km above sea level.
-    h_top : Top level of the atmosphere in km above sea level.
-    N_steps : Number of discretization steps.
-    h_step : Size of discretization step in km.
-    model : CORSIKA atmospheric model. Presently either 1 or 17. More models to
+    h0 : float
+        Ground level in km above sea level.
+    h_top : float
+        Top level of the atmosphere in km above sea level.
+    N_steps : int
+        Number of discretization steps.
+    h_step : float
+        Size of discretization step in km.
+    model : int
+        CORSIKA atmospheric model. Presently either 1 or 17. More models to
         be implemented.
 
     Methods
