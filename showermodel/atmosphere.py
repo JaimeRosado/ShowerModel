@@ -112,7 +112,7 @@ class Test(pd.DataFrame):
     """
     Test
     """
-    def __init__(self):
+    def __init__(self, a):
         """
         Test __init__
         
@@ -121,7 +121,8 @@ class Test(pd.DataFrame):
         a : int
             Description.
         """
-        pass
+        super().__init__(columns=['a','b'])
+        self.a=a
     def hello(self):
         """
         Hello
