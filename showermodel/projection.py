@@ -215,7 +215,7 @@ class _Projection(pd.DataFrame):
         -------
         ax1, ax2 : PolarAxesSubplot objects.
         """
-        from .tools import show_projection
+        from ._tools import show_projection
         return show_projection(self, None, False, axes, max_theta, X_mark)
 
     def altaz_to_thetaphi(self, alt, az):

@@ -303,7 +303,7 @@ class _Track(pd.DataFrame):
         Projection.show
         """
         projection = sm.Projection(telescope, self)
-        from .tools import show_projection
+        from ._tools import show_projection
         return projection, (show_projection(projection, None, False, axes,
                                             max_theta, X_mark))
 
@@ -334,7 +334,7 @@ class _Track(pd.DataFrame):
         -------
         AxesSubplot object.
         """
-        from .tools import show_geometry
+        from ._tools import show_geometry
         return show_geometry(self, observatory, '2d', x_min, x_max, y_min,
                              y_max, X_mark, False, False, tel_index, False,
                              False)
@@ -368,7 +368,7 @@ class _Track(pd.DataFrame):
         -------
         Axes3DSubplot object.
         """
-        from .tools import show_geometry
+        from ._tools import show_geometry
         return show_geometry(self, observatory, '3d', x_min, x_max, y_min,
                              y_max, X_mark, False, False, False, xy_proj,
                              pointing)

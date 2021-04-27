@@ -528,7 +528,7 @@ class _Telescope:
         Calculate the angle theta in degrees [0, 180] of a vector with vertical
         projection z and modulus r, where theta is defined from the z axis
         """
-        from .tools import zr_to_theta
+        from ._tools import zr_to_theta
         return zr_to_theta(z, r)
 
     def xy_to_phi(self, x, y):
@@ -537,7 +537,7 @@ class _Telescope:
         vector, where phi is defined from the x axis towards the y axis
         (anticlockwise)
         """
-        from .tools import xy_to_phi
+        from ._tools import xy_to_phi
         return xy_to_phi(x, y)
 
     def Projection(self, track):
@@ -590,7 +590,7 @@ class _Telescope:
         Projection.show
         """
         projection = sm.Projection(self, track)
-        from .tools import show_projection
+        from ._tools import show_projection
         return projection, (show_projection(projection, None, False, axes,
                                             max_theta, X_mark))
 
