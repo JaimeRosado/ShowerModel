@@ -115,6 +115,11 @@ class Test:
     def __init__(self):
         """
         Test __init__
+        
+        Parameters
+        ----------
+        a : int
+            Description.
         """
         pass
     pass
