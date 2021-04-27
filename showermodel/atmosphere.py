@@ -116,6 +116,8 @@ class Test(pd.DataFrame):
     ----------
     a : int
         Description.
+    b : float
+        Description.
 
     Attributes
     ----------
