@@ -112,9 +112,9 @@ class Kk:
     """
     Test
     """
-    def __init__(self):
+    def __init__(self, a):
         """
-        Test __init__
+        Test __init__        
         """
         pass
     pass
