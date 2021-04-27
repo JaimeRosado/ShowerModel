@@ -114,7 +114,7 @@ showermodel.track module
 Module contents
 ---------------
 
-#.. automodule:: showermodel
-#   :members:
-#   :undoc-members:
-#   :show-inheritance:
+.. automodule:: showermodel
+   :members:
+   :undoc-members:
+   :show-inheritance:
