@@ -7,6 +7,7 @@ Submodules
 showermodel.atmosphere module
 -----------------------------
 
+.. autoclass:: Test
 .. automodule:: showermodel.atmosphere
    :members:
    :undoc-members:
