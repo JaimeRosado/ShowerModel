@@ -8,7 +8,7 @@ showermodel.atmosphere module
 -----------------------------
 
 .. automodule:: showermodel.atmosphere
-   :members: Test, _Atmosphere
+   :members:
    :undoc-members:
    :show-inheritance:
 
