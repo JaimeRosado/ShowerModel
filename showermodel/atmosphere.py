@@ -108,6 +108,18 @@ def Atmosphere(h0=_h0, h_top=_h_top, N_steps=_N_steps, model=_model):
 
 
 # Class #######################################################################
+class Test:
+    """
+    Test
+    """
+    def __init__(self):
+        """
+        Test __init__
+        """
+        pass
+    pass
+
+
 class _Atmosphere(pd.DataFrame):
     """
     DataFrame containing an atmosphere discretization.
