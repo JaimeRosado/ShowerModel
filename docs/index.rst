@@ -24,7 +24,6 @@ A Python package for modelling cosmic-ray showers, their light production and it
     introduction/index
     tutorials/index
     ShowerModel
-    modules
     bibliography
 
 
