@@ -7,11 +7,12 @@ Submodules
 showermodel.atmosphere module
 -----------------------------
 
-.. autoclass:: Test
-.. automodule:: showermodel.atmosphere
+.. autoclass:: showermodel.atmosphere.Test
    :members:
-   :undoc-members:
-   :show-inheritance:
+#.. automodule:: showermodel.atmosphere
+#   :members:
+#   :undoc-members:
+#   :show-inheritance:
 
 showermodel.cherenkov module
 ----------------------------
