@@ -320,7 +320,7 @@ class _Shower:
             X_mark = self.X_max
         projection = sm.Projection(telescope, self.track)
         profile = self.profile
-        from .tools import show_projection
+        from ._tools import show_projection
         return projection, (show_projection(projection, profile, shower_size,
                                             axes, max_theta, X_mark))
 
@@ -418,7 +418,7 @@ class _Shower:
         """
         if X_mark == 'X_max':
             X_mark = self.X_max
-        from .tools import show_geometry
+        from ._tools import show_geometry
         return show_geometry(self, observatory, '2d', x_min, x_max, y_min,
                              y_max, X_mark, shower_size, False, tel_index,
                              False, False)
@@ -458,7 +458,7 @@ class _Shower:
         """
         if X_mark == 'X_max':
             X_mark = self.X_max
-        from .tools import show_geometry
+        from ._tools import show_geometry
         return show_geometry(self, observatory, '3d', x_min, x_max, y_min,
                              y_max, X_mark, shower_size, False, False, xy_proj,
                              pointing)

@@ -261,7 +261,7 @@ class _Signal(pd.DataFrame):
             X_mark = self.shower.X_max
         projection = self.projection
         profile = self.profile
-        from .tools import show_projection
+        from ._tools import show_projection
         return show_projection(projection, profile, shower_size, axes,
                                max_theta, X_mark)
 
