@@ -111,6 +111,15 @@ def Atmosphere(h0=_h0, h_top=_h_top, N_steps=_N_steps, model=_model):
 class Test(pd.DataFrame):
     """
     Test
+    
+    Parameters
+    ----------
+    a : float
+        Column 1.
+    b : float
+        Colunn 2.
+    c : int
+        Attribute.
     """
     def __init__(self, a):
         """
