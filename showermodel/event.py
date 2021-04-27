@@ -163,7 +163,7 @@ class _Event():
             X_mark = self.shower.X_max
         projection = self.projections[tel_index]
         profile = self.profile
-        from .tools import show_projection
+        from ._tools import show_projection
         return show_projection(projection, profile, shower_size, axes,
                                max_theta, X_mark)
 
@@ -255,7 +255,7 @@ class _Event():
             X_mark = self.shower.X_max
         observatory = (self.grid if self.event_type == 'GridEvent'
                        else self.observatory)
-        from .tools import show_geometry
+        from ._tools import show_geometry
         return show_geometry(self, observatory, '2d', x_min, x_max, y_min,
                              y_max, X_mark, shower_size, signal_size,
                              tel_index, False, False)
@@ -300,7 +300,7 @@ class _Event():
             X_mark = self.shower.X_max
         observatory = (self.grid if self.event_type == 'GridEvent'
                        else self.observatory)
-        from .tools import show_geometry
+        from ._tools import show_geometry
         return show_geometry(self, observatory, '3d', x_min, x_max, y_min,
                              y_max, X_mark, shower_size, signal_size, False,
                              xy_proj, pointing)
