@@ -108,7 +108,7 @@ def Atmosphere(h0=_h0, h_top=_h_top, N_steps=_N_steps, model=_model):
 
 
 # Class #######################################################################
-class Test:
+class Test(pd.DataFrame):
     """
     Test
     """
@@ -122,6 +122,11 @@ class Test:
             Description.
         """
         pass
+    def hello(self):
+        """
+        Hello
+        """
+        print("Hello")
     pass
 
 
