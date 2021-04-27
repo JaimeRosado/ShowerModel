@@ -112,7 +112,7 @@ class Test(pd.DataFrame):
     """
     Test
     
-    Parameters
+    Attributes
     ----------
     a : float
         Column 1.
@@ -120,6 +120,10 @@ class Test(pd.DataFrame):
         Colunn 2.
     c : int
         Attribute.
+
+    Methods
+    -------
+    hello : A method example.
     """
     def __init__(self, a):
         """
