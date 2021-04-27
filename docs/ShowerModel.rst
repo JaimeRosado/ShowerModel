@@ -1,9 +1,6 @@
 ShowerModel package
 ===================
 
-Submodules
-----------
-
 showermodel.atmosphere module
 -----------------------------
 
