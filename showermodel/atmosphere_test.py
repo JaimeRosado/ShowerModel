@@ -108,49 +108,6 @@ def Atmosphere(h0=_h0, h_top=_h_top, N_steps=_N_steps, model=_model):
 
 
 # Class #######################################################################
-class Test(pd.DataFrame):
-    """
-    Test
-
-    Parameters
-    ----------
-    a : int
-        Description.
-    b : float
-        Description.
-
-    Attributes
-    ----------
-    a : float
-        Column 1.
-    b : float
-        Colunn 2.
-    c : int
-        Attribute.
-
-    Methods
-    -------
-    hello : A method example.
-    """
-    def __init__(self, a):
-        """
-        Test __init__
-        
-        Parameters
-        ----------
-        a : int
-            Description.
-        """
-        super().__init__(columns=['a','b'])
-        self.a=a
-    def hello(self):
-        """
-        Hello
-        """
-        print("Hello")
-    pass
-
-
 class _Atmosphere(pd.DataFrame):
     """
     DataFrame containing an atmosphere discretization.

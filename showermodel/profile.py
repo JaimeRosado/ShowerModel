@@ -25,31 +25,36 @@ def Profile(E=_E, theta=_theta, alt=None, prf_model=_prf_model, X_max=None,
 
     Parameters
     ----------
-    E : Energy of the primary particle in MeV.
-    theta : Zenith angle in degrees of the apparent position of the source.
-    alt : Altitude in degrees of the apparent position of the source. If None,
+    E : float
+        Energy of the primary particle in MeV.
+    theta : float
+        Zenith angle in degrees of the apparent position of the source.
+    alt : float
+        Altitude in degrees of the apparent position of the source. If None,
         theta is used. If given, theta is overwritten.
-    prf_model : 'Greisen', 'Gaisser-Hillas' or DataFrame cointaining a
-        numerical energy deposit profile. If 'Greisen', the Greisen function
-        for electromagnetic showers is used. If 'Gaisser-Hillas', the
-        Gaisser-Hillas function for hadron-induced showers is used.
-        If DataFrame, it must have two columns with the slant depth in g/cm2
-        and dE/dX in MeV.cm2/g.
-    X_max : Slant depth in g/cm^2 at shower maximum. If None and prf_model is
+    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame
+        If 'Greisen', the Greisen function for electromagnetic showers is used.
+        If 'Gaisser-Hillas', the Gaisser-Hillas function for hadron-induced
+        showers is used. If a DataFrame with an energy deposit profile is input,
+        it must have two columns with the slant depth in g/cm2 and dE/dX in
+        MeV.cm2/g. 
+    X_max : float
+        Slant depth in g/cm^2 at shower maximum. If None and prf_model is
         'Greisen' or 'Gaisser-Hillas', a typical value of X_max for gamma or
         proton showers is used. If None and a numerical energy deposit profile
         is input, lambda_r = 36.7 g/cm^2 is the radiation length and
         E_c = 81 MeV is the critical energy.
-    X0_GH : X0 parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
+    X0_GH : float
+        X0 parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
         If None, a typical value for the input energy is used.
-    lambda_GH : lambda parameter in g/cm2 to be used when
-        prf_model=='Gaisser-Hillas'. If None, a typical value for the input
-        energy is used.
-    atmosphere : Existing Atmosphere object to be used.
+    lambda_GH : float
+        Lambda parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
+        If None, a typical value for the input energy is used.
+    atmosphere : Atmosphere object.
         If None, a new Atmosphere object is generated.
-    **kwargs {h0, h_top, N_steps, model} : Options to construct the new
-        Atmosphere object when atmosphere==None. If None, the default
-        Atmosphere object is used.
+    **kwargs {h0, h_top, N_steps, model}
+        Options to construct the new Atmosphere object when atmosphere==None.
+        If None, the default Atmosphere object is used.
 
     Returns
     -------
@@ -57,7 +62,7 @@ def Profile(E=_E, theta=_theta, alt=None, prf_model=_prf_model, X_max=None,
 
     See also
     --------
-    Profile object.
+    _Profile : Profile class.
     Shower : Contructor of Shower object.
     """
     from .atmosphere import _Atmosphere
@@ -225,25 +230,35 @@ class _Profile(pd.DataFrame):
 
     Columns
     -------
-    X : Slant depth in g/cm^2.
-    s : Shower age.
-    dX : Discretization step in g/cm^2 along the shower axis.
-    E_dep : Energy deposit in MeV at each discretiztion step.
-    N_ch : Number of charged particles.
+    X : float
+        Slant depth in g/cm^2.
+    s : float
+        Shower age.
+    dX : float
+        Discretization step in g/cm^2 along the shower axis.
+    E_dep : float
+        Energy deposit in MeV at each discretiztion step.
+    N_ch : float
+        Number of charged particles.
 
     Attributes
     ----------
-    atmosphere : Atmosphere discretization used to construct the shower
-        profile.
-    E : Energy of the primary particle.
-    theta : Zenith angle in degrees of the apparent position of the source.
-    alt : Altitude in degrees of the apparent position of the source.
-    prf_model : 'Greisen', 'Gaisser-Hillas' or DataFrame cointaining the input
-        energy deposit profile.
-    X_max : Slant depth in g/cm^2 at shower maximum.
-    X0_GH : X0 parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
-    lambda_GH : lambda parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
-    dl : Size in km of the discretization step along the shower axis.
+    atmosphere : Atmosphere object.
+    E : float
+        Energy of the primary particle.
+    theta : float
+        Zenith angle in degrees of the apparent position of the source.
+    alt : float
+        Altitude in degrees of the apparent position of the source.
+    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame.
+    X_max : float
+        Slant depth in g/cm^2 at shower maximum.
+    X0_GH : float
+        X0 parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
+    lambda_GH : float
+        lambda parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
+    dl : float
+        Size in km of the discretization step along the shower axis.
 
     Methods
     -------

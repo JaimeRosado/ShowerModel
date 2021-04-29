@@ -10,25 +10,30 @@ from IPython.display import HTML
 # Constructor #################################################################
 def Image(signal, lat_profile=True, N_pix=None, int_time=None, NSB=40.):
     """
-    Generate a time-varying shower image in a circular camera with square
-    pixels of same solid angle. A Nishimura-Kamata-Greisen lateral profile is
-    used to spread the signal contribution from each shower point to several
-    pixels.
+    Generate a time-varying shower image from a Signal object.
+
+    A Nishimura-Kamata-Greisen lateral profile is used to spread the signal
+    contribution from each shower point to several pixels. A circular camera with
+    square pixels of same solid angle is assumed.
 
     Parameters
     ----------
-    signal : Signal object used generate the shower image.
-    lat_profile : Bool indicating wether a NKG lateral profile is used to
-        spread the signal. If False, a linear shower is assumed.
-    N_pix : Number of camera pixels. If not given, the predefined value in the
+    signal : Signal object.
+    lat_profile : bool, default True
+        Use a NKG lateral profile to spread the signal. If False, a linear
+        shower is assumed.
+    N_pix : int
+        Number of camera pixels. If not given, the predefined value in the
         Telescope object is used.
-    int_time : Integration time in microseconds of a camera frame. If not
+    int_time : float
+        Integration time in microseconds of a camera frame. If not
         given, the predefined value in the Telescope object is used.
-    NSB : Night sky background in MHz/m$^2$/deg$^2$.
+    NSB : float
+        Night sky background in MHz/m$^2$/deg$^2$.
 
     Returns
     -------
-    Image object
+    image : Image object
     """
     image = _Image()
     image.NSB = NSB
@@ -255,19 +260,28 @@ class _Image:
 
     Attributes
     ----------
-    signal : Signal object used to obtain the image.
-    lat_profile : Bool indicating wether a NKG lateral profile is used to
+    signal : Signal object.
+    lat_profile : bool
+        Bool indicating wether a NKG lateral profile is used to
         spread the signal. If False, a linear shower is assumed.
-    N_pix : Number of camera pixels.
-    N_pix_r : Number of pixels across a camera radius.
-    sol_angle_pix : Solid angle in stereoradians of a single pixel.
-    int_time : Integration time in microseconds of a camera frame.
-    N_frames : Number of frames.
-    frames : Array of size (N_frames, 2*N_pix_r+1, 2*N_pix_r+1) containing the
+    N_pix : int
+        Number of camera pixels.
+    N_pix_r : int
+        Number of pixels across a camera radius.
+    sol_angle_pix : float
+        Solid angle in stereoradians of a single pixel.
+    int_time : float
+        Integration time in microseconds of a camera frame.
+    N_frames : int
+        Number of frames.
+    frames : array
+        Array of size (N_frames, 2*N_pix_r+1, 2*N_pix_r+1) containing the
         pixel values at each frame. Array elements not corresponding to any
         camera pixel are set to -inf.
-    NSB : Night sky background in MHz/m$^2$/deg$^2$.
-    NSB_pix : Mean number of background photoelectrons per pixel and frame.
+    NSB : float
+        Night sky background in MHz/m$^2$/deg$^2$.
+    NSB_pix : float
+        Mean number of background photoelectrons per pixel and frame.
 
     Methods
     -------
@@ -284,15 +298,18 @@ class _Image:
 
         Parameters
         ----------
-        frame : Frame number. If not given, the sum of frames is shown.
-        NSB : Night sky background in MHz/m$^2$/deg$^2$. If not given, the one
+        frame : int
+            Frame number. If not given, the sum of frames is shown.
+        NSB : float
+            Night sky background in MHz/m$^2$/deg$^2$. If not given, the one
             defined in Image is used.
-        ax : Axes instance where the plot is generated. In not given, a new
+        ax : AxesSubplot object
+            Axes instance where the plot is generated. In not given, a new
             AxesSubplot object is created.
 
         Returns
         -------
-        AxesSubplot object.
+        axes : AxesSubplot object.
         """
         N_pix = self.N_pix
         N_pix_r = self.N_pix_r
@@ -349,12 +366,13 @@ class _Image:
 
         Parameters
         ----------
-        NSB : Night sky background in MHz/m$^2$/deg$^2$. If not given, the one
+        NSB : float
+            Night sky background in MHz/m$^2$/deg$^2$. If not given, the one
             defined in Image is used.
 
         Returns
         -------
-        HTML object.
+        ani : HTML object.
         """
         N_pix = self.N_pix
         N_pix_r = self.N_pix_r

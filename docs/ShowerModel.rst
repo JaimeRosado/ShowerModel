@@ -1,16 +1,15 @@
 ShowerModel package
 ===================
 
-Submodules
-----------
-
 showermodel.atmosphere module
 -----------------------------
 
-.. automodule:: showermodel.atmosphere
+.. autoclass:: showermodel.atmosphere.Test
    :members:
-   :undoc-members:
-   :show-inheritance:
+#.. automodule:: showermodel.atmosphere
+#   :members:
+#   :undoc-members:
+#   :show-inheritance:
 
 showermodel.cherenkov module
 ----------------------------

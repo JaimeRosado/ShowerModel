@@ -36,6 +36,8 @@ extensions = [
     'sphinx.ext.napoleon',
     'nbsphinx'
 ]
+# Show both the class’ and the __init__ method’s docstring
+autoclass_content = 'both'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

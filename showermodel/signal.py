@@ -16,20 +16,21 @@ def Signal(telescope, shower, projection=None, atm_trans=True, tel_eff=True,
     ----------
     telescope : Telescope object.
     shower : Shower object.
-    projection : Projection object. If None, it will generated from telescope
-        and shower.
-    atm_trans : True if the atmospheric transmision is included to transport
-        photons.
-    tel_eff : True if the telescope efficiency is included to calculate the
-        signal. If False, 100% efficiency is assumed for a given wavelenght
-        interval.
-    **kwargs {wvl_ini, wvl_fin, wvl_step}: Options to modify the wavelenght
-        interval when tel_eff==False. If None, the wavelength interval defined
-        in the telescope is used.
+    projection : Projection object
+        If None, it will generated from telescope and shower.
+    atm_trans : bool, default True
+        Include the atmospheric transmision to transport photons.
+    tel_eff : bool, default True
+        Include the telescope efficiency to calculate the signal. If False,
+        100% efficiency is assumed for a given wavelenght interval.
+    **kwargs {wvl_ini, wvl_fin, wvl_step}
+        These parameters will modify the wavelenght interval when
+        tel_eff==False. If None, the wavelength interval defined in the
+        telescope is used.
 
     Returns
     -------
-    Signal object.
+    signal : Signal object.
     """
     from .telescope import _Telescope
     from .shower import _Shower
@@ -185,23 +186,34 @@ class _Signal(pd.DataFrame):
 
     Columns
     -------
-    Npe_cher : Number of photoelectrons per discretization step due to
+    Npe_cher : float
+        Number of photoelectrons per discretization step due to
         Cherenkov light.
-    Npe_fluo : Number of photoelectrons per discretization step due to
+    Npe_fluo : float
+        Number of photoelectrons per discretization step due to
         fluorescence light.
-    Npe_total : Total number of photoelectrons per discretization step.
+    Npe_total : float
+        Total number of photoelectrons per discretization step.
 
     Attributes
     ----------
     telescope : Telescope object.
-    atm_trans : True if the atmospheric transmision is included.
-    tel_eff : True if the telescope efficiency is included.
-    wvl_ini : Initial wavelength in nm of the interval.
-    wvl_fin : Final wavelength in nm of the interval.
-    wvl_step : Step size in nm of the interval.
-    Npe_cher_sum : Sum of photoelectrons due to Cherenkov light.
-    Npe_fluo_sum : Sum of photoelectrons due to fluorescence light.
-    Npe_total_sum : Sum of photoelectrons due to both light components.
+    atm_trans : bool
+        True if the atmospheric transmision is included.
+    tel_eff : bool
+        True if the telescope efficiency is included.
+    wvl_ini : float
+        Initial wavelength in nm of the interval.
+    wvl_fin : float
+        Final wavelength in nm of the interval.
+    wvl_step : float
+        Step size in nm of the interval.
+    Npe_cher_sum : float
+        Sum of photoelectrons due to Cherenkov light.
+    Npe_fluo_sum : float
+        Sum of photoelectrons due to fluorescence light.
+    Npe_total_sum : float
+        Sum of photoelectrons due to both light components.
     shower : Shower object.
     projection : Projection object.
     fluorescence : Fluorescence object.
@@ -232,13 +244,16 @@ class _Signal(pd.DataFrame):
 
         Parameters
         ----------
-        shower_size : Bool indicating whether the radii of the shower track
-            points are proportional to the shower size.
-        axes : Bool indicating whether the axes of both frames of reference are
-            visualized or not.
-        max_theta : Maximum offset angle in degrees relative to the telescope
+        shower_size : bool, default True
+            Make the radii of the shower track points proportional to
+            the shower size.
+        axes : bool, default True
+            Show the axes of both frames of reference.
+        max_theta : float, default 30 degrees
+            Maximum offset angle in degrees relative to the telescope
             pointing direction.
-        X_mark : Reference slant depth in g/cm^2 of the shower track to be
+        X_mark : float
+            Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure, default to X_max. If X_mark is set to None,
             no mark is included.
         """
@@ -246,7 +261,7 @@ class _Signal(pd.DataFrame):
             X_mark = self.shower.X_max
         projection = self.projection
         profile = self.profile
-        from .tools import show_projection
+        from ._tools import show_projection
         return show_projection(projection, profile, shower_size, axes,
                                max_theta, X_mark)
 
@@ -297,12 +312,16 @@ class _Signal(pd.DataFrame):
 
         Parameters
         ----------
-        lat_profile : Bool indicating wether a NKG lateral profile is used to
-            spread the signal. If False, a linear shower is assumed.
-        N_pix : Number of camera pixels. If not given, the predefined value in
+        lat_profile : bool, default True
+            Use a NKG lateral profile to spread the signal. If False, a linear
+            shower is assumed.
+        N_pix : int
+            Number of camera pixels. If not given, the predefined value in
             the telescope that produces the signal.
-        int_time : Integration time in microseconds of a camera frame.
-        NSB : Night sky background in MHz/m$^2$/deg$^2$.
+        int_time : float
+            Integration time in microseconds of a camera frame.
+        NSB : float
+            Night sky background in MHz/m$^2$/deg$^2$.
 
         Returns
         -------

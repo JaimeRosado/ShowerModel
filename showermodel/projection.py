@@ -19,7 +19,7 @@ def Projection(telescope, track):
 
     Returns
     -------
-    Projection object.
+    projection : Projection object.
     """
     from .telescope import _Telescope
     from .track import _Track
@@ -133,17 +133,25 @@ class _Projection(pd.DataFrame):
 
     Columns
     -------
-    distance : Shower-to-telescope distance in km.
-    alt : Altitude in degrees (from horizon).
-    az : Azimuth in degrees (from north, clockwise).
-    theta : Offset angle in degrees relative to the telescope pointing
+    distance : float
+        Shower-to-telescope distance in km.
+    alt : float
+        Altitude in degrees (from horizon).
+    az : float
+        Azimuth in degrees (from north, clockwise).
+    theta : float
+        Offset angle in degrees relative to the telescope pointing
         direction.
-    phi : Position angle in degrees from north in FoV projection.
-    beta : Angle in degrees relative to the apparent source position.
-    time : Arrival time in microseconds of photons emitted at each point of
+    phi : float
+        Position angle in degrees from north in FoV projection.
+    beta : float
+        Angle in degrees relative to the apparent source position.
+    time : float
+        Arrival time in microseconds of photons emitted at each point of
         the shower, where time=0 for photons produced at the top of the
         atmosphere.
-    FoV : True if the shower point is within the telescope field of view,
+    FoV : bool
+        True if the shower point is within the telescope field of view,
         False otherwise.
 
     Attributes
@@ -151,17 +159,26 @@ class _Projection(pd.DataFrame):
     atmosphere : Atmosphere object.
     track : Track object.
     telescope : Telescope object.
-    distance_top : Distance in km to shower point at the top of the atmosphere.
-    beta_top : Beta angle in degrees of the shower point at the top of the
+    distance_top : float
+        Distance in km to shower point at the top of the atmosphere.
+    beta_top : float
+        Beta angle in degrees of the shower point at the top of the
         atmosphere.
-    distance_0 : Distance in km to the shower impact point at ground.
-    beta_0 : Beta angle in degrees of the shower impact point at ground.
-    distance_min : Minimum distance in km to (infinite) line going to the
+    distance_0 : float
+        Distance in km to the shower impact point at ground.
+    beta_0 : float
+        Beta angle in degrees of the shower impact point at ground.
+    distance_min : float
+        Minimum distance in km to (infinite) line going to the
         shower axis.
-    alt_inf : Altitude in degrees of the apparent source position.
-    az_inf : Azimuth in degrees of the apparent source position.
-    theta_inf : Offset angle in degrees of the apparent source position.
-    phi_inf : Position angle in degrees of the apparent source position.
+    alt_inf : float
+        Altitude in degrees of the apparent source position.
+    az_inf : float
+        Azimuth in degrees of the apparent source position.
+    theta_inf : float
+        Offset angle in degrees of the apparent source position.
+    phi_inf : float
+        Position angle in degrees of the apparent source position.
 
     Methods
     -------
@@ -185,18 +202,20 @@ class _Projection(pd.DataFrame):
 
         Parameters
         ----------
-        axes : Bool indicating whether the axes of both frames of reference are
-            visualized or not.
-        max_theta : Maximum offset angle in degrees relative to the telescope
+        axes : bool, default True
+            Show the axes of both frames of reference.
+        max_theta : float, default 30 degrees
+            Maximum offset angle in degrees relative to the telescope
             pointing direction.
-        X_mark : Reference slant depth in g/cm^2 of the shower track to be
+        X_mark : float
+            Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure. If None, no mark is included.
 
         Returns
         -------
         ax1, ax2 : PolarAxesSubplot objects.
         """
-        from .tools import show_projection
+        from ._tools import show_projection
         return show_projection(self, None, False, axes, max_theta, X_mark)
 
     def altaz_to_thetaphi(self, alt, az):
@@ -206,12 +225,12 @@ class _Projection(pd.DataFrame):
 
         Parameters
         ----------
-        alt : Scalar or array-like.
-        az : Scalar or array-like.
+        alt : float or array_like.
+        az : float or array_like.
 
         Returns
         -------
-        theta, phi : Scalars or array-like objects.
+        theta, phi : float or array-like objects.
 
         See also
         --------
@@ -238,7 +257,7 @@ class _Projection(pd.DataFrame):
 
         Returns
         -------
-        x_FoV, y_FoV, z_FoV : Scalars or array-like objects.
+        x_FoV, y_FoV, z_FoV : Scalars or array_like.
 
         See also
         --------
@@ -255,12 +274,12 @@ class _Projection(pd.DataFrame):
 
         Parameters
         ----------
-        theta : Scalar or array-like.
-        phi : Scalar or array-like.
+        theta : float or array_like.
+        phi : float or array_like.
 
         Returns
         -------
-        alt, az : Scalars or array-like objects.
+        alt, az : float or array_like.
 
         See also
         --------
@@ -281,13 +300,13 @@ class _Projection(pd.DataFrame):
 
         Parameters
         ----------
-        x_FoV : Scalar or array-like.
-        y_FoV : Scalar or array-like.
-        z_FoV : Scalar or array-like.
+        x_FoV : float or array_like.
+        y_FoV : float or array_like.
+        z_FoV : float or array_like.
 
         Returns
         -------
-        x_hor, y_hor, z_hor : Scalars or array-like objects.
+        x_hor, y_hor, z_hor : float or array_like.
 
         See also
         --------
@@ -305,10 +324,10 @@ class _Projection(pd.DataFrame):
 
         Parameters
         ----------
-        x, y, z : Scalars or array-like objects.
+        x, y, z : float or array_like.
 
         Returns
         -------
-        distance, alt, az, theta, phi : Scalars or array-like objects.
+        distance, alt, az, theta, phi : float or array_like.
         """
         return self.telescope.spherical(x, y, z)

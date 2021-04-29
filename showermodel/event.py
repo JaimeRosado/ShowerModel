@@ -10,25 +10,28 @@ import matplotlib.pyplot as plt
 # Constructor #################################################################
 def Event(observatory, shower, atm_trans=True, tel_eff=True, **kwargs):
     """
-    Make an Event object containing the characteristics of a shower,
-    an observatory and the signal produced by the shower in each telescope.
+    Construct an Event object from a shower and an observatory.
+    
+    The Event objet contains the signal produced by the shower in each
+    telescope of the observatory.
 
     Parameters
     ----------
     observatory : Observatory object (may be a Grid object).
     shower : Shower object.
-    atm_trans : Bool indicating whether the atmospheric transmision is included
-        to transport photons.
-    tel_eff : Bool indicating whether the telescope efficiency is included to
-        calculate the signals. If False, 100% efficiency is assumed for a given
-        wavelength interval.
-    **kwargs {wvl_ini, wvl_fin, wvl_step}: Options to modify the wavelength
-        interval when tel_eff==False. If None, the wavelength interval defined
-        in each telescope is used.
+    atm_trans : bool, default True
+        Include the atmospheric transmision to transport photons.
+    tel_eff : bool, default True
+        Include the telescope efficiency to calculate the signals.
+        If False, 100% efficiency is assumed for a given wavelength interval.
+    **kwargs {wvl_ini, wvl_fin, wvl_step}
+        These parameters will be passed to the Signal constructor to modify
+        the wavelength interval when tel_eff==False. If None, the wavelength
+        interval defined in each telescope is used.
 
     Returns
     -------
-    Event object.
+    event : Event object.
     """
     from .observatory import _Observatory, _Grid
     from .telescope import _Telescope
@@ -80,16 +83,16 @@ def Event(observatory, shower, atm_trans=True, tel_eff=True, **kwargs):
 # Class #######################################################################
 class _Event():
     """
-    Event object containing the characteristics of a shower, an observatory and
+    An Event object contains the characteristics of a shower, an observatory and
     the signal produced by the shower in each telescope.
 
     Use Event to construct an Event object.
 
     Attributes
     ----------
-    event_type : Name of subclass of Event. Presently, only the parent class
-        Event and the subclass GridEvent are available. More subclasses to be
-        implemented.
+    event_type : {'Event', 'GridEvent'} or new name
+        Name of subclass of Event. Presently, only the parent class Event and
+        the subclass GridEvent are available. More subclasses to be implemented.
     shower : Shower object.
     track : Track object.
     profile : Profile object.
@@ -97,14 +100,16 @@ class _Event():
     cherenkov : Cherenkov object.
     atmosphere : Atmosphere object.
     observatory : Observatory object.
-    grid : Grid object (only GridEvent objects). It replaces observatory for
-        GridEvent objects
-    projections : List of Projection objects (one for each telescope).
-    signals : List of Signal objects (one for each telescope).
-    images : List of Image objects. Only available if generated via the method
-        make_images.
-    atm_trans : True if the atmospheric transmision is included.
-    tel_eff : True if the telescope efficiency is included.
+    grid : Grid object (only for GridEvent objects)
+        It replaces observatory for GridEvent objects.
+    projections : List of Projection objects.
+    signals : List of Signal objects.
+    images : List of Image objects
+        Only available if generated via the method make_images.
+    atm_trans : bool
+        True if the atmospheric transmision is included.
+    tel_eff : bool
+        True if the telescope efficiency is included.
 
     Methods
     -------
@@ -135,14 +140,18 @@ class _Event():
 
         Parameters
         ----------
-        tel_index : Index of the chosen telescope of the observatory.
-        shower_size : Bool indicating whether the radii of the shower track
-            points are proportional to the shower size.
-        axes : Bool indicating whether the axes of both frames of reference are
-            visualized or not.
-        max_theta : Maximum offset angle in degrees relative to the telescope
+        tel_index : int
+            Index of the chosen telescope of the observatory.
+        shower_size : bool, default True
+            Make the radii of the shower track points proportional to the
+            shower size.
+        axes : bool, default True
+            Show the axes of both frames of reference.
+        max_theta : float, default 30 degrees
+            Maximum offset angle in degrees relative to the telescope
             pointing direction.
-        X_mark : Reference slant depth in g/cm^2 of the shower track to be
+        X_mark : float or None
+            Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure, default to X_max. If X_mark is set to None,
             no mark is included.
 
@@ -154,7 +163,7 @@ class _Event():
             X_mark = self.shower.X_max
         projection = self.projections[tel_index]
         profile = self.profile
-        from .tools import show_projection
+        from ._tools import show_projection
         return show_projection(projection, profile, shower_size, axes,
                                max_theta, X_mark)
 
@@ -188,7 +197,8 @@ class _Event():
 
         Parameters
         ----------
-        tel_index : Index of the chosen telescope of the observatory.
+        tel_index : int, default 0
+            Index of the chosen telescope of the observatory.
 
         Returns
         -------
@@ -216,29 +226,36 @@ class _Event():
 
         Parameters
         ----------
-        x_min : Lower limit of the coordinate x in km.
-        x_max : Upper limit of the coordinate x in km.
-        y_min : Lower limit of the coordinate y in km.
-        y_max : Upper limit of the coordinate y in km.
-        X_mark : Reference slant depth in g/cm^2 of the shower track to be
+        x_min : float
+            Lower limit of the coordinate x in km.
+        x_max : float
+            Upper limit of the coordinate x in km.
+        y_min : float
+            Lower limit of the coordinate y in km.
+        y_max : float
+            Upper limit of the coordinate y in km.
+        X_mark : float
+            Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure, default to X_max. If X_mark is set to None,
             no mark is included.
-        shower_size : Bool indicating whether the radii of the shower track
-            points are proportional to the shower size.
-        signal_size : Bool indicating whether the radii of the telescope
-            position points are proportional to the signal.
-        tel_index : Bool indicating whether the telescope indexes are shown
-            together the telescope position points.
+        shower_size : bool, default True
+            Make the radii of the shower track points proportional to the
+            shower size.
+        signal_size : bool
+            Make the radii of the telescope position points proportional to
+            the signal.
+        tel_index : bool
+            Show the telescope indexes together the telescope position points.
 
         Returns
         -------
-        AxesSubplot object.
+        ax : AxesSubplot object.
         """
         if X_mark == 'X_max':
             X_mark = self.shower.X_max
         observatory = (self.grid if self.event_type == 'GridEvent'
                        else self.observatory)
-        from .tools import show_geometry
+        from ._tools import show_geometry
         return show_geometry(self, observatory, '2d', x_min, x_max, y_min,
                              y_max, X_mark, shower_size, signal_size,
                              tel_index, False, False)
@@ -252,30 +269,38 @@ class _Event():
 
         Parameters
         ----------
-        x_min : Lower limit of the coordinate x in km.
-        x_max : Upper limit of the coordinate x in km.
-        y_min : Lower limit of the coordinate y in km.
-        y_max : Upper limit of the coordinate y in km.
-        X_mark : Reference slant depth in g/cm^2 of the shower track to be
+        x_min : float
+            Lower limit of the coordinate x in km.
+        x_max : float
+            Upper limit of the coordinate x in km.
+        y_min : float
+            Lower limit of the coordinate y in km.
+        y_max : float
+            Upper limit of the coordinate y in km.
+        X_mark : float
+            Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure, default to X_max. If X_mark is set to None,
             no mark is included.
-        shower_size : Bool indicating whether the radii of the shower track
-            points are proportional to the shower size.
-        signal_size : Bool indicating whether the radii of the telescope
-            position points are proportional to the signal.
-        xy_proj : Bool indicating whether the xy projection of the shower track
-            is shown.
-        pointing : Bool indicating whether the telescope axes are shown.
+        shower_size : bool, default True
+            Make the radii of the shower track points proportional to the
+            shower size.
+        signal_size : bool, default True
+            Make the radii of the telescope position points proportional to
+            the signal.
+        xy_proj : bool, default True
+            Show the xy projection of the shower track.
+        pointing : bool, default False
+            Show the telescope axes.
 
         Returns
         -------
-        Axes3DSubplot object.
+        ax : Axes3DSubplot object.
         """
         if X_mark == 'X_max':
             X_mark = self.shower.X_max
         observatory = (self.grid if self.event_type == 'GridEvent'
                        else self.observatory)
-        from .tools import show_geometry
+        from ._tools import show_geometry
         return show_geometry(self, observatory, '3d', x_min, x_max, y_min,
                              y_max, X_mark, shower_size, signal_size, False,
                              xy_proj, pointing)
@@ -289,23 +314,28 @@ class _Event():
 
         Parameters
         ----------
-        grid : Existing Grid object to be used. If None, a new Grid object is
-            generated from the specified dimensions and the characteristics of
-            the telescope with tel_index=0 of the observatory. If given,
-            size_x, size_y, N_x, N_y are not used.
-        size_x : Size of the grid in km across the x direction.
-        size_y : Size of the grid in km across the y direction.
-        N_x : Number of cells across the x direction.
-        N_y : Number of cells across the y direction.
-        atm_trans : Bool indicating whether the atmospheric transmision is
-            included to transport photons. If None, this option is set to be the
-            same as the original Event object.
-        tel_eff : Bool indicating whether the telescope efficiency is included
-            to calculate the signals. If None, this option is set to be the
-            same as the original Event object.
-        **kwargs {wvl_ini, wvl_fin, wvl_step}: Options to modify the wavelength
-            interval when tel_eff==False. If None, the wavelength interval of
-            the grid telescopes is used.
+        grid : Grid object
+            If None, a new Grid object is generated from the specified
+            dimensions and the characteristics of the telescope with tel_index=0
+            of the observatory. If given, size_x, size_y, N_x, N_y are not used.
+        size_x : float
+            Size of the grid in km across the x direction.
+        size_y : float
+            Size of the grid in km across the y direction.
+        N_x : int
+            Number of cells across the x direction.
+        N_y : int
+            Number of cells across the y direction.
+        atm_trans : bool, default True
+            Include the atmospheric transmision to transport photons. If None,
+            this option is set to be the same as the original Event object.
+        tel_eff : bool, default True
+            Include the telescope efficiency to calculate the signals. If None,
+            this option is set to be the same as the original Event object.
+        **kwargs {wvl_ini, wvl_fin, wvl_step}
+            These parameters will be passed to the Signal constructor to modify
+            the wavelength interval when tel_eff==False. If None, the wavelength
+            interval the grid telescopes is used.
 
         Returns
         -------
@@ -350,13 +380,15 @@ class _Event():
 
         Parameters
         ----------
-        lat_profile : Bool indicating whether a NKG lateral profile is used to
-            spread the signal. If False, a linear shower is assumed.
-        NSB : Night sky background in MHz/m$^2$/deg$^2$.
+        lat_profile : book
+            Use a NKG lateral profile to spread the signal. If False,
+            a linear shower is assumed.
+        NSB : float
+            Night sky background in MHz/m$^2$/deg$^2$.
 
         Returns
         -------
-        List of Image objects.
+        images : List of Image objects.
 
         See also
         --------
@@ -374,8 +406,10 @@ class _Event():
         
         Parameters
         ----------
-        col : Number of columns of the figure. Default to 5.
-        size : Subplot size in cm. Default to 2.
+        col : int
+            Number of columns of the figure. Default to 5.
+        size : float, default 2
+            Subplot size in cm.
         """
         if self.images is None:
             raise ValueError(

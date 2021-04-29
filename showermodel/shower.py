@@ -14,40 +14,50 @@ def Shower(E=_E, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
            prf_model=_prf_model, X_max=None, N_ch_max=None, X0_GH=None,
            lambda_GH=None, atmosphere=None, **kwargs):
     """
-    Make a discretization of both the track and profile of a shower as well as
-    its fluorescence and Cherenkov light production.
+    Make a discretization of shower.
+
+    It includes the shower profile and its fluorescence and Cherenkov light
+    production.
 
     Parameters
     ----------
-    E : Energy of the primary particle.
-    theta : Zenith angle in degrees of the apparent position of the source.
-    alt : Altitude in degrees of the apparent position of the source. If None,
+    E : float
+        Energy of the primary particle.
+    theta : float
+        Zenith angle in degrees of the apparent position of the source.
+    alt : float
+        Altitude in degrees of the apparent position of the source. If None,
         theta is used. If given, theta is overwritten.
-    az : Azimuth angle (from north, clockwise) in degrees of the apparent
+    az : float
+        Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
-    x0 : East coordinate in km of shower impact point at ground.
-    y0 : West coordinate in km of shower impact point at ground.
-    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame containing a
-        numerical energy deposit profile. If 'Greisen', the Greisen function
-        for electromagnetic showers is used. If 'Gaisser-Hillas', the
-        Gaisser-Hillas function for hadron-induced showers is used.
-        If DataFrame, it must have two columns with the slant depth in g/cm2
-        and dE/dX in MeV.cm2/g.
-    X_max : Slant depth in g/cm^2 at shower maximum. If None and prf_model is
+    x0 : float
+        East coordinate in km of shower impact point at ground.
+    y0 : float
+        West coordinate in km of shower impact point at ground.
+    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame
+        If 'Greisen', the Greisen function for electromagnetic showers is used.
+        If 'Gaisser-Hillas', the Gaisser-Hillas function for hadron-induced
+        showers is used. If a DataFrame with an energy deposit profile is input,
+        it must have two columns with the slant depth in g/cm2 and dE/dX in
+        MeV.cm2/g. 
+    X_max : float
+        Slant depth in g/cm^2 at shower maximum. If None and prf_model is
         'Greisen' or 'Gaisser-Hillas', a typical value of X_max for gamma or
         proton showers is used. If None and a numerical energy deposit profile
         is input, lambda_r = 36.7 g/cm^2 is the radiation length E_c = 81 MeV
         is the critical energy.
-    X0_GH : X0 parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
+    X0_GH : float
+        X0 parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
         If None, a typical value for the input energy is used.
-    lambda_GH : lambda parameter in g/cm2 to be used when
-        prf_model=='Gaisser-Hillas'. If None, a typical value for the input
-        energy is used.
-    atmosphere : Existing Atmosphere object to be used. If None, a new
-        Atmosphere object is generated.
-    **kwargs {h0, h_top, N_steps, model} : Options to construct the new
-        Atmosphere object when atmosphere==None. If None, the default
-        Atmosphere object is used.
+    lambda_GH : float
+        Lambda parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
+        If None, a typical value for the input energy is used.
+    atmosphere : Atmosphere object.
+        If None, a new Atmosphere object is generated.
+    **kwargs {h0, h_top, N_steps, model}
+        Options to construct the new Atmosphere object when atmosphere==None.
+        If None, the default Atmosphere object is used.
 
     Returns
     -------
@@ -55,7 +65,7 @@ def Shower(E=_E, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
 
     See also
     --------
-    Shower object.
+    _Shower : Shower class.
     """
     from .atmosphere import _Atmosphere
     if isinstance(atmosphere, _Atmosphere):
@@ -119,26 +129,39 @@ class _Shower:
     Attributes
     ----------
     atmosphere : Atmosphere object.
-    h0 : Ground level in km above sea level.
-    h_top : Top level of the atmosphere in km above sea level.
-    N_steps : Number of discretization steps.
-    h_step : Size of discretization step in km.
-    model : CORSIKA atmospheric model. Presently either 1 or 17. More models to
+    h0 : float
+        Ground level in km above sea level.
+    h_top : float
+        Top level of the atmosphere in km above sea level.
+    N_steps : int
+        Number of discretization steps.
+    h_step : float
+        Size of discretization step in km.
+    model : int
+        CORSIKA atmospheric model. Presently either 1 or 17. More models to
         be implemented.
     track : Track object.
     profile : Profile object.
-    E : Energy of the primary particle.
-    theta : Zenith angle in degrees of the apparent position of the source.
-    alt : Altitude in degrees of the apparent position of the source.
-    az : Azimuth angle (from north, clockwise) in degrees of the apparent
+    E : float
+        Energy of the primary particle.
+    theta : float
+        Zenith angle in degrees of the apparent position of the source.
+    alt : float
+        Altitude in degrees of the apparent position of the source.
+    az : float
+        Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
-    x0 : East coordinate in km of shower impact point at ground.
-    y0 : North coordinate in km of shower impact point at ground.
-    prf_model : 'Greisen', 'Gaisser-Hillas' or DataFrame containing the input
-        energy deposit profile.
-    X_max : Slant depth in g/cm^2 at shower maximum.
-    X0_GH : X0 parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
-    lambda_GH : lambda parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
+    x0 : float
+        East coordinate in km of shower impact point at ground.
+    y0 : float
+        North coordinate in km of shower impact point at ground.
+    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame.
+    X_max : float
+        Slant depth in g/cm^2 at shower maximum.
+    X0_GH : float
+        X0 parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
+    lambda_GH : float
+        Lambda parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
     fluorescence : Fluorescence object.
     cherenkov : Cherenkov object.
 
@@ -180,7 +203,8 @@ class _Shower:
 
         Parameters
         ----------
-        **kwargs : Optional key arguments to be passed to the constructors of
+        **kwargs
+            Optional key arguments to be passed to the constructors of
             the different attributes of the Shower object.
 
         Returns
@@ -221,12 +245,15 @@ class _Shower:
         Parameters
         ----------
         telescope : Telescope object.
-        atm_trans : True if the atmospheric transmission is included.
-        tel_eff : True if the telescope efficiency is included. If False, 100%
-            efficiency is assumed for a given wavelength interval.
-        **kwargs {wvl_ini, wvl_fin, wvl_step}: Optional keyword arguments to
-            modify the wavelength interval when tel_eff==False. If None, the
-            wavelength interval defined in the Telescope object is used.
+        atm_trans : bool, default True
+            Include the atmospheric transmission.
+        tel_eff : bool, default True
+            Include the telescope efficiency. If False, 100% efficiency is
+            assumed for a given wavelength interval.
+        **kwargs {wvl_ini, wvl_fin, wvl_step}
+            These parameters will modify the wavelenght interval when
+            tel_eff==False. If None, the wavelength interval defined in the
+            telescope is used.
 
         Results
         -------
@@ -242,14 +269,16 @@ class _Shower:
         Parameters
         ----------
         observatory : Observatory object (may be a Grid object).
-        atm_trans : True if the atmospheric transmision is included to
-            calculate the signals.
-        tel_eff : True if the telescope efficiency is included to calculate
-            the signals. If False, 100% efficiency is assumed for a given
+        atm_trans : bool, default True
+            Include the atmospheric transmision to calculate the signals.
+        tel_eff : book, default True
+            Include the telescope efficiency to calculate the signals.
+            If False, 100% efficiency is assumed for a given
             wavelength interval.
-        **kwargs {wvl_ini, wvl_fin, wvl_step}: Optional keyword arguments to
-            modify the wavelength interval when tel_eff==False. If None, the
-            wavelength interval defined in each telescope is used.
+        **kwargs {wvl_ini, wvl_fin, wvl_step}
+            These parameters will modify the wavelenght interval when
+            tel_eff==False. If None, the wavelength interval defined in the
+            telescope is used.
 
         Results
         -------
@@ -265,13 +294,16 @@ class _Shower:
         Parameters
         ----------
         telescope : Telescope object.
-        shower_size : Bool indicating whether the radii of the shower track
-            points are proportional to the shower size.
-        axes : Bool indicating whether the axes of both frames of reference are
-            visualized or not.
-        max_theta : Maximum offset angle in degrees relative to the telescope
+        shower_size : book, default True
+            Make the radii of the shower track points proportional to the
+            shower size.
+        axes : book, default True
+            Show the axes of both frames of reference.
+        max_theta : float, default 30 degrees
+            Maximum offset angle in degrees relative to the telescope
             pointing direction.
-        X_mark : Reference slant depth in g/cm^2 of the shower track to be ma
+        X_mark : float
+            Reference slant depth in g/cm^2 of the shower track to be ma
             ked in the figure, default X_max. If X_mark=None, no mark is
             included.
 
@@ -288,7 +320,7 @@ class _Shower:
             X_mark = self.X_max
         projection = sm.Projection(telescope, self.track)
         profile = self.profile
-        from .tools import show_projection
+        from ._tools import show_projection
         return projection, (show_projection(projection, profile, shower_size,
                                             axes, max_theta, X_mark))
 
@@ -334,12 +366,15 @@ class _Shower:
         Parameters
         ----------
         telescope : Telescope object.
-        atm_trans : True if the atmospheric transmision is included.
-        tel_eff : True if the telescope efficiency is included. If False, 100%
-            efficiency is assumed for a given wavelength interval.
-        **kwargs {wvl_ini, wvl_fin, wvl_step}: Optional keyword arguments to
-            modify the wavelength interval when tel_eff==False. If None, the
-            wavelength interval defined in the Telescope object is used.
+        atm_trans : bool, default True
+            Include the atmospheric transmision.
+        tel_eff : bool, default True
+            Include the telescope efficiency. If False, 100% efficiency is
+            assumed for a given wavelength interval.
+        **kwargs {wvl_ini, wvl_fin, wvl_step}
+            These parameters will modify the wavelenght interval when
+            tel_eff==False. If None, the wavelength interval defined in the
+            telescope is used.
 
         Results
         -------
@@ -359,17 +394,23 @@ class _Shower:
 
         Parameters
         ----------
-        x_min : Lower limit of the coordinate x in km.
-        x_max : Upper limit of the coordinate x in km.
-        y_min : Lower limit of the coordinate y in km.
-        y_max : Upper limit of the coordinate y in km.
-        X_mark : Reference slant depth in g/cm^2 of the shower track to be
+        x_min : float
+            Lower limit of the coordinate x in km.
+        x_max : float
+            Upper limit of the coordinate x in km.
+        y_min : float
+            Lower limit of the coordinate y in km.
+        y_max : float
+            Upper limit of the coordinate y in km.
+        X_mark : float
+            Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure, default to X_max. If X_mark is set to None,
             no mark is included.
-        shower_size : Bool indicating whether the radii of the shower track
-            points are proportional to the shower size.
-        tel_index : Bool indicating whether the telescope indexes are shown
-            together the telescope position points.
+        shower_size : bool, default True
+            Make the radii of the shower track points proportional to the
+            shower size.
+        tel_index : bool, default True
+            Show the telescope indexes together the telescope position points.
 
         Returns
         -------
@@ -377,7 +418,7 @@ class _Shower:
         """
         if X_mark == 'X_max':
             X_mark = self.X_max
-        from .tools import show_geometry
+        from ._tools import show_geometry
         return show_geometry(self, observatory, '2d', x_min, x_max, y_min,
                              y_max, X_mark, shower_size, False, tel_index,
                              False, False)
@@ -391,18 +432,25 @@ class _Shower:
 
         Parameters
         ----------
-        x_min : Lower limit of the coordinate x in km.
-        x_max : Upper limit of the coordinate x in km.
-        y_min : Lower limit of the coordinate y in km.
-        y_max : Upper limit of the coordinate y in km.
-        X_mark : Reference slant depth in g/cm^2 of the shower track to be
+        x_min : float
+            Lower limit of the coordinate x in km.
+        x_max : float
+            Upper limit of the coordinate x in km.
+        y_min : float
+            Lower limit of the coordinate y in km.
+        y_max : float
+            Upper limit of the coordinate y in km.
+        X_mark : float
+            Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure, default to X_max. If X_mark is set to None,
             no mark is included.
-        shower_size : Bool indicating whether the radii of the shower track
-            points are proportional to the shower size.
-        xy_proj : Bool indicating whether the xy projection of the shower track
-            is shown.
-        pointing : Bool indicating whether the telescope axes are shown.
+        shower_size : bool, default True
+            Make the radii of the shower track points proportional to
+            the shower size.
+        xy_proj : bool, default True
+            Show the xy projection of the shower track.
+        pointing : bool, default False
+            Show the telescope axes.
 
         Returns
         -------
@@ -410,7 +458,7 @@ class _Shower:
         """
         if X_mark == 'X_max':
             X_mark = self.X_max
-        from .tools import show_geometry
+        from ._tools import show_geometry
         return show_geometry(self, observatory, '3d', x_min, x_max, y_min,
                              y_max, X_mark, shower_size, False, False, xy_proj,
                              pointing)
@@ -427,37 +475,49 @@ class _Shower:
 
         Parameters
         ----------
-        grid : Existing Grid object to be used. If None, a new Grid object is
-            generated from the specificed dimensions and telescope
-            characteristics. If given, {telescope, tel_type, ..., N_x, N_y}
-            are not used.
-        telescope : Existing Telescope object to be used to construct a Grid
-            object when grid==None. If None, the Grid object is constructed
+        grid : Grid object.
+            If None, a new Grid object is generated from the specificed
+            dimensions and telescope characteristics.
+            If given, {telescope, tel_type, ..., N_x, N_y} are not used.
+        telescope : Telescope object (when grid==None)
+            If None, the Grid object is constructed
             based on a Telescope object of type tel_type.
-        tel_type : Subclass of Telescope to be used when grid==None and
+        tel_type : str
+            Subclass of Telescope to be used when grid==None and
             telescope==None. Default to GridElement with 100% detection
             efficiency, FoV of 180 degrees around zenith and area of one grid
             cell. If tel_type==None, the parent class Telescope is used.
-        x_c : x coordinate in km of the center of the grid.
-        y_c : y coordinate in km of the center of the grid.
-        z_c : Height of the grid in km above ground level.
-        theta : Zenith angle in degrees of the telescope pointing directions.
-        alt : Altitude in degrees of the telescope pointing direction.
+        x_c : float
+            x coordinate in km of the center of the grid.
+        y_c : float
+            y coordinate in km of the center of the grid.
+        z_c : float
+            Height of the grid in km above ground level.
+        theta : float
+            Zenith angle in degrees of the telescope pointing directions.
+        alt : float
+            Altitude in degrees of the telescope pointing direction.
             If None, theta is used. If given, theta is overwritten.
-        az : Azimuth angle (from north, clockwise) in degrees of the telescope
+        az : float
+            Azimuth angle (from north, clockwise) in degrees of the telescope
             pointing direction.
-        size_x : Size of the grid in km across the x direction.
-        size_y : Size of the grid in km across the y direction.
-        N_x : Number of cells across the x direction.
-        N_y : Number of cells across the y direction.
-        atm_trans : Bool indicating whether the atmospheric transmision is
-            included to tranport photons.
-        tel_eff : Bool indicating whether the telescope efficiency is included
-            to calculate the signals. If False, 100% efficiency is assumed for
-            a given wavelenght interval.
-        **kwargs {wvl_ini, wvl_fin, wvl_step}: Options to modify the wavelenght
-            interval when tel_eff==False. If None, the wavelength interval
-            defined in each telescope is used.
+        size_x : float
+            Size of the grid in km across the x direction.
+        size_y : float
+            Size of the grid in km across the y direction.
+        N_x : int
+            Number of cells across the x direction.
+        N_y : int
+            Number of cells across the y direction.
+        atm_trans : bool, default True
+            Include the atmospheric transmision to transport photons.
+        tel_eff : bool, default True
+            Include the telescope efficiency to calculate the signal. If False,
+            100% efficiency is assumed for a given wavelenght interval.
+        **kwargs {wvl_ini, wvl_fin, wvl_step}
+            These parameters will modify the wavelenght interval when
+            tel_eff==False. If None, the wavelength interval defined in the
+            telescope is used.
 
         Returns
         -------
