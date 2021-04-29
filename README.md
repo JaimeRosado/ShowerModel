@@ -4,7 +4,7 @@ ShowerModel
 ![ShowerModel logo](docs/logo_showermodel.png)
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JaimeRosado/ShowerModel/master?filepath=notebooks)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4306356.svg)](https://doi.org/10.5281/zenodo.4306356)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4727298.svg)](https://doi.org/10.5281/zenodo.4727298)
 [![image](https://img.shields.io/pypi/v/ShowerModel.svg)](https://pypi.org/project/ShowerModel)
 [![image](https://github.com/JaimeRosado/ShowerModel/workflows/CI/badge.svg?branch=master)](https://github.com/JaimeRosado/ShowerModel/actions?query=workflow%3ACI+branch%3Amaster)
 
