@@ -10,19 +10,31 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
+import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+import datetime
+
+# Get configuration information from setup.cfg
+from configparser import ConfigParser
+
+import showermodel
+
+conf = ConfigParser()
+conf.read([os.path.join(os.path.dirname(__file__), "..", "setup.cfg")])
+setup_cfg = dict(conf.items("metadata"))
 
 
 # -- Project information -----------------------------------------------------
+project = setup_cfg["name"]
+author = setup_cfg["author"]
+copyright = "{}.  Last updated {}".format(
+    setup_cfg["author"], datetime.datetime.now().strftime("%d %b %Y %H:%M")
+)
 
-project = 'ShowerModel'
-copyright = '2020, Jaime Rosado and Daniel Morcuende'
-author = 'Jaime Rosado'
-
-# The full version, including alpha/beta/rc tags
-release = '0.1.0'
+version = showermodel.__version__
+# The full version, including alpha/beta/rc tags.
+release = version
 
 # -- General configuration ---------------------------------------------------
 
