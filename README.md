@@ -5,7 +5,7 @@ ShowerModel
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JaimeRosado/ShowerModel/master?filepath=notebooks)
 
-[![DOI](https://zenodo.org/badge/259611899.svg)](https://zenodo.org/badge/latestdoi/259611899)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4306356.svg)](https://doi.org/10.5281/zenodo.4306356)
 
 A Python package for modelling cosmic-ray showers, their light production and their detection.
 
@@ -20,20 +20,17 @@ A Python package for modelling cosmic-ray showers, their light production and th
 * Install miniconda or anaconda first.
 
 ### As user
-
+It can be installed by doing:
 ```
-SHOWERMODEL_VER=0.1.3
-wget https://raw.githubusercontent.com/JaimeRosado/ShowerModel/v$SHOWERMODEL_VER/environment.yml
-conda env create -n showermodel -f environment.yml
-conda activate showermodel
 pip install ShowerModel
-rm environment.yml
 ```
-**Note**: If `pip install ShowerModel` fails as it is, you probably need to use `--user` option. 
+If `pip install ShowerModel` fails as it is, you probably need to use `--user` option. 
 This may happen in Windows installations.
 ```
 pip install --user ShowerModel
 ```
+
+Although it is optional, it is recommended to create a dedicated conda virtual environment.
 
 ### As developer
 
@@ -45,23 +42,19 @@ conda env create -f environment.yml
 conda activate showermodel
 ```
 
-* To update the environment (e.g., when dependencies get updated), use:
+* To update the environment when dependencies get updated use:
 ```
 conda env update -n showermodel -f environment.yml
 ```
 
-To install `ShowerModel`, run the following command from the ShowerModel root directory:
+To install `ShowerModel`, run the following command from the ShowerModel root directory
+where the `setup.py` file is located:
 ```
 pip install -e .
 ```
 
-Alternatively, you can also install `ShowerModel` (using conda-build) by running the following command from the ShowerModel root directory:
-```
-conda develop .
-```
-
 Test your installation by running any of the notebooks in this repository.
-Otherwise open an Issue with your error.
+Otherwise, open an Issue with your error.
 
 Installation, versioning and docs-web deploying methods are base on 
 the [*ctapipe* repository](https://github.com/cta-observatory/ctapipe).
