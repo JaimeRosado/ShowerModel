@@ -5,7 +5,7 @@ ShowerModel
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JaimeRosado/ShowerModel/master?filepath=notebooks)
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4306356.svg)](https://doi.org/10.5281/zenodo.4306356)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4727298.svg)](https://doi.org/10.5281/zenodo.4727298)
 
 A Python package for modelling cosmic-ray showers, their light production and their detection.
 
