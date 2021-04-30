@@ -10,7 +10,7 @@ See the following use cases. You can play with them using Binder without any fur
 
 .. toctree::
 
-    ../../notebooks/UC0_Playing_around_with_ShowerModel
+    UC0_Playing_around_with_ShowerModel
     UC1_Track_visualization
     UC2_Shower_profile
     UC3_Signal_production_and_ground_distribution
