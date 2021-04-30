@@ -88,10 +88,10 @@ def Fluorescence(profile):
                    * (T0 / profile.atmosphere.temp)**(0.5 - a)))
         else:
             fluorescence[wvl] = (
-                N0_337 * I_rel * (1. + P0 / PP0 / (
-                    1. + ((profile.atmosphere.P - profile.atmosphere.P_w)
-                          / PP0 + profile.atmosphere.P_w / PPw)
-                    * (T0 / profile.atmosphere.temp)**(0.5 - a))))
+                N0_337 * I_rel * (1. + P0 / PP0)
+                / (1. + ((profile.atmosphere.P - profile.atmosphere.P_w) / PP0
+                         + profile.atmosphere.P_w / PPw)
+                   * (T0 / profile.atmosphere.temp)**(0.5 - a)))
 
     return fluorescence
 
