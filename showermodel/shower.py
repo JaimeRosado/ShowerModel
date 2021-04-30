@@ -22,7 +22,7 @@ def Shower(E=_E, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
     Parameters
     ----------
     E : float
-        Energy of the primary particle.
+        Energy of the primary particle in MeV.
     theta : float
         Zenith angle in degrees of the apparent position of the source.
     alt : float
@@ -143,7 +143,7 @@ class _Shower:
     track : Track object.
     profile : Profile object.
     E : float
-        Energy of the primary particle.
+        Energy of the primary particle in MeV.
     theta : float
         Zenith angle in degrees of the apparent position of the source.
     alt : float
