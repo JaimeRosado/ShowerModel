@@ -4,12 +4,10 @@ ShowerModel package
 showermodel.atmosphere module
 -----------------------------
 
-.. autoclass:: showermodel.atmosphere.Test
+.. automodule:: showermodel.atmosphere
    :members:
-#.. automodule:: showermodel.atmosphere
-#   :members:
-#   :undoc-members:
-#   :show-inheritance:
+   :undoc-members:
+   :show-inheritance:
 
 showermodel.cherenkov module
 ----------------------------
