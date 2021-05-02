@@ -21,7 +21,7 @@ setup(
         "matplotlib",
         "scipy",
         "ipython",
-        "setuptools_scm>=3.4"
+        "setuptools_scm"
     ],
     package_data={
         'showermodel': [
