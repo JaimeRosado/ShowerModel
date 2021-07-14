@@ -65,7 +65,7 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=None, NSB=40.):
     N = 2 * N_pix_r + 1
 
     # Night sky background per pixel and frame
-    NSB_pix = (NSB * 90.**2 / math.pi**2 * telescope.area * sol_angle_pix
+    NSB_pix = (NSB * 180.**2 / math.pi**2 * telescope.area * sol_angle_pix
                * int_time)
     image.NSB_pix = NSB_pix
 
@@ -335,7 +335,7 @@ class _Image:
             telescope = self.signal.telescope
             int_time = self.int_time
             sol_angle_pix = self.sol_angle_pix
-            NSB_pix = (NSB * 90.**2 / math.pi**2 * telescope.area *
+            NSB_pix = (NSB * 180.**2 / math.pi**2 * telescope.area *
                        sol_angle_pix * int_time)
 
         # Sum of frames
@@ -395,7 +395,7 @@ class _Image:
             telescope = self.signal.telescope
             int_time = self.int_time
             sol_angle_pix = self.sol_angle_pix
-            NSB_pix = (NSB * 90.**2 / math.pi**2 * telescope.area *
+            NSB_pix = (NSB * 180.**2 / math.pi**2 * telescope.area *
                        sol_angle_pix * int_time)
 
         fig = plt.figure()
