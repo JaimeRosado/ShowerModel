@@ -18,8 +18,6 @@ import datetime
 # Get configuration information from setup.cfg
 from configparser import ConfigParser
 
-# import showermodel
-
 conf = ConfigParser()
 conf.read([os.path.join(os.path.dirname(__file__), "..", "setup.cfg")])
 setup_cfg = dict(conf.items("metadata"))
@@ -32,10 +30,11 @@ copyright = "{}.  Last updated {}".format(
     setup_cfg["author"], datetime.datetime.now().strftime("%d %b %Y %H:%M")
 )
 
-# version = showermodel.__version__
+import showermodel
+version = showermodel.__version__
 # The full version, including alpha/beta/rc tags.
-# release = version
-release = 'v0.1.7'
+release = version
+# release = 'v0.1.7'
 
 # -- General configuration ---------------------------------------------------
 
