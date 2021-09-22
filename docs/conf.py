@@ -32,9 +32,10 @@ copyright = "{}.  Last updated {}".format(
     setup_cfg["author"], datetime.datetime.now().strftime("%d %b %Y %H:%M")
 )
 
-version = showermodel.__version__
+# version = showermodel.__version__
 # The full version, including alpha/beta/rc tags.
-release = version
+# release = version
+release = 'v0.1.7'
 
 # -- General configuration ---------------------------------------------------
 
