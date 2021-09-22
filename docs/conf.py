@@ -18,7 +18,7 @@ import datetime
 # Get configuration information from setup.cfg
 from configparser import ConfigParser
 
-import showermodel
+# import showermodel
 
 conf = ConfigParser()
 conf.read([os.path.join(os.path.dirname(__file__), "..", "setup.cfg")])
