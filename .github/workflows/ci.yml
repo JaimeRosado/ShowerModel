@@ -40,24 +40,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: git fetch --tags
+
+      - name: Sphinx Build
+        uses: ammaraskar/sphinx-action@0.4
         with:
-          fetch-depth: 0
+          docs-folder: "docs/"
+          pre-build-command: |
+            apt update --yes && apt install --yes git build-essential pandoc graphviz
+            pip install -U pip setuptools wheel
+            pip install -e .[docs]
+            python -c 'import showermodel; print(showermodel.__version__)'
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-
-      - name: Install doc dependencies
-        run: |
-          sudo apt update --yes && sudo apt install --yes git build-essential pandoc
-          pip install -U pip setuptools wheel
-          pip install -e .[docs]
-          git describe --tags
-          python -c 'import showermodel; print(showermodel.__version__)'
-
-      - name: Build docs
-        run: make html SPHINXOPTS="-W --keep-going -n --color -j auto"
+          build-command: make html SPHINXOPTS="-W --keep-going -n --color -w /tmp/sphinx-log"
 
       - name: Deploy to gihub pages
         # only run on push to master
