@@ -2,6 +2,9 @@ name: CI
 
 on: [push, pull_request]
 
+env:
+  MPLBACKEND: Agg
+  PYTEST_ADDOPTS: --color=yes
 
 jobs:
   tests:
@@ -21,6 +24,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest pytest-cov
           python -m pip install .
+          python -m pip freeze
       - name: Test with pytest
         run: |
           pytest -v --cov=./ --cov-report=xml
@@ -38,13 +42,16 @@ jobs:
       - uses: actions/checkout@v2
       - run: git fetch --tags
 
-      - uses: ammaraskar/sphinx-action@master
+      - name: Sphinx Build
+        uses: ammaraskar/sphinx-action@0.4
         with:
           docs-folder: "docs/"
           pre-build-command: |
-            apt update --yes && apt install --yes git build-essential pandoc
+            apt update --yes && apt install --yes git build-essential pandoc graphviz
             pip install -U pip setuptools wheel
-            pip install --use-feature=2020-resolver -e .[all]
+            pip install -e .[all]
+            python -c 'import showermodel; print(showermodel.__version__)'
+
       - name: Deploy to gihub pages
         # only run on push to master
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
