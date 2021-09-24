@@ -49,7 +49,7 @@ jobs:
           pre-build-command: |
             apt update --yes && apt install --yes git build-essential pandoc graphviz
             pip install -U pip setuptools wheel
-            pip install -e .[all]
+            pip install -e .[docs]
             python -c 'import showermodel; print(showermodel.__version__)'
 
       - name: Deploy to gihub pages

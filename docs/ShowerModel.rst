@@ -92,7 +92,7 @@ showermodel.telescope module
 showermodel.tools module
 ------------------------
 
-.. automodule:: showermodel.tools
+.. automodule:: showermodel._tools
    :members:
    :undoc-members:
    :show-inheritance:
