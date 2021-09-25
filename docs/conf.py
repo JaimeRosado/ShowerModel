@@ -34,7 +34,6 @@ import showermodel
 version = showermodel.__version__
 # The full version, including alpha/beta/rc tags.
 release = version
-# release = 'v0.1.7'
 
 # -- General configuration ---------------------------------------------------
 
