@@ -6,6 +6,7 @@ docs_require = [
     "sphinx_automodapi",
     "sphinx",
     "nbsphinx",
+    "nbsphinx-link",
     "numpydoc",
     "jupyter",
     "notebook",
