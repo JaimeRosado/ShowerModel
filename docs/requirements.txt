@@ -1,3 +1,4 @@
 sphinx-rtd-theme
 numpydoc
 nbsphinx
+nbsphinx_link
