@@ -18,13 +18,14 @@ _prf_model = 'Greisen'
 
 
 # Constructor #################################################################
-def Profile(E=_E, theta=_theta, alt=None, prf_model=_prf_model, X_max=None,
-            X0_GH=None, lambda_GH=None, atmosphere=None, **kwargs):
+def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
+             atmosphere, **kwargs):
     """
-    Make a shower profile discretization.
+    Constructor of Profile class.
 
     Parameters
     ----------
+    profile :  Profile object
     E : float
         Energy of the primary particle in MeV.
     theta : float
@@ -55,18 +56,9 @@ def Profile(E=_E, theta=_theta, alt=None, prf_model=_prf_model, X_max=None,
     **kwargs {h0, h_top, N_steps, model}
         Options to construct the new Atmosphere object when atmosphere==None.
         If None, the default Atmosphere object is used.
-
-    Returns
-    -------
-    profile : Profile object.
-
-    See also
-    --------
-    _Profile : Profile class.
-    Shower : Contructor of Shower object.
     """
-    from .atmosphere import _Atmosphere
-    if isinstance(atmosphere, _Atmosphere):
+    from .atmosphere import Atmosphere
+    if isinstance(atmosphere, Atmosphere):
         pass
     elif atmosphere is None:
         atmosphere = sm.Atmosphere(**kwargs)
@@ -76,7 +68,7 @@ def Profile(E=_E, theta=_theta, alt=None, prf_model=_prf_model, X_max=None,
     # The columns of the output DataFrame are: the slant depth in g/cm^2,
     # the shower age s, the energy deposit E_dep in MeV, and the number N_ch of
     # charged particles with energy above 1MeV
-    profile = _Profile(columns=['X', 's', 'dX', 'E_dep', 'N_ch'])
+    # profile = Profile(columns=['X', 's', 'dX', 'E_dep', 'N_ch'])
     profile.atmosphere = atmosphere
 
     # The input shower parameters along with some geometric parameters are
@@ -218,31 +210,26 @@ def Profile(E=_E, theta=_theta, alt=None, prf_model=_prf_model, X_max=None,
     else:
         raise ValueError('The input model is not valid.')
 
-    return profile
-
 
 # Class #######################################################################
-class _Profile(pd.DataFrame):
+class Profile(pd.DataFrame):
     """
     DataFrame containing a shower profile discretization.
 
-    Use sm.Profile to construct a Profile object.
-
-    Columns
-    -------
-    X : float
-        Slant depth in g/cm^2.
-    s : float
-        Shower age.
-    dX : float
-        Discretization step in g/cm^2 along the shower axis.
-    E_dep : float
-        Energy deposit in MeV at each discretiztion step.
-    N_ch : float
-        Number of charged particles.
+    Use sm.Profile() to construct the default Profile object.
 
     Attributes
     ----------
+    X : float
+        Column 0, slant depth in g/cm^2.
+    s : float
+        Column 1, shower age.
+    dX : float
+        Column 2, discretization step in g/cm^2 along the shower axis.
+    E_dep : float
+        Column 3, energy deposit in MeV at each discretiztion step.
+    N_ch : float
+        Column 4, number of charged particles.
     atmosphere : Atmosphere object.
     E : float
         Energy of the primary particle.
@@ -269,9 +256,15 @@ class _Profile(pd.DataFrame):
 
     See also
     --------
-    Profile : Constructor of Profile object.
-    Shower : Constructor of Shower object.
+    Profile : DataFrame containing a shower profile discretization.
+    Shower : Make a discretization of a shower.
     """
+    def __init__(self, E=_E, theta=_theta, alt=None, prf_model=_prf_model,
+                 X_max=None, X0_GH=None, lambda_GH=None, atmosphere=None,
+                 **kwargs):
+        super().__init__(columns=['X', 's', 'dX', 'E_dep', 'N_ch'])
+        _profile(self, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
+                 atmosphere, **kwargs)
 
     def _Greisen_norm(self):
         """

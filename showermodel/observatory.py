@@ -6,29 +6,19 @@ import matplotlib.pyplot as plt
 
 # Default values for array25
 from .telescope import _x, _y, _z, _theta, _az
+from .telescope import Telescope, IACT, GridElement
 
 
 # Constructors ################################################################
-def Observatory(*telescopes, obs_type=None):
+def _observatory(observatory):
     """
-    Make an observatory from a list of telescopes.
+    Constructor of Observatory class.
 
     Parameters
     -----------
-    *telescopes : list
-        Arbitrary number of Telescope objects.
-    obs_type : str or None
-        Name assigned to the Observatory object, default None.
-
-    Returns
-    -------
     observatory : Observatory object.
     """
-    from .telescope import _Telescope
-    if not np.all([isinstance(tel, _Telescope) for tel in telescopes]):
-        raise ValueError("Input telescopes are not valid.")
-    observatory = _Observatory([*telescopes])
-    observatory.obs_type = obs_type
+    # observatory = Observatory([*telescopes])
     observatory.N_tel = len(observatory)
     observatory.size_x = None
     observatory.size_y = None
@@ -42,28 +32,17 @@ def Observatory(*telescopes, obs_type=None):
     observatory.tel_area = observatory[0].area
     observatory.tel_N_pix = observatory[0].N_pix
 
-    return observatory
 
-
-def Array25(telescope=None, tel_type='IACT', x_c=_x, y_c=_y, z_c=_z,
-            theta=None, alt=None, az=None, R=0.341, rot_angle=0.):
+def _array25(observatory, telescope, x_c, y_c, z_c, theta, alt, az, R,
+             rot_angle):
     """
-    Make an array of 25 telescopes based on a layout of MST telescopes of CTA.
-
-    The pointing directions of all the telescopes are set equally, but they can
-    be modified individually (along with other porperties) later on.
-
-    The telescope index is sorted first by radius and then by azimuth, so that
-    tel_index=0 corresponds to the central telescope.
+    Constructor of Array25 class.
 
     Parameters
     ----------
-    telescope : Telescope object
-        If None, a new Telescope object of type tel_type is generated.
-    tel_type : str
-        Subclass of Telescope to be used when telescope==None. Default
-        to IACT with field of view of 8 degrees, mirror area of 113 m^2 and
-        1800 pixels. If tel_type==None, the parent class Telescope is used.
+    observatory : Array25 object.
+    telescope : Telescope object.
+        If None, the default IACT object is used.
     x_c : float
         East coordinate in km of the center of the array.
     y_c : float
@@ -82,32 +61,26 @@ def Array25(telescope=None, tel_type='IACT', x_c=_x, y_c=_y, z_c=_z,
         Radius in km of the array.
     rot_angle : float
         Rotation angle in degrees of the array (clockwise).
-
-    Returns
-    -------
-    observatory : Observatory object.
     """
-    from .telescope import _Telescope
-    if isinstance(telescope, _Telescope):
+    if isinstance(telescope, Telescope):
         # Default theta and az values are taken from the input telescope
         if theta is None:
             theta = telescope.theta
         if az is None:
             az = telescope.az
         telescope = telescope.copy(x=x_c, y=y_c, z=z_c, theta=theta, alt=alt,
-                                   az=az)  # tel_type is ignored
+                                   az=az)
     elif telescope is None:
-        # Default theta and az values are those of Telescope
+        # Default theta and az values are those of .telescope
         if theta is None:
             theta = _theta
         if az is None:
             az = _az
-        telescope = sm.Telescope(x_c, y_c, z_c, theta=theta, alt=alt, az=az,
-                                 tel_type=tel_type)
+        # The default telescope type is IACT
+        telescope = IACT(x_c, y_c, z_c, theta=theta, alt=alt, az=az)
     else:
         raise ValueError('The input telescope is not valid.')
 
-    observatory = _Array25()
     observatory.x_c = x_c
     observatory.y_c = y_c
     observatory.z_c = z_c
@@ -151,30 +124,17 @@ def Array25(telescope=None, tel_type='IACT', x_c=_x, y_c=_y, z_c=_z,
         yi = y_c + R * np.cos(az)
         observatory.append(telescope.copy(x=xi, y=yi))
 
-    return observatory
 
-
-def Grid(telescope=None, tel_type='GridElement', x_c=_x, y_c=_y, z_c=_z,
-         theta=None, alt=None, az=None, size_x=2., size_y=2., N_x=10, N_y=10):
+def _grid(grid, telescope, x_c, y_c, z_c, theta, alt, az, size_x,
+          size_y, N_x, N_y):
     """
-    Make a rectangular grid of telescopes across the x and y directions.
-
-    The pointing directions of all the telescopes are set equally, but they can
-    be modified individually (along with other porperties) later on.
-
-    The telescope index is sorted first by y (from max to min) and then by x
-    (from min to max), so that tel_index=0 corresponds to the telescope placed
-    at the corner with minimum x and maximum y.
+    Constructor of Grid class.
 
     Parameters
     ----------
+    grid : Grid object.
     telescope : Telescope object.
-        If None, a new Telescope object of type tel_type is generated.
-    tel_type : str
-        Subclass of Telescope to be used when telescope==None. Default
-        to GridElement with 100% detection efficiency, FoV of 180 degrees
-        around zenith and area of one grid cell. If tel_type==None, the parent
-        class Telescope is used.
+        If None, the default GridElement object is used.
     x_c : float
         East coordinate in km of the center of the grid.
     y_c : float
@@ -196,10 +156,6 @@ def Grid(telescope=None, tel_type='GridElement', x_c=_x, y_c=_y, z_c=_z,
         Number of cells across the x direction.
     N_y : int
         Number of cells across the y direction.
-
-    Returns
-    -------
-    observatory : Observatory object.
     """
     # Range of x, y values
     x = np.linspace(x_c-size_x/2., x_c+size_x/2., N_x + 1)  # From min to max
@@ -212,36 +168,24 @@ def Grid(telescope=None, tel_type='GridElement', x_c=_x, y_c=_y, z_c=_z,
     y_mid = y[1:] + step_y/2.
     cell_area = step_x * step_y * 1000000.
 
-    from .telescope import _Telescope
-    if isinstance(telescope, _Telescope):
+    if isinstance(telescope, Telescope):
         # Default theta and az values are taken from the input telescope
         if theta is None:
             theta = telescope.theta
         if az is None:
             az = telescope.az
-        # tel_type is ignored
         telescope = telescope.copy(z=z_c, theta=theta, alt=alt, az=az)
     elif telescope is None:
-        if tel_type == 'GridElement':
-            # The FoV is 180 degrees around zenith direction and area equal
-            # to one grid cell
-            theta = 0.
-            alt = None
-            az = 0.
-            telescope = sm.Telescope(z=z_c, theta=theta, alt=None, az=0.,
-                                     tel_type=tel_type, area=cell_area)
-        else:
-            # Default theta and az values are those of Telescope
-            if theta is None:
-                theta = _theta
-            if az is None:
-                az = _az
-            telescope = sm.Telescope(z=z_c, theta=theta, alt=None, az=az,
-                                     tel_type=tel_type)
+        # The FoV is 180 degrees around zenith direction and area equal
+        # to one grid cell
+        theta = 0.
+        alt = None
+        az = 0.
+        telescope = GridElement(z=z_c, theta=theta, alt=None, az=0.,
+                                area=cell_area)
     else:
         raise ValueError('The input telescope is not valid.')
 
-    grid = _Grid()
     grid.N_tel = N_x * N_y
     grid.x_c = x_c
     grid.y_c = y_c
@@ -267,21 +211,22 @@ def Grid(telescope=None, tel_type='GridElement', x_c=_x, y_c=_y, z_c=_z,
         for xi in x_mid:
             grid.append(telescope.copy(x=xi, y=yi))
 
-    return grid
-
 
 # Classes #####################################################################
-class _Observatory(list):
+class Observatory(list):
     """
-    List containing the characterestics of an observatory and its constituent
-    telescopes.
+    List of telescopes.
+
+    The characterestics of the observatory are stored in attributes.
+
+    Note: Attributes inherited from Telescope (i.e., tel_type, tel_apert,
+    tel_area and tel_N_pix) are not updated when telescopes are modified
+    or appended.
 
     Attributes
     ----------
     obs_type : str
-        Name of the subclass of Observatory.
-        Presently only the parent class Observatory and the Array25 and Grid
-        subclasses are available. More subclasses to be implemented.
+        Name given to the observatory. Default to None.
     N_tel : int
         Number of telescopes.
     x_c : float
@@ -315,30 +260,113 @@ class _Observatory(list):
     tel_N_pix : int
         Number of camera pixels.
 
-    Note: Attributes inherited from Telescope (i.e., tel_type, tel_apert,
-    tel_area and tel_N_pix) are not updated when telescopes are modified
-    or appended.
-
     Methods
     -------
     show : Show the telescope positions and indexes of the observatory in a
     2D plot.
     """
-    obs_type = None
+    # obs_type = None
+    def __init__(self, *telescopes, obs_type=None):
+        if not np.all([isinstance(tel, Telescope) for tel in telescopes]):
+            raise ValueError("Input telescopes are not valid.")
+        super().__init__([*telescopes])
+        self.obs_type = obs_type
+        _observatory(self)
 
     def show(self):
         return _show(self)
 
 
-class _Array25(_Observatory):
+class Array25(Observatory):
+    """
+    Array of 25 telescopes similar to the layout of MST telescopes of CTA-South.
+
+    The pointing directions of all the telescopes are set equally, but they can
+    be modified individually (along with other porperties) later on.
+
+    The telescope index is sorted first by radius and then by azimuth, so that
+    tel_index=0 corresponds to the central telescope.
+
+    Parameters
+    ----------
+    telescope : Telescope object.
+        If None, the default IACT object is used.
+
+    Attributes
+    ----------
+    x_c : float
+        East coordinate in km of the center of the array.
+    y_c : float
+        North coordinate in km of the center of the array.
+    z_c : float
+        Height of the array in km above ground level.
+    theta : float
+        Zenith angle in degrees of the telescope pointing directions.
+    alt : float
+        Altitude in degrees of the telescope pointing directions. If None,
+        theta is used. If given, theta is overwritten.
+    az : float
+        Azimuth angle (from north, clockwise) in degrees of the telescope
+        pointing directions.
+    R : float
+        Radius in km of the array.
+    rot_angle : float
+        Rotation angle in degrees of the array (clockwise).
+    """
     obs_type = 'Array25'
     N_tel = 25
-    pass
+
+    def __init__(self, telescope=None, x_c=_x, y_c=_y, z_c=_z,
+                 theta=None, alt=None, az=None, R=0.341, rot_angle=0.):
+        _array25(self, telescope, x_c, y_c, z_c, theta, alt, az, R, rot_angle)
 
 
-class _Grid(_Observatory):
+class Grid(Observatory):
+    """
+    Rectangular grid of telescopes across the x and y directions.
+
+    The pointing directions of all the telescopes are set equally, but they can
+    be modified individually (along with other porperties) later on.
+
+    The telescope index is sorted first by y (from max to min) and then by x
+    (from min to max), so that tel_index=0 corresponds to the telescope placed
+    at the corner with minimum x and maximum y.
+
+    Parameters
+    ----------
+    telescope : Telescope object.
+        If None, the default GridElement object is used.
+
+    Attributes
+    ----------
+    x_c : float
+        East coordinate in km of the center of the grid.
+    y_c : float
+        North coordinate in km of the center of the grid.
+    z_c : float
+        Height of the grid in km above ground level.
+    theta : float
+        Zenith angle in degrees of the telescope pointing directions.
+    alt : float
+        Altitude in degrees of the telescope pointing directions. If None,
+        theta is used. If given, theta is overwritten.
+    az : float
+        Azimuth angle in degrees of the telescope pointing directions.
+    size_x : float
+        Size of the grid in km across the x direction.
+    size_y : float
+        Size of the grid in km across the y direction.
+    N_x : int
+        Number of cells across the x direction.
+    N_y : int
+        Number of cells across the y direction.
+    """
     obs_type = 'Grid'
-    pass
+
+    def __init__(self, telescope=None, x_c=_x, y_c=_y, z_c=_z, theta=None,
+                 alt=None, az=None, size_x=2., size_y=2., N_x=10, N_y=10):
+        _grid(self, telescope, x_c, y_c, z_c, theta, alt, az, size_x,
+              size_y, N_x, N_y)
 
 
 # Auxiliary functions #########################################################

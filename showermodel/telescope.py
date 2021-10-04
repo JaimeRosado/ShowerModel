@@ -11,18 +11,17 @@ _y = 0.  # km
 _z = 0.  # km
 _theta = 0.  # deg
 _az = 0.  # deg
-_tel_type = 'IACT'
 
 
 # Constructor #################################################################
-def Telescope(x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
-              tel_type=_tel_type, efficiency=None, apert=None, area=None,
-              N_pix=None, int_time=None):
+def _telescope(telescope, x, y, z, theta, alt, az, efficiency, apert, area,
+               N_pix, int_time):
     """
-    Make a Telescope object with the specified characteristics.
+    Constructor of Telescope class and daughter classes.
 
     Parameters
     ----------
+    telescope : Telescope object.
     x : float
         East coordinate of the telescope in km.
     y : float
@@ -37,10 +36,6 @@ def Telescope(x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
     az : float
         Azimuth angle (from north, clockwise) in degrees of the telescope
         pointing direction.
-    tel_type : str
-        Subclass of Telescope to be used, default to IACT. If None, the
-        parent class Telescope is used. Presently only the IACT and GridElement
-        subclasses are available. More subclasses to be implemented.
     efficiency : DataFrame
         If None, the default efficiency of the selected tel_type. If given,
         the DataFrame should have two columns with wavelength in nm
@@ -53,25 +48,7 @@ def Telescope(x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
         Number of camera pixels.
     int_time : float
         Integration time in microseconds of camera frames.
-
-    Returns
-    -------
-    telescope : Telescope object.
-
-    See also
-    --------
-    _Telescope : Telescope class.
-    Array25 : Make an array of 25 telescopes based on a layout of CTA.
     """
-    if tel_type == 'IACT':
-        telescope = _IACT()
-    elif tel_type == 'GridElement':
-        telescope = _GridElement()
-    else:
-        telescope = _Telescope()
-        # If tel_type!=None -> new telescope type
-        telescope.tel_type = tel_type
-
     telescope.x = x
     telescope.y = y
     telescope.z = z
@@ -148,28 +125,27 @@ def Telescope(x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
     else:
         ValueError("The input efficiency data is not valid.")
 
-    return telescope
-
 
 # Class #######################################################################
-class _Telescope:
+class Telescope:
     """
-    Telescope object containing the characteristics of a Cherenkov telescope.
+    Object containing the characteristics of a Cherenkov/fluorescence telescope.
 
-    Class attributes
-    ----------------
+    Attributes
+    ----------
     tel_type : str
-        Name of the subclass of Telescope. Presently only the parent
-        class Telescope and the IACT and GridElement subclasses are available.
-        More subclasses to be implemented.
+        Name given to the telescope. Default to None.
     apert : float
         Angular diameter in degrees of the telescope field of view.
+        Default to 10 degrees.
     area : float
         Detection area in m^2 (e.g., mirror area of an IACT).
+        Default to 100 m^2.
     N_pix : int
-        Number of camera pixels.
+        Number of camera pixels. Default to 1500.
     int_time : float
         Integration time in microseconds of camera frames.
+        Default to 0.01 us.
     sol_angle : float
         Telescope field of view in stereoradians.
     sol_angle_pix : float
@@ -178,25 +154,25 @@ class _Telescope:
         Angular diameter in degrees of the pixel FoV.
     wvl_ini : float
         Initial wavelength in nm of the detection efficiency data.
+        Default to 290 nm.
     wvl_fin : float
         Final wavelength in nm of the detection efficiency data.
+        Default to 430 nm.
     wvl_step : float
         Step size in nm of the detection efficiency data.
+        Default to 3 nm.
     wvl_fluo : ndarray
         Array containing the wavelengths of the 34 fluorescence bands
-        included in the model.
+        included in the model. See Fluorescence class.
     eff_fluo : ndarray
         Array containing the detection efficiency at these 34
-        wavelenghts.
+        wavelenghts. Default to 1.
     wvl_cher : ndarray
         Array containing the range of wavelengths in nm defined by
         wvl_ini, wvl_fin and wvl_step
     eff_cher : ndarray
         Array containing the detection efficiency data in this range
-        used to compute the Cherenkov signal.
-
-    Object attributes
-    -----------------
+        used to compute the Cherenkov signal. Default to 1.
     x : float
         East coordinate of the telescope in km.
     y : float
@@ -251,10 +227,12 @@ class _Telescope:
 
     See also
     --------
-    _Telescope : Telescope class.
+    IACT : IACT class, daughter of Telescope class.
+    GridElement : GridElement class, daughter of Telescope class.
+    Observatory : List of telescopes.
     """
     # Default values of the class. They may be redefined in subclasses
-    tel_type = None   # Generic telescope
+    # tel_type = None   # Generic telescope
     apert = 10.  # deg
     area = 100.  # m^2
     N_pix = 1500
@@ -284,6 +262,13 @@ class _Telescope:
     eff_cher = np.ones_like(wvl_cher)
 
     # Methods #################################################################
+    def __init__(self, x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
+              tel_type=None, efficiency=None, apert=None, area=None,
+              N_pix=None, int_time=None):
+        self.tel_type = tel_type
+        _telescope(self, x, y, z, theta, alt, az, efficiency, apert, area,
+                   N_pix, int_time)
+
     def copy(self, **kwargs):
         """
         Copy a Telescope object, but with optional changes.
@@ -598,9 +583,21 @@ class _Telescope:
 # Subclasses ##################################################################
 # Presently only the IACT and grid_elem subclasses are available.
 # More subclasses to be implemented.
-class _IACT(_Telescope):
+class IACT(Telescope):
+    """
+    Daughter class of Telescope.
+
+    tel_type is set to 'IACT' and the following default values are used:
+    apert = 8 deg
+    area = 113.097 m^2
+    N_pix = 1800
+    wvl_ini = 280 nm
+    wvl_fin = 600 nm
+    wvl_step = 3nm
+
+    The detection efficiency is taken similar to MST telescopes of CTA.
+    """
     # Default values of IACT
-    tel_type = 'IACT'
     apert = 8.  # deg
     area = 113.097  # m^2
     N_pix = 1800
@@ -664,12 +661,33 @@ class _IACT(_Telescope):
                          0.079789755, 0.077237853, 0.074972054, 0.072399174,
                          0.069519165, 0.066662492, 0.063829159, 0.061106831,
                          0.058511426, 0.057261531, 0.057550245])
-    pass
+    
+    def __init__(self, x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
+                 tel_type = 'IACT', efficiency=None, apert=None, area=None,
+                 N_pix=None, int_time=None):
+        self.tel_type = tel_type
+        _telescope(self, x, y, z, theta, alt, az, efficiency, apert, area,
+                   N_pix, int_time)
 
 
-class _GridElement(_Telescope):
+class GridElement(Telescope):
+    """
+    Daughter class of Telescope used to calculate ground distributions. 
+
+    tel_type is set to 'GridElement' and the following default values are used:
+    apert = 180 deg
+    N_pix = 1
+    int_time = 10 us
+
+    The detection efficiency is assumed to be 1.
+
+    See also
+    --------
+    Grid : Make a rectangular grid of telescopes across the x and y directions.
+    Shower.show_distribution : Show the light distribution on ground.
+    Event.show_distribution : Show the light distribution on ground.
+    """
     # Default values
-    tel_type = 'GridElement'
     # theta = 0.  # deg  It is set to zero by default when Grid is called
     apert = 180.  # deg
     # area = 100. # m^2 It is set to one grid cell when Grid is called
@@ -700,4 +718,9 @@ class _GridElement(_Telescope):
     # 100% efficiency assumed
     # eff_cher = np.ones_like(wvl_cher)
 
-    pass
+    def __init__(self, x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
+                 tel_type = 'GridElement', efficiency=None, apert=None,
+                 area=None, N_pix=None, int_time=None):
+        self.tel_type = tel_type
+        _telescope(self, x, y, z, theta, alt, az, efficiency, apert, area,
+                   N_pix, int_time)

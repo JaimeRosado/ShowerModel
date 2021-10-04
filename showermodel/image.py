@@ -8,7 +8,7 @@ from IPython.display import HTML
 
 
 # Constructor #################################################################
-def Image(signal, lat_profile=True, N_pix=None, int_time=None, NSB=40.):
+def _image(image, signal, lat_profile, N_pix, int_time, NSB):
     """
     Generate a time-varying shower image from a Signal object.
 
@@ -18,6 +18,7 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=None, NSB=40.):
 
     Parameters
     ----------
+    image : Image object.
     signal : Signal object.
     lat_profile : bool, default True
         Use a NKG lateral profile to spread the signal. If False, a linear
@@ -30,12 +31,7 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=None, NSB=40.):
         given, the predefined value in the Telescope object is used.
     NSB : float
         Night sky background in MHz/m$^2$/deg$^2$.
-
-    Returns
-    -------
-    image : Image object
     """
-    image = _Image()
     image.NSB = NSB
     image.lat_profile = lat_profile
     image.signal = signal
@@ -247,13 +243,14 @@ def Image(signal, lat_profile=True, N_pix=None, int_time=None, NSB=40.):
                     frames[f_index_p, pix_y_pss, pix_x_pss] += Npe_pss
 
     image.frames = frames
-    return image
 
 
 # Class #######################################################################
-class _Image:
+class Image:
     """
-    Object containing a time-varying shower image in a circular camera with
+    Generate a time-varying shower image from a Signal object.
+
+    The object contains a time-varying shower image in a circular camera with
     square pixels of same solid angle. A Nishimura-Kamata-Greisen lateral
     profile is used to spread the signal contribution from each shower point to
     several pixels.
@@ -289,7 +286,8 @@ class _Image:
         background.
     animate : Show an animation of camera frames.
     """
-    pass
+    def __init__(self, signal, lat_profile=True, N_pix=None, int_time=None, NSB=40.):
+        _image(self, signal, lat_profile, N_pix, int_time, NSB)
 
     # Methods #################################################################
     def show(self, frame=None, NSB=None, ax=None):

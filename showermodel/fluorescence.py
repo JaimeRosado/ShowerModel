@@ -10,23 +10,65 @@ warnings.filterwarnings(
 
 
 # Constructor #################################################################
-def Fluorescence(profile):
+def _fluorescence(fluorescence, profile):
     """
-    Calculate the fluorescence photon production from a shower profile.
-
-    The parameterization described in D. Morcuende et al., Astropart. Phys.
-    107(2019)26 and references therein is used.
+    Constructor of Fluorescence class.
 
     Parameters
-    profile : Profile object.
-
-    Returns
-    -------
+    ----------
     fluorescence : Fluorescence object.
+    profile : Profile object.
+    """
+    # Number of fluorescence photons at 337nm
+    N0_337 = fluorescence.Y0_337 * profile.E_dep
 
-    See also
-    --------
-    _Fluorescence : Fluorescence class.
+    # fluorescence = Fluorescence()
+    fluorescence.profile = profile
+    fluorescence.atmosphere = profile.atmosphere
+    
+    P0 = fluorescence.P0
+    T0 = fluorescence.T0
+
+    # Number of emitted photons at wavelength wvl as a function of pressure P,
+    # temperature T and partial pressure P_w of water vapor:
+    for wvl, I_rel, PP0, PPw, a in fluorescence.model:
+        # For some bands, no information on the quenching contribution from
+        # water vapor is available
+        if PPw == 0:
+            fluorescence[wvl] = (
+                N0_337 * I_rel * (1. + P0 / PP0)
+                / (1. + profile.atmosphere.P / PP0
+                   * (T0 / profile.atmosphere.temp)**(0.5 - a)))
+        else:
+            fluorescence[wvl] = (
+                N0_337 * I_rel * (1. + P0 / PP0)
+                / (1. + ((profile.atmosphere.P - profile.atmosphere.P_w) / PP0
+                         + profile.atmosphere.P_w / PPw)
+                   * (T0 / profile.atmosphere.temp)**(0.5 - a)))
+
+
+# Class #######################################################################
+class Fluorescence(pd.DataFrame):
+    """
+    DataFrame containing the fluorescence light production.
+
+    Fluorescence light is evaluated at each of the 34 bands of the fluorescence
+    spectrum in the 290 - 430 nm range based on the parameterization described
+    in D. Morcuende et al., Astropart. Phys. 107(2019)26 and references therein.
+
+    Attributes
+    ----------
+    296 : float
+        Column 0, number of fluorescence photons in the band centered at 296 nm.
+    428 : float
+        Column 33, number of fluorescence photons in the band centered at 428 nm.
+    profile : Profile object.
+    atmosphere : Atmosphere object.
+
+    Methods
+    -------
+    show : Show the production of fluorescence photons in the 290 - 430 nm
+        range as a function of slant depth.
     """
     # Parameters of the fluorescence model (34 bands)
     #     wvl(nm),   Irel,   PP0,  PPw,     a
@@ -70,58 +112,13 @@ def Fluorescence(profile):
     # Y0_337=7.05 ph/MeV is the fluorescence yield of the band at 337nm in
     # dry air at reference conditions
     # J. Rosado et al. Astropart. Phys. 55(2014)51.
-    N0_337 = 7.05 * profile.E_dep
+    Y0_337 = 7.05
+    
+    def __init__(self, profile):
+        columns = [wvl[0] for wvl in self.model]
+        super().__init__(columns=columns)
+        _fluorescence(self, profile)
 
-    fluorescence = _Fluorescence()
-    fluorescence.profile = profile
-    fluorescence.atmosphere = profile.atmosphere
-
-    # Number of emitted photons at wavelength wvl as a function of pressure P,
-    # temperature T and partial pressure P_w of water vapor:
-    for i, (wvl, I_rel, PP0, PPw, a) in enumerate(model):
-        # For some bands, no information on the quenching contribution from
-        # water vapor is available
-        if PPw == 0:
-            fluorescence[wvl] = (
-                N0_337 * I_rel * (1. + P0 / PP0)
-                / (1. + profile.atmosphere.P / PP0
-                   * (T0 / profile.atmosphere.temp)**(0.5 - a)))
-        else:
-            fluorescence[wvl] = (
-                N0_337 * I_rel * (1. + P0 / PP0)
-                / (1. + ((profile.atmosphere.P - profile.atmosphere.P_w) / PP0
-                         + profile.atmosphere.P_w / PPw)
-                   * (T0 / profile.atmosphere.temp)**(0.5 - a)))
-
-    return fluorescence
-
-
-# Class #######################################################################
-class _Fluorescence(pd.DataFrame):
-    """
-    DataFrame containing the fluorescence light production at each of the
-    34 bands of the fluorescence spectrum in the 290 - 430 nm range based on
-    the parameterization described in D. Morcuende et al.,
-    Astropart. Phys. 107(2019)26 and references therein.
-
-    Columns
-    -------
-    296 : float
-        Number of fluorescence photons in the band centered at 296 nm.
-    ...
-    428 : float
-        Number of fluorescence photons in the band centered at 428 nm.
-
-    Atributes
-    ---------
-    profile : Profile object.
-    atmosphere : Atmosphere object.
-
-    Methods
-    -------
-    show : Show the production of fluorescence photons in the 290 - 430 nm
-        range as a function of slant depth.
-    """
     def show(self):
         """
         Show the production of fluorescence photons in the 290 - 430 nm range

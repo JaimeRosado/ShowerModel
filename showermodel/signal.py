@@ -7,13 +7,14 @@ import matplotlib.pyplot as plt
 
 
 # Constructor #################################################################
-def Signal(telescope, shower, projection=None, atm_trans=True, tel_eff=True,
-           **kwargs):
+def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
+            **kwargs):
     """
     Calculate the signal produced by a shower detected by a telescope.
 
     Parameters
     ----------
+    signal : Signal object.
     telescope : Telescope object.
     shower : Shower object.
     projection : Projection object
@@ -27,32 +28,25 @@ def Signal(telescope, shower, projection=None, atm_trans=True, tel_eff=True,
         These parameters will modify the wavelenght interval when
         tel_eff==False. If None, the wavelength interval defined in the
         telescope is used.
-
-    Returns
-    -------
-    signal : Signal object.
     """
-    from .telescope import _Telescope
-    from .shower import _Shower
-    if not isinstance(telescope, _Telescope):
-        if not isinstance(telescope, _Shower):
+    if not isinstance(telescope, sm.Telescope):
+        if not isinstance(telescope, sm.Shower):
             raise ValueError('The input telescope is not valid')
         else:
             telescope, shower = (shower, telescope)
-    if not isinstance(shower, _Shower):
+    if not isinstance(shower, sm.Shower):
         raise ValueError('The input shower is not valid')
 
     # This function is normally called from Event. If not, projection must be
     # generated.
-    from .projection import _Projection
-    if not isinstance(projection, _Projection):
+    if not isinstance(projection, sm.Projection):
         projection = sm.Projection(telescope, shower.track)
     atmosphere = shower.atmosphere
     track = shower.track
     fluorescence = shower.fluorescence
     cherenkov = shower.cherenkov
 
-    signal = _Signal()
+    # signal = Signal()
     signal.shower = shower
     signal.telescope = telescope
     signal.projection = projection
@@ -175,28 +169,43 @@ def Signal(telescope, shower, projection=None, atm_trans=True, tel_eff=True,
     # Total number of photoelectrons
     signal.Npe_total_sum = signal.Npe_cher_sum + signal.Npe_fluo_sum
 
-    return signal
-
 
 # Class #######################################################################
-class _Signal(pd.DataFrame):
+class Signal(pd.DataFrame):
     """
-    DataFrame containing the signal produced by a shower detected by a
-    telescope.
+    DataFrame containing the signal produced by a shower.
 
-    Columns
-    -------
-    Npe_cher : float
-        Number of photoelectrons per discretization step due to
-        Cherenkov light.
-    Npe_fluo : float
-        Number of photoelectrons per discretization step due to
-        fluorescence light.
-    Npe_total : float
-        Total number of photoelectrons per discretization step.
+    Both Cherenkov light and fluorescence light are transported to the
+    telescope and the number of photoelectrons (of each light component) is
+    evaluated from the detection efficiency of the telescope. The atmosphere,
+    shower, telescope, etc. are stored as object attributes.
+
+    Parameters
+    ----------
+    telescope : Telescope object.
+    shower : Shower object.
+    projection : Projection object
+        If None, it will generated from telescope and shower.
+    atm_trans : bool, default True
+        Include the atmospheric transmision to transport photons.
+    tel_eff : bool, default True
+        Include the telescope efficiency to calculate the signal. If False,
+        100% efficiency is assumed for a given wavelenght interval.
+    **kwargs {wvl_ini, wvl_fin, wvl_step}
+        These parameters will modify the wavelenght interval when
+        tel_eff==False. If None, the wavelength interval defined in the
+        telescope is used.
 
     Attributes
     ----------
+    Npe_cher : float
+        Column 0, number of photoelectrons per discretization step due to
+        Cherenkov light.
+    Npe_fluo : float
+        Column 1, number of photoelectrons per discretization step due to
+        fluorescence light.
+    Npe_total : float
+        Column 2, total number of photoelectrons per discretization step.
     telescope : Telescope object.
     atm_trans : bool
         True if the atmospheric transmision is included.
@@ -220,6 +229,7 @@ class _Signal(pd.DataFrame):
     cherenkov : Cherenkov object.
     profile : Profile object.
     track : Track object.
+    telescope : Telescope object.
     atmosphere : Atmosphere object.
 
     Methods
@@ -235,6 +245,11 @@ class _Signal(pd.DataFrame):
         (relative to the shower axis direction).
     Image : Generate a time-varying shower image.
     """
+    def __init__(self, telescope, shower, projection=None, atm_trans=True,
+                 tel_eff=True, **kwargs):
+        super().__init__(columns=['Npe_cher', 'Npe_fluo', 'Npe_total'])
+        _signal(self, telescope, shower, projection, atm_trans, tel_eff,
+            **kwargs)
 
     def show_projection(self, shower_size=True, axes=True, max_theta=30.,
                         X_mark='X_max'):

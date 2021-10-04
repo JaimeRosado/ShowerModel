@@ -155,17 +155,17 @@ def show_geometry(obj, observatory, mode, x_min, x_max, y_min, y_max,
     Show a shower track together with the telescope positions of an observatory
     in an either 2D or 3D plot.
     """
-    from .telescope import _Telescope
-    from .observatory import _Observatory
-    if not isinstance(observatory, (_Telescope, _Observatory)):
+    from .telescope import Telescope
+    from .observatory import Observatory
+    if not isinstance(observatory, (Telescope, Observatory)):
         raise ValueError('The input observatory is not valid')
-    elif isinstance(observatory, _Telescope):
+    elif isinstance(observatory, Telescope):
         telescope = observatory
-        observatory = _Observatory()
+        observatory = Observatory()
         observatory.append(telescope)
 
-    from .track import _Track
-    track = obj.track if not isinstance(obj, _Track) else obj
+    from .track import Track
+    track = obj.track if not isinstance(obj, Track) else obj
 
     # Track points
     data_range = ((x_min < track.x) & (track.x < x_max) & (y_min < track.y)

@@ -16,14 +16,13 @@ _model = 1
 
 
 # Constructor #################################################################
-def Atmosphere(h0=_h0, h_top=_h_top, N_steps=_N_steps, model=_model):
+def _atmosphere(atmosphere, h0, h_top, N_steps, model):
     """
-    Make an atmosphere discretization.
-
-    Atmosphere() makes the default Atmosphere object.
+    Constructor of Atmosphere class.
 
     Parameters
     ----------
+    atmosphere : Atmosphere object
     h0 : float
         Ground level in km above sea level.
     h_top : float
@@ -33,30 +32,19 @@ def Atmosphere(h0=_h0, h_top=_h_top, N_steps=_N_steps, model=_model):
     model : int
         CORSIKA atmospheric model. Presently either 1 or 17. More models to
         be implemented.
-
-    Returns
-    -------
-    atmosphere : Atmosphere object.
-
-    See also
-    --------
-    _Atmosphere : Atmosphere class.
-    Track : Constructor of Track object.
-    Profile: Constructor of Profile object.
-    Shower : Constructor of Shower object.
     """
-    atmosphere = _Atmosphere(
-        columns=['h', 'X_vert', 'rho', 'temp', 'P', 'P_w', 'E_th', 'r_M'])
+    # atmosphere = Atmosphere(
+    #     columns=['h', 'X_vert', 'rho', 'temp', 'P', 'P_w', 'E_th', 'r_M'])
 
     # For the default atmospheric parameters
-    if (h0 == _h0) and (N_steps == _N_steps) and (model == _model):
-        global ATM
-        try:
-            return ATM  # Outputs the default atmosphere if already generated
-        except Exception:
-            # If the default atmosphere is to be generated,
-            # it will be assigned to the global variable ATM
-            ATM = atmosphere
+    # if (h0 == _h0) and (N_steps == _N_steps) and (model == _model):
+    #     global ATM
+    #     try:
+    #         atmosphere = ATM  # Outputs the default atmosphere if already generated
+    #    except Exception:
+    #         # If the default atmosphere is to be generated,
+    #         # it will be assigned to the global variable ATM
+    #         ATM = atmosphere
 
     # The output DataFrame includes the input parameters h0, h_top, N_steps,
     # model as attributes
@@ -104,37 +92,32 @@ def Atmosphere(h0=_h0, h_top=_h_top, N_steps=_N_steps, model=_model):
     # Moliere radius in km
     atmosphere.r_M = 21.2 / 81. * 36.7 / atmosphere.rho / 100000.
 
-    return atmosphere
-
 
 # Class #######################################################################
-class _Atmosphere(pd.DataFrame):
+class Atmosphere(pd.DataFrame):
     """
     DataFrame containing an atmosphere discretization.
 
-    Use sm.Atmosphere to construct an Atmosphere object.
-
-    Columns
-    -------
-    h : float
-        Height in km above sea level.
-    X_vert : float
-        Vertical depth in g/cm^2.
-    rho : float
-        Mass density in g/cm^3.
-    temp : float
-        Temperature in K.
-    P : float
-        Pressure in hPa.
-    P_w : float
-        Partial pressure of water vapor in hPa.
-    E_th : float
-        Cherenkov energy threshold in MeV at 350 nm.
-    r_M : float
-        Moliere radius in km.
+    Use sm.Atmosphere() to construct the default Atmosphere object.
 
     Attributes
     ----------
+    h : float
+        Column 0, height in km above sea level.
+    X_vert : float
+        Column 1, vertical depth in g/cm^2.
+    rho : float
+        Column 2, mass density in g/cm^3.
+    temp : float
+        Column 3, temperature in K.
+    P : float
+        Column 4, pressure in hPa.
+    P_w : float
+        Column 5, partial pressure of water vapor in hPa.
+    E_th : float
+        Column 6, cherenkov energy threshold in MeV at 350 nm.
+    r_M : float
+        Column 7, Moliere radius in km.
     h0 : float
         Ground level in km above sea level.
     h_top : float
@@ -155,11 +138,14 @@ class _Atmosphere(pd.DataFrame):
 
     See also
     --------
-    Atmosphere : Constructor of Atmosphere object.
-    Track : Constructor of Track object.
-    Profile : Constructor of Profile object.
-    Shower : Constructor of Shower object.
+    Track : DataFrame containing a shower track discretization.
+    Profile : DataFrame containing a shower profile discretization.
+    Shower : Make a discretization of a shower.
     """
+    def __init__(self, h0=_h0, h_top=_h_top, N_steps=_N_steps, model=_model):
+        super().__init__(
+            columns=['h', 'X_vert', 'rho', 'temp', 'P', 'P_w', 'E_th', 'r_M'])
+        _atmosphere(self, h0, h_top, N_steps, model)
 
     def h_to_Xv(self, h):
         """

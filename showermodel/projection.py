@@ -5,7 +5,7 @@ import pandas as pd
 
 
 # Constructor #################################################################
-def Projection(telescope, track):
+def _projection(projection, telescope, track):
     """
     Obtain the projection of a shower track viewed from the telescope position
     in both horizontal coordiantes system (alt/az) and FoV coordinates system
@@ -14,36 +14,33 @@ def Projection(telescope, track):
 
     Parameters
     ----------
+    projection : Projection object.
     telescope : Telescope object.
     track : Track object or Shower object.
-
-    Returns
-    -------
-    projection : Projection object.
     """
-    from .telescope import _Telescope
-    from .track import _Track
-    from .shower import _Shower
-    if isinstance(telescope, _Telescope):
+    from .telescope import Telescope
+    from .track import Track
+    from .shower import Shower
+    if isinstance(telescope, Telescope):
         pass
     # In case the input objects are not ordered correctly.
-    elif isinstance(telescope, _Track):
+    elif isinstance(telescope, Track):
         telescope, track = (track, telescope)
-    elif isinstance(telescope, _Shower):
+    elif isinstance(telescope, Shower):
         telescope, shower = (track, telescope)
         track = shower.track
     else:
         raise ValueError('The input telescope is not valid')
-    if isinstance(track, _Track):
+    if isinstance(track, Track):
         pass
-    elif isinstance(track, _Shower):
+    elif isinstance(track, Shower):
         shower = track
         track = shower.track
     else:
         raise ValueError('The input track is not valid')
 
-    projection = _Projection(columns=['distance', 'alt', 'az', 'theta', 'phi',
-                                      'beta', 'time', 'FoV'])
+    # projection = Projection(columns=['distance', 'alt', 'az', 'theta', 'phi',
+    #                                   'beta', 'time', 'FoV'])
     projection.atmosphere = track.atmosphere
     projection.track = track
     projection.telescope = telescope
@@ -120,42 +117,39 @@ def Projection(telescope, track):
     projection.FoV = ((projection.theta <= telescope.apert/2.)
                       & (projection.distance > 0.))
 
-    return projection
 
 
 # Class #######################################################################
-class _Projection(pd.DataFrame):
+class Projection(pd.DataFrame):
     """
-    DataFrame containing the projection of a shower track viewed from a
-    telescope poisition in both horizontal coordinates system and FoV
-    coordinates system as well as the fraction of the track within the
-    telescope field of view.
+    DataFrame containing the projection of a shower track.
 
-    Columns
-    -------
-    distance : float
-        Shower-to-telescope distance in km.
-    alt : float
-        Altitude in degrees (from horizon).
-    az : float
-        Azimuth in degrees (from north, clockwise).
-    theta : float
-        Offset angle in degrees relative to the telescope pointing
-        direction.
-    phi : float
-        Position angle in degrees from north in FoV projection.
-    beta : float
-        Angle in degrees relative to the apparent source position.
-    time : float
-        Arrival time in microseconds of photons emitted at each point of
-        the shower, where time=0 for photons produced at the top of the
-        atmosphere.
-    FoV : bool
-        True if the shower point is within the telescope field of view,
-        False otherwise.
+    The track is viewed from a telescope poisition in both horizontal
+    coordinates system and FoV coordinates system as well as the fraction of
+    the track within the telescope field of view.
 
     Attributes
     ----------
+    distance : float
+        Column 0, shower-to-telescope distance in km.
+    alt : float
+        Column 1, altitude in degrees (from horizon).
+    az : float
+        Column 2, azimuth in degrees (from north, clockwise).
+    theta : float
+        Column 3, offset angle in degrees relative to the telescope pointing
+        direction.
+    phi : float
+        Column 4, position angle in degrees from north in FoV projection.
+    beta : float
+        Column 5, angle in degrees relative to the apparent source position.
+    time : float
+        Column 6, arrival time in microseconds of photons emitted at each point
+        of the shower, where time=0 for photons produced at the top of the
+        atmosphere.
+    FoV : bool
+        Column 7, true if the shower point is within the telescope field of
+        view, False otherwise.
     atmosphere : Atmosphere object.
     track : Track object.
     telescope : Telescope object.
@@ -195,6 +189,11 @@ class _Projection(pd.DataFrame):
     spherical : Calculate the spherical coordinates in both horizontal and
         FoV systems.
     """
+    def __init__(self, telescope, track):
+        super().__init__(columns=['distance', 'alt', 'az', 'theta', 'phi',
+                                  'beta', 'time', 'FoV'])
+        _projection(self, telescope, track)
+
     def show(self, axes=True, max_theta=30., X_mark=None):
         """
         Show the projection of the shower track viewed by the telescope in both

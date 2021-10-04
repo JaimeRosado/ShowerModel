@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 
 # Constructor #################################################################
-def Event(observatory, shower, atm_trans=True, tel_eff=True, **kwargs):
+def _event(event, observatory, shower, atm_trans, tel_eff, **kwargs):
     """
     Construct an Event object from a shower and an observatory.
     
@@ -17,7 +17,8 @@ def Event(observatory, shower, atm_trans=True, tel_eff=True, **kwargs):
 
     Parameters
     ----------
-    observatory : Observatory object (may be a Grid object).
+    event : Event object.
+    observatory : Observatory object.
     shower : Shower object.
     atm_trans : bool, default True
         Include the atmospheric transmision to transport photons.
@@ -28,31 +29,26 @@ def Event(observatory, shower, atm_trans=True, tel_eff=True, **kwargs):
         These parameters will be passed to the Signal constructor to modify
         the wavelength interval when tel_eff==False. If None, the wavelength
         interval defined in each telescope is used.
-
-    Returns
-    -------
-    event : Event object.
     """
-    from .observatory import _Observatory, _Grid
-    from .telescope import _Telescope
-    from .shower import _Shower
-    if not isinstance(shower, _Shower):
+    if not isinstance(shower, sm.Shower):
         observatory, shower = (shower, observatory)
-        if not isinstance(shower, _Shower):
+        if not isinstance(shower, sm.Shower):
             raise ValueError('The input shower is not valid')
 
-    if isinstance(observatory, (_Telescope, _Observatory)):
-        if isinstance(observatory, _Grid):
-            event = _GridEvent()
+    if isinstance(event, GridEvent):
+        if isinstance(observatory, sm.Grid):
             event.grid = observatory
         else:
-            event = _Event()
-            if isinstance(observatory, _Telescope):
-                telescope = observatory
-                event.observatory = _Observatory()
-                event.observatory.append(telescope)
-            else:
-                event.observatory = observatory
+            raise ValueError('The input grid is not valid')
+
+    if isinstance(observatory, (sm.Telescope, sm.Observatory)):
+        if isinstance(observatory, sm.Telescope):
+            telescope = observatory
+            event.observatory = sm.Observatory()
+            event.observatory.append(telescope)
+            event.observatory.N_tel = 1         
+        else:
+            event.observatory = observatory
     else:
         raise ValueError('The input observatory is not valid')
 
@@ -74,25 +70,37 @@ def Event(observatory, shower, atm_trans=True, tel_eff=True, **kwargs):
         signal = sm.Signal(
             telescope, shower, projection, atm_trans, tel_eff, **kwargs)
         event.signals.append(signal)
-        
+    
     event.images = None
-
-    return event
 
 
 # Class #######################################################################
-class _Event():
+class Event():
     """
-    An Event object contains the characteristics of a shower, an observatory and
-    the signal produced by the shower in each telescope.
+    Contain the characteristics of a shower detected by an observatory.
 
-    Use Event to construct an Event object.
+    The signal produced by the shower in each telescope of the observatory is
+    stored in a list. The shower, the observatory, etc. are stored as object
+    attributes.
+
+    Parameters
+    ----------
+    observatory : Observatory object.
+    shower : Shower object.
+    atm_trans : bool, default True
+        Include the atmospheric transmision to transport photons.
+    tel_eff : bool, default True
+        Include the telescope efficiency to calculate the signals.
+        If False, 100% efficiency is assumed for a given wavelength interval.
+    **kwargs {wvl_ini, wvl_fin, wvl_step}
+        These parameters will be passed to the Signal constructor to modify
+        the wavelength interval when tel_eff==False. If None, the wavelength
+        interval defined in each telescope is used.
 
     Attributes
     ----------
-    event_type : {'Event', 'GridEvent'} or new name
-        Name of subclass of Event. Presently, only the parent class Event and
-        the subclass GridEvent are available. More subclasses to be implemented.
+    event_type : str
+        Name given to the event. Default to None.
     shower : Shower object.
     track : Track object.
     profile : Profile object.
@@ -100,8 +108,6 @@ class _Event():
     cherenkov : Cherenkov object.
     atmosphere : Atmosphere object.
     observatory : Observatory object.
-    grid : Grid object (only for GridEvent objects)
-        It replaces observatory for GridEvent objects.
     projections : List of Projection objects.
     signals : List of Signal objects.
     images : List of Image objects
@@ -130,7 +136,11 @@ class _Event():
     make_images : Generate shower images.
     show_images : Show shower images (if already exist).
     """
-    event_type = None
+
+    def __init__(self, observatory, shower, event_type=None, atm_trans=True,
+                 tel_eff=True, **kwargs):
+        self.event_type = event_type
+        _event(self, observatory, shower, atm_trans, tel_eff, **kwargs)
 
     def show_projection(self, tel_index=0, shower_size=True, axes=True,
                         max_theta=30., X_mark='X_max'):
@@ -344,8 +354,7 @@ class _Event():
         (ax1, ax2, cbar) : AxesSubplot objects and Colorbar object
             (if 2D grid).
         """
-        from .observatory import _Grid
-        if not isinstance(grid, _Grid):
+        if not isinstance(grid, sm.Grid):
             if grid is None:
                 observatory = self.observatory
                 telescope = observatory[0]  # tel_index=0 is used as reference
@@ -356,8 +365,8 @@ class _Event():
                 theta = telescope.theta
                 alt = telescope.alt
                 az = telescope.az
-                grid =sm.Grid(telescope, tel_type, x_c, y_c, z_c, theta, alt,
-                               az, size_x, size_y, N_x, N_y)
+                grid =sm.Grid(telescope, x_c, y_c, z_c, theta, alt,
+                              az, size_x, size_y, N_x, N_y)
             else:
                 raise ValueError('The input grid is not valid')
 
@@ -369,7 +378,7 @@ class _Event():
         kwargs['wvl_fin'] = kwargs.get('wvl_fin', signal.wvl_fin)
         kwargs['wvl_step'] = kwargs.get('wvl_step', signal.wvl_step)
 
-        grid_event = sm.Event(grid, self.shower, atm_trans, tel_eff, **kwargs)
+        grid_event = GridEvent(grid, self.shower, atm_trans, tel_eff, **kwargs)
         return grid_event.show_distribution()
 
     def make_images(self, lat_profile=True, NSB=40.):
@@ -425,7 +434,14 @@ class _Event():
         #plt.show()
 
 
-class _GridEvent(_Event):
+class GridEvent(Event):
+    """
+    Daughter class of Event used to calculate ground distributions.
+
+    A Grid object must be input to create a GridEvent. The event_type is set to
+    'GridEvent' and the attribute observatory is replaced by grid. The method
+    show_distribution does not accept arguments.
+    """
     event_type = 'GridEvent'
 
     def show_distribution(self):  # Overwrite the method of the parent class

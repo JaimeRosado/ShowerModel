@@ -11,22 +11,16 @@ warnings.filterwarnings(
 
 
 # Constructor
-def Cherenkov(profile):
+def _cherenkov(cherenkov, profile):
     """
-    Calculate the Cherenkov light production from a shower profile.
-    
-    The parameterization described in F. Nerling et al., Astropart. Phys.
-    24(2006)241 is used.
+    Constructor of Cherenkov class.
 
     Parameters
     ----------
-    profile : Profile object.
-
-    Returns
-    -------
     cherenkov : Cherenkov object.
+    profile : Profile object.
     """
-    cherenkov = _Cherenkov(columns=['N_ph', 'a', 'theta_c', 'b', 'theta_cc'])
+    # cherenkov = _Cherenkov(columns=['N_ph', 'a', 'theta_c', 'b', 'theta_cc'])
     cherenkov.profile = profile
     cherenkov.atmosphere = profile.atmosphere
     C_E = _E_factor(profile.s, profile.atmosphere.E_th, profile.E/2.)
@@ -40,11 +34,9 @@ def Cherenkov(profile):
     theta_cc[theta_cc < 0.] = 0.
     cherenkov.theta_cc = theta_cc
 
-    return cherenkov
-
 
 # Class #######################################################################
-class _Cherenkov(pd.DataFrame):
+class Cherenkov(pd.DataFrame):
     """
     DataFrame containing the Cherenkov ligth production.
     
@@ -53,29 +45,30 @@ class _Cherenkov(pd.DataFrame):
     Cherenkov emission based on the parameterization described in
     F. Nerling et al., Astropart. Phys. 24(2006)241.
 
-    Columns
-    -------
-    N_ph : int
-        Number of Cherenkov photons in the 290 - 430 nm range.
-    a : float
-        First parameter of the angular distribution of Cherenkov emission.
-    theta_c : float
-        Second parameter (degrees) of the angular distribution.
-    b : float
-        Third parameter of the angular distribution.
-    theta_cc : float
-        Fourth parameter (degrees) of the angular distribution.
-
     Atributes
     ---------
+    N_ph : int
+        Column 0, number of Cherenkov photons in the 290 - 430 nm range.
+    a : float
+        Column 1, first parameter of the angular distribution of Cherenkov emission.
+    theta_c : float
+        Column 2, second parameter (degrees) of the angular distribution.
+    b : float
+        Column 3, third parameter of the angular distribution.
+    theta_cc : float
+        Column 4, fourth parameter (degrees) of the angular distribution.
     profile : Profile object.
     atmosphere : Atmosphere object.
 
     Methods
     -------
-    show : Show the production of Cherenkov photons in the 290 - 430 nm range.
+    show : Show the production of Cherenkov photons in the 290 - 430 nm range
     as a function of slant depth.
     """
+    def __init__(self, profile):
+        super().__init__(columns=['N_ph', 'a', 'theta_c', 'b', 'theta_cc'])
+        _cherenkov(self, profile)
+
     def _E_factor(self, s, Eth, Emax):
         """
         Calculate a factor enclosing the dependence of the Cherenkov production

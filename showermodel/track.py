@@ -19,13 +19,13 @@ _y0 = 0.     # km
 
 
 # Constructor #################################################################
-def Track(theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0, atmosphere=None,
-          **kwargs):
+def _track(track, theta, alt, az, x0, y0, atmosphere, **kwargs):
     """
-    Make a shower track discretization.
+    Constructor of Track class.
 
     Parameters
     ----------
+    track : Track object
     theta : float
         Zenith angle in degrees of the apparent position of the source.
     alt : float
@@ -43,18 +43,8 @@ def Track(theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0, atmosphere=None,
     **kwargs {h0, h_top, N_steps, model}
         Options to construct the new Atmosphere object when atm==None.
         If None, the default Atmosphere object is used.
-
-    Returns
-    -------
-    track : Track object.
-
-    See also
-    --------
-    _Track : Track class.
-    Shower : Contructor of Shower object.
     """
-    from .atmosphere import _Atmosphere
-    if isinstance(atmosphere, _Atmosphere):
+    if isinstance(atmosphere, sm.Atmosphere):
         pass
     elif atmosphere is None:
         atmosphere = sm.Atmosphere(**kwargs)
@@ -63,7 +53,7 @@ def Track(theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0, atmosphere=None,
 
     # The columns of the output DataFrame includes, at each discretization step
     # of are: coordinates (x,y,z) in km and the travel time t in us
-    track = _Track(columns=['x', 'y', 'z', 't'])
+    # track = Track(columns=['x', 'y', 'z', 't'])
     track.atmosphere = atmosphere
 
     # The input parameters along with some geometric parameters are also
@@ -119,30 +109,25 @@ def Track(theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0, atmosphere=None,
     track.y = y0 + track.z * track.uy / track.uz
     track.t = (track.z_top - track.z) / track.uz / 0.2998  # Travel time
 
-    return track
-
 
 # Class #######################################################################
-class _Track(pd.DataFrame):
+class Track(pd.DataFrame):
     """
     DataFrame containing a linear-shower track discretization.
 
-    Use Track to construct a Track object.
-
-    Columns
-    -------
-    x : float
-        East coordinate in km.
-    y : float
-        North coordinate in km.
-    z : float
-        Height in km from ground level.
-    t : float
-        Travel time in microseconds. t=0 at the top of the atmosphere. The
-        shower is assumed to propates with the speed of light.
+    Use sm.Track() to construct a default Track object.
 
     Attributes
     ----------
+    x : float
+        Column 0, east coordinate in km.
+    y : float
+        Column 1, north coordinate in km.
+    z : float
+        Column 2, height in km from ground level.
+    t : float
+        Column 3, travel time in microseconds. t=0 at the top of the atmosphere.
+        The shower is assumed to propates with the speed of light.
     atmosphere : Atmosphere object.
     theta : float
         Zenith angle in degrees of the apparent position of the source.
@@ -200,9 +185,12 @@ class _Track(pd.DataFrame):
 
     See also
     --------
-    Track : Constructor of Track object.
-    Shower : Constructor of Shower object.
+    Shower : Make a discretization of a shower.
     """
+    def __init__(self, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
+                 atmosphere=None, **kwargs):
+        super().__init__(columns=['x', 'y', 'z', 't'])
+        _track(self, theta, alt, az, x0, y0, atmosphere, **kwargs)
 
     def h_to_xyz(self, h):
         """

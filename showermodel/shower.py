@@ -10,14 +10,111 @@ from .profile import _E, _prf_model
 
 
 # Constructor #################################################################
-def Shower(E=_E, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
-           prf_model=_prf_model, X_max=None, N_ch_max=None, X0_GH=None,
-           lambda_GH=None, atmosphere=None, **kwargs):
+def _shower(shower, E, theta, alt, az, x0, y0, prf_model, X_max, N_ch_max,
+            X0_GH, lambda_GH, atmosphere, **kwargs):
     """
-    Make a discretization of shower.
+    Constructor of Shower object.
 
     It includes the shower profile and its fluorescence and Cherenkov light
     production.
+
+    Parameters
+    ----------
+    shower : Shower object.
+    E : float
+        Energy of the primary particle in MeV.
+    theta : float
+        Zenith angle in degrees of the apparent position of the source.
+    alt : float
+        Altitude in degrees of the apparent position of the source. If None,
+        theta is used. If given, theta is overwritten.
+    az : float
+        Azimuth angle (from north, clockwise) in degrees of the apparent
+        position of the source.
+    x0 : float
+        East coordinate in km of shower impact point at ground.
+    y0 : float
+        West coordinate in km of shower impact point at ground.
+    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame
+        If 'Greisen', the Greisen function for electromagnetic showers is used.
+        If 'Gaisser-Hillas', the Gaisser-Hillas function for hadron-induced
+        showers is used. If a DataFrame with an energy deposit profile is input,
+        it must have two columns with the slant depth in g/cm2 and dE/dX in
+        MeV.cm2/g. 
+    X_max : float
+        Slant depth in g/cm^2 at shower maximum. If None and prf_model is
+        'Greisen' or 'Gaisser-Hillas', a typical value of X_max for gamma or
+        proton showers is used. If None and a numerical energy deposit profile
+        is input, lambda_r = 36.7 g/cm^2 is the radiation length E_c = 81 MeV
+        is the critical energy.
+    X0_GH : float
+        X0 parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
+        If None, a typical value for the input energy is used.
+    lambda_GH : float
+        Lambda parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
+        If None, a typical value for the input energy is used.
+    atmosphere : Atmosphere object.
+        If None, a new Atmosphere object is generated.
+    **kwargs {h0, h_top, N_steps, model}
+        Options to construct the new Atmosphere object when atmosphere==None.
+        If None, the default Atmosphere object is used.
+    """
+    if isinstance(atmosphere, sm.Atmosphere):
+        pass
+    elif atmosphere is None:
+        atmosphere = sm.Atmosphere(**kwargs)
+    else:
+        raise ValueError('The input atmosphere is not valid.')
+
+    # shower = Shower()
+    shower.E = E
+    if alt is None:
+        alt = 90. - theta
+    else:
+        theta = 90. - alt
+    shower.theta = theta
+    shower.alt = alt
+    shower.az = az
+    shower.x0 = x0
+    shower.y0 = y0
+
+    # Atmosphere
+    shower.atmosphere = atmosphere
+
+    shower.h0 = atmosphere.h0
+    shower.h_top = atmosphere.h_top
+    shower.N_steps = atmosphere.N_steps
+    shower.model = atmosphere.model
+
+    # Shower track
+    shower.track = sm.Track(theta, None, az, x0, y0, atmosphere)
+
+    # Shower profile
+    profile = sm.Profile(E, theta, None, prf_model, X_max, X0_GH, lambda_GH,
+                         atmosphere)
+    shower.profile = profile
+
+    shower.prf_model = profile.prf_model
+    shower.X_max = profile.X_max
+    shower.X0_GH = profile.X0_GH
+    shower.lambda_GH = profile.lambda_GH
+
+    # Fluorescence emission
+    shower.fluorescence = shower.profile.Fluorescence()
+
+    # Cherenkov emission
+    shower.cherenkov = shower.profile.Cherenkov()
+
+
+# Class #######################################################################
+class Shower:
+    """
+    Object containing a discretization of a shower.
+
+    It includes the atmosphere, both the track and profile of the shower
+    as well as its fluorescence and Cherenkov light production.
+
+    Use sm.Shower() to construct the default Shower object.
 
     Parameters
     ----------
@@ -58,73 +155,6 @@ def Shower(E=_E, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
     **kwargs {h0, h_top, N_steps, model}
         Options to construct the new Atmosphere object when atmosphere==None.
         If None, the default Atmosphere object is used.
-
-    Returns
-    -------
-    shower : Shower object.
-
-    See also
-    --------
-    _Shower : Shower class.
-    """
-    from .atmosphere import _Atmosphere
-    if isinstance(atmosphere, _Atmosphere):
-        pass
-    elif atmosphere is None:
-        atmosphere = sm.Atmosphere(**kwargs)
-    else:
-        raise ValueError('The input atmosphere is not valid.')
-
-    shower = _Shower()
-    shower.E = E
-    if alt is None:
-        alt = 90. - theta
-    else:
-        theta = 90. - alt
-    shower.theta = theta
-    shower.alt = alt
-    shower.az = az
-    shower.x0 = x0
-    shower.y0 = y0
-
-    # Atmosphere
-    shower.atmosphere = atmosphere
-
-    shower.h0 = atmosphere.h0
-    shower.h_top = atmosphere.h_top
-    shower.N_steps = atmosphere.N_steps
-    shower.model = atmosphere.model
-
-    # Shower track
-    shower.track = sm.Track(theta, None, az, x0, y0, atmosphere)
-
-    # Shower profile
-    profile = sm.Profile(E, theta, None, prf_model, X_max, X0_GH, lambda_GH,
-                         atmosphere)
-    shower.profile = profile
-
-    shower.prf_model = profile.prf_model
-    shower.X_max = profile.X_max
-    shower.X0_GH = profile.X0_GH
-    shower.lambda_GH = profile.lambda_GH
-
-    # Fluorescence emission
-    shower.fluorescence = shower.profile.Fluorescence()
-
-    # Cherenkov emission
-    shower.cherenkov = shower.profile.Cherenkov()
-
-    return shower
-
-
-# Class #######################################################################
-class _Shower:
-    """
-    Object containing a discretization of the atmosphere, both the track and
-    profile of a shower as well as its fluorescence and Cherenkov light
-    production.
-
-    Use Shower to construct a Shower object.
 
     Attributes
     ----------
@@ -189,10 +219,15 @@ class _Shower:
 
     See also
     --------
-    Atmosphere : Constructor of Atmosphere object.
-    Track : Constructor of Track object.
-    Profile : Constructor of Profile object.
+    Atmosphere : DataFrame containing the atmosphere discretization.
+    Track : DataFrame containing a shower track discretization.
+    Profile : DataFrame containing a shower profile discretization.
     """
+    def __init__(self, E=_E, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
+                 prf_model=_prf_model, X_max=None, N_ch_max=None, X0_GH=None,
+                 lambda_GH=None, atmosphere=None, **kwargs):
+        _shower(self, E, theta, alt, az, x0, y0, prf_model, X_max, N_ch_max,
+                X0_GH, lambda_GH, atmosphere, **kwargs)
 
     def copy(self, **kwargs):
         """
@@ -463,8 +498,7 @@ class _Shower:
                              y_max, X_mark, shower_size, False, False, xy_proj,
                              pointing)
 
-    def show_distribution(self, grid=None, telescope=None,
-                          tel_type='GridElement', x_c=0., y_c=0., z_c=0.,
+    def show_distribution(self, grid=None, telescope=None, x_c=0., y_c=0., z_c=0.,
                           theta=None, alt=None, az=None, size_x=2., size_y=2.,
                           N_x=10, N_y=10, atm_trans=True, tel_eff=False,
                           **kwargs):
@@ -481,12 +515,7 @@ class _Shower:
             If given, {telescope, tel_type, ..., N_x, N_y} are not used.
         telescope : Telescope object (when grid==None)
             If None, the Grid object is constructed
-            based on a Telescope object of type tel_type.
-        tel_type : str
-            Subclass of Telescope to be used when grid==None and
-            telescope==None. Default to GridElement with 100% detection
-            efficiency, FoV of 180 degrees around zenith and area of one grid
-            cell. If tel_type==None, the parent class Telescope is used.
+            based on the default GridElement object.
         x_c : float
             x coordinate in km of the center of the grid.
         y_c : float
@@ -526,15 +555,14 @@ class _Shower:
         (ax1, ax2, cbar) : AxesSubplot objects and Colorbar object
             (if 2D grid).
         """
-        from .observatory import _Grid
-        if not isinstance(grid, _Grid):
+        if not isinstance(grid, sm.Grid):
             if grid is None:
-                grid = sm.Grid(telescope, tel_type, x_c, y_c, z_c, theta, alt,
+                grid = sm.Grid(telescope, x_c, y_c, z_c, theta, alt,
                                az, size_x, size_y, N_x, N_y)
             else:
                 raise ValueError('The input grid is not valid')
 
-        grid_event = sm.Event(grid, self, atm_trans, tel_eff, **kwargs)
+        grid_event = sm.GridEvent(grid, self, atm_trans, tel_eff, **kwargs)
         return grid_event.show_distribution()
 
 
@@ -565,8 +593,7 @@ def _copy(shower, atmosphere=None, **kwargs):
     N_steps = kwargs.get('N_steps', shower.N_steps)
     model = kwargs.get('model', shower.model)
 
-    from .atmosphere import _Atmosphere
-    if isinstance(atmosphere, _Atmosphere):
+    if isinstance(atmosphere, sm.Atmosphere):
         # If the key argument atmosphere is passed with a valid atmosphere,
         # the function generates a new shower from scratch using that
         # atmosphere (h0, h_top, etc. not used)
@@ -585,7 +612,7 @@ def _copy(shower, atmosphere=None, **kwargs):
             # If the atmospheric parameters are the same as the original
             # atmosphere a new Shower object is generated with an alias of the
             # original atmosphere
-            shower_c = _Shower()
+            shower_c = Shower()
             shower_c.atmosphere = shower.atmosphere  # New alias
 
             # Attributes are overwritten
