@@ -1,5 +1,5 @@
 def test_telescope():
-    from showermodel import Telescope
+    from showermodel import IACT
 
     # Default telescope type: IACT
     # Default angular aperture in degrees: 8.0
