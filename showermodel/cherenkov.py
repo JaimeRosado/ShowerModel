@@ -10,31 +10,6 @@ warnings.filterwarnings(
     UserWarning)
 
 
-# Constructor
-def _cherenkov(cherenkov, profile):
-    """
-    Constructor of Cherenkov class.
-
-    Parameters
-    ----------
-    cherenkov : Cherenkov object.
-    profile : Profile object.
-    """
-    # cherenkov = _Cherenkov(columns=['N_ph', 'a', 'theta_c', 'b', 'theta_cc'])
-    cherenkov.profile = profile
-    cherenkov.atmosphere = profile.atmosphere
-    C_E = _E_factor(profile.s, profile.atmosphere.E_th, profile.E/2.)
-    cherenkov.N_ph = (2. * np.pi / 137.036 * (1. / 290. - 1. / 430.)
-                      * 1e12 * C_E * profile.N_ch * profile.dl)
-
-    cherenkov.a = 0.42489 + 0.58371 * profile.s - 0.082373 * profile.s**2
-    cherenkov.theta_c = np.degrees(0.62694 / profile.atmosphere.E_th**0.6059)
-    cherenkov.b = 0.055108 - 0.095587 * profile.s + 0.056952 * profile.s**2
-    theta_cc = np.array((10.509 - 4.9444 * profile.s) * cherenkov.theta_c)
-    theta_cc[theta_cc < 0.] = 0.
-    cherenkov.theta_cc = theta_cc
-
-
 # Class #######################################################################
 class Cherenkov(pd.DataFrame):
     """
@@ -44,6 +19,10 @@ class Cherenkov(pd.DataFrame):
     includes the parameters determining the angular distribution of
     Cherenkov emission based on the parameterization described in
     F. Nerling et al., Astropart. Phys. 24(2006)241.
+
+    Parameters
+    ----------
+    profile : Profile object.
 
     Atributes
     ---------
@@ -92,6 +71,31 @@ class Cherenkov(pd.DataFrame):
         ax.axes.yaxis.set_label_text(
             "Cherenkov production (photons·cm$^2$/g)")
         return ax
+
+
+# Constructor
+def _cherenkov(cherenkov, profile):
+    """
+    Constructor of Cherenkov class.
+
+    Parameters
+    ----------
+    cherenkov : Cherenkov object.
+    profile : Profile object.
+    """
+    # cherenkov = _Cherenkov(columns=['N_ph', 'a', 'theta_c', 'b', 'theta_cc'])
+    cherenkov.profile = profile
+    cherenkov.atmosphere = profile.atmosphere
+    C_E = _E_factor(profile.s, profile.atmosphere.E_th, profile.E/2.)
+    cherenkov.N_ph = (2. * np.pi / 137.036 * (1. / 290. - 1. / 430.)
+                      * 1e12 * C_E * profile.N_ch * profile.dl)
+
+    cherenkov.a = 0.42489 + 0.58371 * profile.s - 0.082373 * profile.s**2
+    cherenkov.theta_c = np.degrees(0.62694 / profile.atmosphere.E_th**0.6059)
+    cherenkov.b = 0.055108 - 0.095587 * profile.s + 0.056952 * profile.s**2
+    theta_cc = np.array((10.509 - 4.9444 * profile.s) * cherenkov.theta_c)
+    theta_cc[theta_cc < 0.] = 0.
+    cherenkov.theta_cc = theta_cc
 
 
 # Auxiliary functions #########################################################
