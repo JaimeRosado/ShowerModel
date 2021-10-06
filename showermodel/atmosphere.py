@@ -15,14 +15,15 @@ _N_steps = 550
 _model = 1
 
 
-# Constructor #################################################################
-def _atmosphere(atmosphere, h0, h_top, N_steps, model):
+# Class #######################################################################
+class Atmosphere(pd.DataFrame):
     """
-    Constructor of Atmosphere class.
+    DataFrame containing an atmosphere discretization.
+
+    Use sm.Atmosphere() to construct the default Atmosphere object.
 
     Parameters
     ----------
-    atmosphere : Atmosphere object
     h0 : float
         Ground level in km above sea level.
     h_top : float
@@ -32,73 +33,6 @@ def _atmosphere(atmosphere, h0, h_top, N_steps, model):
     model : int
         CORSIKA atmospheric model. Presently either 1 or 17. More models to
         be implemented.
-    """
-    # atmosphere = Atmosphere(
-    #     columns=['h', 'X_vert', 'rho', 'temp', 'P', 'P_w', 'E_th', 'r_M'])
-
-    # For the default atmospheric parameters
-    # if (h0 == _h0) and (N_steps == _N_steps) and (model == _model):
-    #     global ATM
-    #     try:
-    #         atmosphere = ATM  # Outputs the default atmosphere if already generated
-    #    except Exception:
-    #         # If the default atmosphere is to be generated,
-    #         # it will be assigned to the global variable ATM
-    #         ATM = atmosphere
-
-    # The output DataFrame includes the input parameters h0, h_top, N_steps,
-    # model as attributes
-    atmosphere.h0 = h0
-    atmosphere.h_top = h_top
-    atmosphere.N_steps = N_steps
-    atmosphere.model = model
-
-    # Array of mid heights of the discretization of the atmosphere.
-    # h0 represent the ground level.
-    height = np.linspace(h0, atmosphere.h_top, N_steps+1)
-    atmosphere.h_step = height[1] - height[0]
-    atmosphere.h = height[1:] - atmosphere.h_step/2.
-
-    # Vertical depth and density from the input model
-    Xv, rho = atmosphere._get_Xv_rho(atmosphere.h)
-
-    atmosphere.X_vert = Xv
-    atmosphere.rho = rho
-
-    temp = np.zeros_like(rho)
-    # Air is assumed to be an ideal gas with 28.96 g/mol
-    temp[rho > 0] = 28.96 * 9.81 * Xv[rho > 0] / 831445.98 / rho[rho > 0]
-    atmosphere.temp = temp
-    P = 9.81 * Xv / 10.  # A constant gravitational acceleration is assumed
-    atmosphere.P = P
-    # CORSIKA models do not describe the partial pressure of water vapor
-    P_w = np.zeros_like(P)
-    atmosphere.P_w = P_w
-
-    # delta=1-n at 350nm. J.C. Owens, Appl. Opt. 6 (1967) 51
-    delta = np.zeros_like(temp)
-    delta[temp > 0] = 0.00000001 * (
-        8132.8589*(P[temp > 0]-P_w[temp > 0])/temp[temp > 0]
-        * (1.+(P[temp > 0]-P_w[temp > 0])
-            * (0.000000579-0.0009325/temp[temp > 0]+0.25844/temp[temp > 0]**2))
-        + 6961.9879*P_w[temp > 0]/temp[temp > 0]
-        * (1.+P_w[temp > 0]*(1.+0.00037*P_w[temp > 0])
-            * (-0.00237321+2.23366/temp[temp > 0]-710.792/temp[temp > 0]**2
-                + 0.000775141/temp[temp > 0]**3)))
-
-    # Threshold energy for Cherenkov production at 350 nm in air
-    atmosphere.E_th = 0.511 / np.sqrt(2.*delta)
-
-    # Moliere radius in km
-    atmosphere.r_M = 21.2 / 81. * 36.7 / atmosphere.rho / 100000.
-
-
-# Class #######################################################################
-class Atmosphere(pd.DataFrame):
-    """
-    DataFrame containing an atmosphere discretization.
-
-    Use sm.Atmosphere() to construct the default Atmosphere object.
 
     Attributes
     ----------
@@ -215,6 +149,81 @@ class Atmosphere(pd.DataFrame):
         # (more or less linear)
         return (h_lower + (h_upper-h_lower) / np.log(Xv_upper/Xv_lower)
                 * np.log(Xv_upper/Xv))
+
+
+# Constructor #################################################################
+def _atmosphere(atmosphere, h0, h_top, N_steps, model):
+    """
+    Constructor of Atmosphere class.
+
+    Parameters
+    ----------
+    atmosphere : Atmosphere object
+    h0 : float
+        Ground level in km above sea level.
+    h_top : float
+        Top level of the atmosphere in km above sea level.
+    N_steps : int
+        Number of discretization steps.
+    model : int
+        CORSIKA atmospheric model. Presently either 1 or 17. More models to
+        be implemented.
+    """
+    # For the default atmospheric parameters
+    # if (h0 == _h0) and (N_steps == _N_steps) and (model == _model):
+    #     global ATM
+    #     try:
+    #         atmosphere = ATM  # Outputs the default atmosphere if already generated
+    #    except Exception:
+    #         # If the default atmosphere is to be generated,
+    #         # it will be assigned to the global variable ATM
+    #         ATM = atmosphere
+
+    # The output DataFrame includes the input parameters h0, h_top, N_steps,
+    # model as attributes
+    atmosphere.h0 = h0
+    atmosphere.h_top = h_top
+    atmosphere.N_steps = N_steps
+    atmosphere.model = model
+
+    # Array of mid heights of the discretization of the atmosphere.
+    # h0 represent the ground level.
+    height = np.linspace(h0, atmosphere.h_top, N_steps+1)
+    atmosphere.h_step = height[1] - height[0]
+    atmosphere.h = height[1:] - atmosphere.h_step/2.
+
+    # Vertical depth and density from the input model
+    Xv, rho = atmosphere._get_Xv_rho(atmosphere.h)
+
+    atmosphere.X_vert = Xv
+    atmosphere.rho = rho
+
+    temp = np.zeros_like(rho)
+    # Air is assumed to be an ideal gas with 28.96 g/mol
+    temp[rho > 0] = 28.96 * 9.81 * Xv[rho > 0] / 831445.98 / rho[rho > 0]
+    atmosphere.temp = temp
+    P = 9.81 * Xv / 10.  # A constant gravitational acceleration is assumed
+    atmosphere.P = P
+    # CORSIKA models do not describe the partial pressure of water vapor
+    P_w = np.zeros_like(P)
+    atmosphere.P_w = P_w
+
+    # delta=1-n at 350nm. J.C. Owens, Appl. Opt. 6 (1967) 51
+    delta = np.zeros_like(temp)
+    delta[temp > 0] = 0.00000001 * (
+        8132.8589*(P[temp > 0]-P_w[temp > 0])/temp[temp > 0]
+        * (1.+(P[temp > 0]-P_w[temp > 0])
+            * (0.000000579-0.0009325/temp[temp > 0]+0.25844/temp[temp > 0]**2))
+        + 6961.9879*P_w[temp > 0]/temp[temp > 0]
+        * (1.+P_w[temp > 0]*(1.+0.00037*P_w[temp > 0])
+            * (-0.00237321+2.23366/temp[temp > 0]-710.792/temp[temp > 0]**2
+                + 0.000775141/temp[temp > 0]**3)))
+
+    # Threshold energy for Cherenkov production at 350 nm in air
+    atmosphere.E_th = 0.511 / np.sqrt(2.*delta)
+
+    # Moliere radius in km
+    atmosphere.r_M = 21.2 / 81. * 36.7 / atmosphere.rho / 100000.
 
 
 # Auxiliary functions #########################################################
