@@ -7,6 +7,199 @@ import matplotlib.animation as animation
 from IPython.display import HTML
 
 
+# Class #######################################################################
+class Image:
+    """
+    Generate a time-varying shower image from a Signal object.
+
+    The object contains a time-varying shower image in a circular camera with
+    square pixels of same solid angle. A Nishimura-Kamata-Greisen lateral
+    profile is used to spread the signal contribution from each shower point to
+    several pixels.
+
+    Parameters
+    ----------
+    signal : Signal object.
+    lat_profile : bool, default True
+        Use a NKG lateral profile to spread the signal. If False, a linear
+        shower is assumed.
+    N_pix : int
+        Number of camera pixels. If not given, the predefined value in the
+        Telescope object is used.
+    int_time : float
+        Integration time in microseconds of a camera frame. If not
+        given, the predefined value in the Telescope object is used.
+    NSB : float
+        Night sky background in MHz/m$^2$/deg$^2$.
+
+    Attributes
+    ----------
+    signal : Signal object.
+    lat_profile : bool
+        Bool indicating wether a NKG lateral profile is used to
+        spread the signal. If False, a linear shower is assumed.
+    N_pix : int
+        Number of camera pixels.
+    N_pix_r : int
+        Number of pixels across a camera radius.
+    sol_angle_pix : float
+        Solid angle in stereoradians of a single pixel.
+    int_time : float
+        Integration time in microseconds of a camera frame.
+    N_frames : int
+        Number of frames.
+    frames : array
+        Array of size (N_frames, 2*N_pix_r+1, 2*N_pix_r+1) containing the
+        pixel values at each frame. Array elements not corresponding to any
+        camera pixel are set to -inf.
+    NSB : float
+        Night sky background in MHz/m$^2$/deg$^2$.
+    NSB_pix : float
+        Mean number of background photoelectrons per pixel and frame.
+
+    Methods
+    -------
+    show : Show a camera frame or the sum of all them including random
+        background.
+    animate : Show an animation of camera frames.
+    """
+    def __init__(self, signal, lat_profile=True, N_pix=None, int_time=None, NSB=40.):
+        _image(self, signal, lat_profile, N_pix, int_time, NSB)
+
+    # Methods #################################################################
+    def show(self, frame=None, NSB=None, ax=None):
+        """
+        Show a camera frame or the sum of all them including random background.
+
+        Parameters
+        ----------
+        frame : int
+            Frame number. If not given, the sum of frames is shown.
+        NSB : float
+            Night sky background in MHz/m$^2$/deg$^2$. If not given, the one
+            defined in Image is used.
+        ax : AxesSubplot object
+            Axes instance where the plot is generated. In not given, a new
+            AxesSubplot object is created.
+
+        Returns
+        -------
+        axes : AxesSubplot object.
+        """
+        N_pix = self.N_pix
+        N_pix_r = self.N_pix_r
+        N_frames = self.N_frames
+        frames = self.frames
+        # Image size
+        N = 2 * N_pix_r +1
+
+        # If an Axes instance is not given, a new AxesSubplot is created
+        if ax is None:
+            fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+
+        # If no signal, an empty plot is generated
+        if N_frames == 0:
+            ax.text(0.4, 0.5, 'No signal')
+            return ax
+
+        # The NSB defined in image is used
+        if NSB is None:
+            NSB_pix = self.NSB_pix
+        # The input NSB is used
+        else:
+            telescope = self.signal.telescope
+            int_time = self.int_time
+            sol_angle_pix = self.sol_angle_pix
+            NSB_pix = (NSB * 180.**2 / math.pi**2 * telescope.area *
+                       sol_angle_pix * int_time)
+
+        # Sum of frames
+        if frame is None:
+            image = frames.sum(0)
+            # Integrated noise
+            noise = np.array(np.random.poisson(N_frames*NSB_pix, (N, N)),
+                             float)
+            image += noise
+        # A given frame is shown
+        elif frame < N_frames:
+            image = frames[frame]
+            # Noise of a single frame
+            noise = np.array(np.random.poisson(NSB_pix, (N, N)), float)
+            image += noise
+        else:
+            raise ValueError(
+                'The frame number must be lower the number of frames')
+
+        extent = (-N_pix_r-0.5, N_pix_r+0.5, -N_pix_r-0.5, N_pix_r+0.5)
+        psm = ax.imshow(image, extent=extent)  # cmap=viridis
+        plt.colorbar(psm, ax=ax, label='Photoelectrons')
+        return ax
+
+    def animate(self, NSB=None):
+        """
+        Show an interactive animation of camera frames.
+
+        Parameters
+        ----------
+        NSB : float
+            Night sky background in MHz/m$^2$/deg$^2$. If not given, the one
+            defined in Image is used.
+
+        Returns
+        -------
+        ani : HTML object.
+        """
+        N_pix = self.N_pix
+        N_pix_r = self.N_pix_r
+        N_frames = self.N_frames
+        frames = self.frames
+        # Image size
+        N = 2 * N_pix_r +1
+
+        # If no signal, an empty plot is generated
+        if N_frames == 0:
+            fig = plt.figure(figsize=(5, 5))
+            plt.text(0.4, 0.5, 'No signal')
+            return fig
+
+        # The NSB defined in image is used
+        if NSB is None:
+            NSB_pix = self.NSB_pix
+        # The input NSB is used
+        else:
+            telescope = self.signal.telescope
+            int_time = self.int_time
+            sol_angle_pix = self.sol_angle_pix
+            NSB_pix = (NSB * 180.**2 / math.pi**2 * telescope.area *
+                       sol_angle_pix * int_time)
+
+        fig = plt.figure()
+        extent = (-N_pix_r-0.5, N_pix_r+0.5, -N_pix_r-0.5, N_pix_r+0.5)
+        # Same color scale for all frames
+        vmax = frames.max()
+        vmin = 0.
+        # List of AxesSubplot objects to pass to ArtistAnimation function
+        ims = []
+        for i, f in enumerate(frames):
+            # Noise of a single frame
+            noise = np.array(
+                np.random.poisson(NSB_pix, (N, N)), float)
+            f += noise
+
+            im = plt.imshow(f, extent=extent, vmin=vmin, vmax=vmax)
+            ims.append([im])
+
+        # One only colorbar
+        cbar = fig.colorbar(im)
+        cbar.ax.set_ylabel('Photoelectrons');
+
+        ani = animation.ArtistAnimation(fig, ims, interval=100, blit=True,
+                                        repeat_delay=500)
+        # Interactive HTML object
+        ani = HTML(ani.to_jshtml())
+        return ani
+
+
 # Constructor #################################################################
 def _image(image, signal, lat_profile, N_pix, int_time, NSB):
     """
@@ -243,184 +436,6 @@ def _image(image, signal, lat_profile, N_pix, int_time, NSB):
                     frames[f_index_p, pix_y_pss, pix_x_pss] += Npe_pss
 
     image.frames = frames
-
-
-# Class #######################################################################
-class Image:
-    """
-    Generate a time-varying shower image from a Signal object.
-
-    The object contains a time-varying shower image in a circular camera with
-    square pixels of same solid angle. A Nishimura-Kamata-Greisen lateral
-    profile is used to spread the signal contribution from each shower point to
-    several pixels.
-
-    Attributes
-    ----------
-    signal : Signal object.
-    lat_profile : bool
-        Bool indicating wether a NKG lateral profile is used to
-        spread the signal. If False, a linear shower is assumed.
-    N_pix : int
-        Number of camera pixels.
-    N_pix_r : int
-        Number of pixels across a camera radius.
-    sol_angle_pix : float
-        Solid angle in stereoradians of a single pixel.
-    int_time : float
-        Integration time in microseconds of a camera frame.
-    N_frames : int
-        Number of frames.
-    frames : array
-        Array of size (N_frames, 2*N_pix_r+1, 2*N_pix_r+1) containing the
-        pixel values at each frame. Array elements not corresponding to any
-        camera pixel are set to -inf.
-    NSB : float
-        Night sky background in MHz/m$^2$/deg$^2$.
-    NSB_pix : float
-        Mean number of background photoelectrons per pixel and frame.
-
-    Methods
-    -------
-    show : Show a camera frame or the sum of all them including random
-        background.
-    animate : Show an animation of camera frames.
-    """
-    def __init__(self, signal, lat_profile=True, N_pix=None, int_time=None, NSB=40.):
-        _image(self, signal, lat_profile, N_pix, int_time, NSB)
-
-    # Methods #################################################################
-    def show(self, frame=None, NSB=None, ax=None):
-        """
-        Show a camera frame or the sum of all them including random background.
-
-        Parameters
-        ----------
-        frame : int
-            Frame number. If not given, the sum of frames is shown.
-        NSB : float
-            Night sky background in MHz/m$^2$/deg$^2$. If not given, the one
-            defined in Image is used.
-        ax : AxesSubplot object
-            Axes instance where the plot is generated. In not given, a new
-            AxesSubplot object is created.
-
-        Returns
-        -------
-        axes : AxesSubplot object.
-        """
-        N_pix = self.N_pix
-        N_pix_r = self.N_pix_r
-        N_frames = self.N_frames
-        frames = self.frames
-        # Image size
-        N = 2 * N_pix_r +1
-
-        # If an Axes instance is not given, a new AxesSubplot is created
-        if ax is None:
-            fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-
-        # If no signal, an empty plot is generated
-        if N_frames == 0:
-            ax.text(0.4, 0.5, 'No signal')
-            return ax
-
-        # The NSB defined in image is used
-        if NSB is None:
-            NSB_pix = self.NSB_pix
-        # The input NSB is used
-        else:
-            telescope = self.signal.telescope
-            int_time = self.int_time
-            sol_angle_pix = self.sol_angle_pix
-            NSB_pix = (NSB * 180.**2 / math.pi**2 * telescope.area *
-                       sol_angle_pix * int_time)
-
-        # Sum of frames
-        if frame is None:
-            image = frames.sum(0)
-            # Integrated noise
-            noise = np.array(np.random.poisson(N_frames*NSB_pix, (N, N)),
-                             float)
-            image += noise
-        # A given frame is shown
-        elif frame < N_frames:
-            image = frames[frame]
-            # Noise of a single frame
-            noise = np.array(np.random.poisson(NSB_pix, (N, N)), float)
-            image += noise
-        else:
-            raise ValueError(
-                'The frame number must be lower the number of frames')
-
-        extent = (-N_pix_r-0.5, N_pix_r+0.5, -N_pix_r-0.5, N_pix_r+0.5)
-        psm = ax.imshow(image, extent=extent)  # cmap=viridis
-        plt.colorbar(psm, ax=ax, label='Photoelectrons')
-        return ax
-
-    def animate(self, NSB=None):
-        """
-        Show an interactive animation of camera frames.
-
-        Parameters
-        ----------
-        NSB : float
-            Night sky background in MHz/m$^2$/deg$^2$. If not given, the one
-            defined in Image is used.
-
-        Returns
-        -------
-        ani : HTML object.
-        """
-        N_pix = self.N_pix
-        N_pix_r = self.N_pix_r
-        N_frames = self.N_frames
-        frames = self.frames
-        # Image size
-        N = 2 * N_pix_r +1
-
-        # If no signal, an empty plot is generated
-        if N_frames == 0:
-            fig = plt.figure(figsize=(5, 5))
-            plt.text(0.4, 0.5, 'No signal')
-            return fig
-
-        # The NSB defined in image is used
-        if NSB is None:
-            NSB_pix = self.NSB_pix
-        # The input NSB is used
-        else:
-            telescope = self.signal.telescope
-            int_time = self.int_time
-            sol_angle_pix = self.sol_angle_pix
-            NSB_pix = (NSB * 180.**2 / math.pi**2 * telescope.area *
-                       sol_angle_pix * int_time)
-
-        fig = plt.figure()
-        extent = (-N_pix_r-0.5, N_pix_r+0.5, -N_pix_r-0.5, N_pix_r+0.5)
-        # Same color scale for all frames
-        vmax = frames.max()
-        vmin = 0.
-        # List of AxesSubplot objects to pass to ArtistAnimation function
-        ims = []
-        for i, f in enumerate(frames):
-            # Noise of a single frame
-            noise = np.array(
-                np.random.poisson(NSB_pix, (N, N)), float)
-            f += noise
-
-            im = plt.imshow(f, extent=extent, vmin=vmin, vmax=vmax)
-            ims.append([im])
-
-        # One only colorbar
-        cbar = fig.colorbar(im)
-        cbar.ax.set_ylabel('Photoelectrons');
-
-        ani = animation.ArtistAnimation(fig, ims, interval=100, blit=True,
-                                        repeat_delay=500)
-        # Interactive HTML object
-        ani = HTML(ani.to_jshtml())
-        return ani
 
 
 # Auxiliary functions #########################################################

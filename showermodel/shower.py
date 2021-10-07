@@ -9,103 +9,6 @@ from .track import _theta, _az, _x0, _y0
 from .profile import _E, _prf_model
 
 
-# Constructor #################################################################
-def _shower(shower, E, theta, alt, az, x0, y0, prf_model, X_max, N_ch_max,
-            X0_GH, lambda_GH, atmosphere, **kwargs):
-    """
-    Constructor of Shower object.
-
-    It includes the shower profile and its fluorescence and Cherenkov light
-    production.
-
-    Parameters
-    ----------
-    shower : Shower object.
-    E : float
-        Energy of the primary particle in MeV.
-    theta : float
-        Zenith angle in degrees of the apparent position of the source.
-    alt : float
-        Altitude in degrees of the apparent position of the source. If None,
-        theta is used. If given, theta is overwritten.
-    az : float
-        Azimuth angle (from north, clockwise) in degrees of the apparent
-        position of the source.
-    x0 : float
-        East coordinate in km of shower impact point at ground.
-    y0 : float
-        West coordinate in km of shower impact point at ground.
-    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame
-        If 'Greisen', the Greisen function for electromagnetic showers is used.
-        If 'Gaisser-Hillas', the Gaisser-Hillas function for hadron-induced
-        showers is used. If a DataFrame with an energy deposit profile is input,
-        it must have two columns with the slant depth in g/cm2 and dE/dX in
-        MeV.cm2/g. 
-    X_max : float
-        Slant depth in g/cm^2 at shower maximum. If None and prf_model is
-        'Greisen' or 'Gaisser-Hillas', a typical value of X_max for gamma or
-        proton showers is used. If None and a numerical energy deposit profile
-        is input, lambda_r = 36.7 g/cm^2 is the radiation length E_c = 81 MeV
-        is the critical energy.
-    X0_GH : float
-        X0 parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
-        If None, a typical value for the input energy is used.
-    lambda_GH : float
-        Lambda parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
-        If None, a typical value for the input energy is used.
-    atmosphere : Atmosphere object.
-        If None, a new Atmosphere object is generated.
-    **kwargs {h0, h_top, N_steps, model}
-        Options to construct the new Atmosphere object when atmosphere==None.
-        If None, the default Atmosphere object is used.
-    """
-    if isinstance(atmosphere, sm.Atmosphere):
-        pass
-    elif atmosphere is None:
-        atmosphere = sm.Atmosphere(**kwargs)
-    else:
-        raise ValueError('The input atmosphere is not valid.')
-
-    # shower = Shower()
-    shower.E = E
-    if alt is None:
-        alt = 90. - theta
-    else:
-        theta = 90. - alt
-    shower.theta = theta
-    shower.alt = alt
-    shower.az = az
-    shower.x0 = x0
-    shower.y0 = y0
-
-    # Atmosphere
-    shower.atmosphere = atmosphere
-
-    shower.h0 = atmosphere.h0
-    shower.h_top = atmosphere.h_top
-    shower.N_steps = atmosphere.N_steps
-    shower.model = atmosphere.model
-
-    # Shower track
-    shower.track = sm.Track(theta, None, az, x0, y0, atmosphere)
-
-    # Shower profile
-    profile = sm.Profile(E, theta, None, prf_model, X_max, X0_GH, lambda_GH,
-                         atmosphere)
-    shower.profile = profile
-
-    shower.prf_model = profile.prf_model
-    shower.X_max = profile.X_max
-    shower.X0_GH = profile.X0_GH
-    shower.lambda_GH = profile.lambda_GH
-
-    # Fluorescence emission
-    shower.fluorescence = shower.profile.Fluorescence()
-
-    # Cherenkov emission
-    shower.cherenkov = shower.profile.Cherenkov()
-
-
 # Class #######################################################################
 class Shower:
     """
@@ -659,3 +562,100 @@ def _copy(shower, atmosphere=None, **kwargs):
         shower_c.cherenkov = shower_c.profile.Cherenkov()
 
     return shower_c
+
+
+# Constructor #################################################################
+def _shower(shower, E, theta, alt, az, x0, y0, prf_model, X_max, N_ch_max,
+            X0_GH, lambda_GH, atmosphere, **kwargs):
+    """
+    Constructor of Shower object.
+
+    It includes the shower profile and its fluorescence and Cherenkov light
+    production.
+
+    Parameters
+    ----------
+    shower : Shower object.
+    E : float
+        Energy of the primary particle in MeV.
+    theta : float
+        Zenith angle in degrees of the apparent position of the source.
+    alt : float
+        Altitude in degrees of the apparent position of the source. If None,
+        theta is used. If given, theta is overwritten.
+    az : float
+        Azimuth angle (from north, clockwise) in degrees of the apparent
+        position of the source.
+    x0 : float
+        East coordinate in km of shower impact point at ground.
+    y0 : float
+        West coordinate in km of shower impact point at ground.
+    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame
+        If 'Greisen', the Greisen function for electromagnetic showers is used.
+        If 'Gaisser-Hillas', the Gaisser-Hillas function for hadron-induced
+        showers is used. If a DataFrame with an energy deposit profile is input,
+        it must have two columns with the slant depth in g/cm2 and dE/dX in
+        MeV.cm2/g. 
+    X_max : float
+        Slant depth in g/cm^2 at shower maximum. If None and prf_model is
+        'Greisen' or 'Gaisser-Hillas', a typical value of X_max for gamma or
+        proton showers is used. If None and a numerical energy deposit profile
+        is input, lambda_r = 36.7 g/cm^2 is the radiation length E_c = 81 MeV
+        is the critical energy.
+    X0_GH : float
+        X0 parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
+        If None, a typical value for the input energy is used.
+    lambda_GH : float
+        Lambda parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
+        If None, a typical value for the input energy is used.
+    atmosphere : Atmosphere object.
+        If None, a new Atmosphere object is generated.
+    **kwargs {h0, h_top, N_steps, model}
+        Options to construct the new Atmosphere object when atmosphere==None.
+        If None, the default Atmosphere object is used.
+    """
+    if isinstance(atmosphere, sm.Atmosphere):
+        pass
+    elif atmosphere is None:
+        atmosphere = sm.Atmosphere(**kwargs)
+    else:
+        raise ValueError('The input atmosphere is not valid.')
+
+    # shower = Shower()
+    shower.E = E
+    if alt is None:
+        alt = 90. - theta
+    else:
+        theta = 90. - alt
+    shower.theta = theta
+    shower.alt = alt
+    shower.az = az
+    shower.x0 = x0
+    shower.y0 = y0
+
+    # Atmosphere
+    shower.atmosphere = atmosphere
+
+    shower.h0 = atmosphere.h0
+    shower.h_top = atmosphere.h_top
+    shower.N_steps = atmosphere.N_steps
+    shower.model = atmosphere.model
+
+    # Shower track
+    shower.track = sm.Track(theta, None, az, x0, y0, atmosphere)
+
+    # Shower profile
+    profile = sm.Profile(E, theta, None, prf_model, X_max, X0_GH, lambda_GH,
+                         atmosphere)
+    shower.profile = profile
+
+    shower.prf_model = profile.prf_model
+    shower.X_max = profile.X_max
+    shower.X0_GH = profile.X0_GH
+    shower.lambda_GH = profile.lambda_GH
+
+    # Fluorescence emission
+    shower.fluorescence = shower.profile.Fluorescence()
+
+    # Cherenkov emission
+    shower.cherenkov = shower.profile.Cherenkov()

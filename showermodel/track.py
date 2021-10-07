@@ -18,14 +18,15 @@ _x0 = 0.     # km
 _y0 = 0.     # km
 
 
-# Constructor #################################################################
-def _track(track, theta, alt, az, x0, y0, atmosphere, **kwargs):
+# Class #######################################################################
+class Track(pd.DataFrame):
     """
-    Constructor of Track class.
+    DataFrame containing a linear-shower track discretization.
+
+    Use sm.Track() to construct a default Track object.
 
     Parameters
     ----------
-    track : Track object
     theta : float
         Zenith angle in degrees of the apparent position of the source.
     alt : float
@@ -43,79 +44,6 @@ def _track(track, theta, alt, az, x0, y0, atmosphere, **kwargs):
     **kwargs {h0, h_top, N_steps, model}
         Options to construct the new Atmosphere object when atm==None.
         If None, the default Atmosphere object is used.
-    """
-    if isinstance(atmosphere, sm.Atmosphere):
-        pass
-    elif atmosphere is None:
-        atmosphere = sm.Atmosphere(**kwargs)
-    else:
-        raise ValueError('The input atmosphereis not valid.')
-
-    # The columns of the output DataFrame includes, at each discretization step
-    # of are: coordinates (x,y,z) in km and the travel time t in us
-    # track = Track(columns=['x', 'y', 'z', 't'])
-    track.atmosphere = atmosphere
-
-    # The input parameters along with some geometric parameters are also
-    # included as atributes of the DataFrame. The angles are stored in degrees
-    if alt is None:
-        alt = 90. - theta
-    else:
-        theta = 90. - alt
-    track.theta = theta
-    track.alt = alt
-    theta = math.radians(theta)
-    cos_theta = math.cos(theta)
-    sin_theta = math.sin(theta)
-    track.az = az
-    az = math.radians(az)
-    cos_az = math.cos(az)
-    sin_az = math.sin(az)
-
-    # Coordinates of the unit vector pointing at the arrival shower direction
-    track.ux = sin_theta * sin_az
-    track.uy = sin_theta * cos_az
-    track.uz = cos_theta
-
-    # Coordinates of a unit vector perpendicular to u and parallel to
-    # horizontal xy plane
-    track.vx = cos_az
-    track.vy = -sin_az
-    track.vz = 0.
-
-    # Coordinates of the unit vector perpendicular to both u and v.
-    track.wx = cos_theta * sin_az
-    track.wy = cos_theta * cos_az
-    track.wz = -sin_theta
-
-    # Core position at ground level (z=0) and on the top of the atmosphere
-    # (z=zmax)
-    track.x0 = x0
-    track.y0 = y0
-    track.z_top = atmosphere.h_top - atmosphere.h0
-    track.x_top = x0 + track.z_top * track.ux / track.uz
-    track.y_top = y0 + track.z_top * track.uy / track.uz
-
-    # Total travel time in us, where t=0 corresponds to the moment when the
-    # shower enters the atmosphere
-    track.t0 = track.z_top / track.uz / 0.2998
-
-    # Distance in km travelled trhough one atmospheric slice
-    track.dl = atmosphere.h_step / track.uz
-
-    # Coordinates along the shower track
-    track.z = atmosphere.h - atmosphere.h0
-    track.x = x0 + track.z * track.ux / track.uz
-    track.y = y0 + track.z * track.uy / track.uz
-    track.t = (track.z_top - track.z) / track.uz / 0.2998  # Travel time
-
-
-# Class #######################################################################
-class Track(pd.DataFrame):
-    """
-    DataFrame containing a linear-shower track discretization.
-
-    Use sm.Track() to construct a default Track object.
 
     Attributes
     ----------
@@ -360,3 +288,95 @@ class Track(pd.DataFrame):
         return show_geometry(self, observatory, '3d', x_min, x_max, y_min,
                              y_max, X_mark, False, False, False, xy_proj,
                              pointing)
+
+
+# Constructor #################################################################
+def _track(track, theta, alt, az, x0, y0, atmosphere, **kwargs):
+    """
+    Constructor of Track class.
+
+    Parameters
+    ----------
+    track : Track object
+    theta : float
+        Zenith angle in degrees of the apparent position of the source.
+    alt : float
+        Altitude in degrees of the apperent position of the source. If None,
+        theta is used. If given, theta is overwritten.
+    az : float
+        Azimuth angle (from north, clockwise) in degrees of the apparent
+        position of the source.
+    x0 : float
+        East coordinate in km of shower impact point at ground.
+    y0 : float
+        West coordinate in km of shower impact point at ground.
+    atmosphere : Atmosphere object
+        If None, a new Atmosphere object is generated.
+    **kwargs {h0, h_top, N_steps, model}
+        Options to construct the new Atmosphere object when atm==None.
+        If None, the default Atmosphere object is used.
+    """
+    if isinstance(atmosphere, sm.Atmosphere):
+        pass
+    elif atmosphere is None:
+        atmosphere = sm.Atmosphere(**kwargs)
+    else:
+        raise ValueError('The input atmosphereis not valid.')
+
+    # The columns of the output DataFrame includes, at each discretization step
+    # of are: coordinates (x,y,z) in km and the travel time t in us
+    # track = Track(columns=['x', 'y', 'z', 't'])
+    track.atmosphere = atmosphere
+
+    # The input parameters along with some geometric parameters are also
+    # included as atributes of the DataFrame. The angles are stored in degrees
+    if alt is None:
+        alt = 90. - theta
+    else:
+        theta = 90. - alt
+    track.theta = theta
+    track.alt = alt
+    theta = math.radians(theta)
+    cos_theta = math.cos(theta)
+    sin_theta = math.sin(theta)
+    track.az = az
+    az = math.radians(az)
+    cos_az = math.cos(az)
+    sin_az = math.sin(az)
+
+    # Coordinates of the unit vector pointing at the arrival shower direction
+    track.ux = sin_theta * sin_az
+    track.uy = sin_theta * cos_az
+    track.uz = cos_theta
+
+    # Coordinates of a unit vector perpendicular to u and parallel to
+    # horizontal xy plane
+    track.vx = cos_az
+    track.vy = -sin_az
+    track.vz = 0.
+
+    # Coordinates of the unit vector perpendicular to both u and v.
+    track.wx = cos_theta * sin_az
+    track.wy = cos_theta * cos_az
+    track.wz = -sin_theta
+
+    # Core position at ground level (z=0) and on the top of the atmosphere
+    # (z=zmax)
+    track.x0 = x0
+    track.y0 = y0
+    track.z_top = atmosphere.h_top - atmosphere.h0
+    track.x_top = x0 + track.z_top * track.ux / track.uz
+    track.y_top = y0 + track.z_top * track.uy / track.uz
+
+    # Total travel time in us, where t=0 corresponds to the moment when the
+    # shower enters the atmosphere
+    track.t0 = track.z_top / track.uz / 0.2998
+
+    # Distance in km travelled trhough one atmospheric slice
+    track.dl = atmosphere.h_step / track.uz
+
+    # Coordinates along the shower track
+    track.z = atmosphere.h - atmosphere.h0
+    track.x = x0 + track.z * track.ux / track.uz
+    track.y = y0 + track.z * track.uy / track.uz
+    track.t = (track.z_top - track.z) / track.uz / 0.2998  # Travel time

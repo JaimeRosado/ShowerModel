@@ -9,44 +9,6 @@ warnings.filterwarnings(
     UserWarning)
 
 
-# Constructor #################################################################
-def _fluorescence(fluorescence, profile):
-    """
-    Constructor of Fluorescence class.
-
-    Parameters
-    ----------
-    fluorescence : Fluorescence object.
-    profile : Profile object.
-    """
-    # Number of fluorescence photons at 337nm
-    N0_337 = fluorescence.Y0_337 * profile.E_dep
-
-    # fluorescence = Fluorescence()
-    fluorescence.profile = profile
-    fluorescence.atmosphere = profile.atmosphere
-    
-    P0 = fluorescence.P0
-    T0 = fluorescence.T0
-
-    # Number of emitted photons at wavelength wvl as a function of pressure P,
-    # temperature T and partial pressure P_w of water vapor:
-    for wvl, I_rel, PP0, PPw, a in fluorescence.model:
-        # For some bands, no information on the quenching contribution from
-        # water vapor is available
-        if PPw == 0:
-            fluorescence[wvl] = (
-                N0_337 * I_rel * (1. + P0 / PP0)
-                / (1. + profile.atmosphere.P / PP0
-                   * (T0 / profile.atmosphere.temp)**(0.5 - a)))
-        else:
-            fluorescence[wvl] = (
-                N0_337 * I_rel * (1. + P0 / PP0)
-                / (1. + ((profile.atmosphere.P - profile.atmosphere.P_w) / PP0
-                         + profile.atmosphere.P_w / PPw)
-                   * (T0 / profile.atmosphere.temp)**(0.5 - a)))
-
-
 # Class #######################################################################
 class Fluorescence(pd.DataFrame):
     """
@@ -55,6 +17,10 @@ class Fluorescence(pd.DataFrame):
     Fluorescence light is evaluated at each of the 34 bands of the fluorescence
     spectrum in the 290 - 430 nm range based on the parameterization described
     in D. Morcuende et al., Astropart. Phys. 107(2019)26 and references therein.
+
+    Parameters
+    ----------
+    profile : Profile object.
 
     Attributes
     ----------
@@ -134,3 +100,41 @@ class Fluorescence(pd.DataFrame):
         ax.axes.yaxis.set_label_text(
             "Fluorescence production (Photons·cm$^2$/g)")
         return ax
+
+
+# Constructor #################################################################
+def _fluorescence(fluorescence, profile):
+    """
+    Constructor of Fluorescence class.
+
+    Parameters
+    ----------
+    fluorescence : Fluorescence object.
+    profile : Profile object.
+    """
+    # Number of fluorescence photons at 337nm
+    N0_337 = fluorescence.Y0_337 * profile.E_dep
+
+    # fluorescence = Fluorescence()
+    fluorescence.profile = profile
+    fluorescence.atmosphere = profile.atmosphere
+    
+    P0 = fluorescence.P0
+    T0 = fluorescence.T0
+
+    # Number of emitted photons at wavelength wvl as a function of pressure P,
+    # temperature T and partial pressure P_w of water vapor:
+    for wvl, I_rel, PP0, PPw, a in fluorescence.model:
+        # For some bands, no information on the quenching contribution from
+        # water vapor is available
+        if PPw == 0:
+            fluorescence[wvl] = (
+                N0_337 * I_rel * (1. + P0 / PP0)
+                / (1. + profile.atmosphere.P / PP0
+                   * (T0 / profile.atmosphere.temp)**(0.5 - a)))
+        else:
+            fluorescence[wvl] = (
+                N0_337 * I_rel * (1. + P0 / PP0)
+                / (1. + ((profile.atmosphere.P - profile.atmosphere.P_w) / PP0
+                         + profile.atmosphere.P_w / PPw)
+                   * (T0 / profile.atmosphere.temp)**(0.5 - a)))

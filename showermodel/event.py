@@ -7,73 +7,6 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 
-# Constructor #################################################################
-def _event(event, observatory, shower, atm_trans, tel_eff, **kwargs):
-    """
-    Construct an Event object from a shower and an observatory.
-    
-    The Event objet contains the signal produced by the shower in each
-    telescope of the observatory.
-
-    Parameters
-    ----------
-    event : Event object.
-    observatory : Observatory object.
-    shower : Shower object.
-    atm_trans : bool, default True
-        Include the atmospheric transmision to transport photons.
-    tel_eff : bool, default True
-        Include the telescope efficiency to calculate the signals.
-        If False, 100% efficiency is assumed for a given wavelength interval.
-    **kwargs {wvl_ini, wvl_fin, wvl_step}
-        These parameters will be passed to the Signal constructor to modify
-        the wavelength interval when tel_eff==False. If None, the wavelength
-        interval defined in each telescope is used.
-    """
-    if not isinstance(shower, sm.Shower):
-        observatory, shower = (shower, observatory)
-        if not isinstance(shower, sm.Shower):
-            raise ValueError('The input shower is not valid')
-
-    if isinstance(event, GridEvent):
-        if isinstance(observatory, sm.Grid):
-            event.grid = observatory
-        else:
-            raise ValueError('The input grid is not valid')
-
-    if isinstance(observatory, (sm.Telescope, sm.Observatory)):
-        if isinstance(observatory, sm.Telescope):
-            telescope = observatory
-            event.observatory = sm.Observatory()
-            event.observatory.append(telescope)
-            event.observatory.N_tel = 1         
-        else:
-            event.observatory = observatory
-    else:
-        raise ValueError('The input observatory is not valid')
-
-    event.shower = shower
-    event.atmosphere = shower.atmosphere
-    event.track = shower.track
-    event.profile = shower.profile
-    event.cherenkov = shower.cherenkov
-    event.fluorescence = shower.fluorescence
-
-    event.atm_trans = atm_trans
-    event.tel_eff = tel_eff
-
-    event.projections = []
-    event.signals = []
-    for telescope in observatory:
-        projection = sm.Projection(telescope, event.track)
-        event.projections.append(projection)
-        signal = sm.Signal(
-            telescope, shower, projection, atm_trans, tel_eff, **kwargs)
-        event.signals.append(signal)
-    
-    event.images = None
-
-
 # Class #######################################################################
 class Event():
     """
@@ -450,6 +383,73 @@ class GridEvent(Event):
         either 1D or 2D plot, depending on the grid dimensions.
         """
         return _show_distribution(self)
+
+
+# Constructor #################################################################
+def _event(event, observatory, shower, atm_trans, tel_eff, **kwargs):
+    """
+    Construct an Event object from a shower and an observatory.
+    
+    The Event objet contains the signal produced by the shower in each
+    telescope of the observatory.
+
+    Parameters
+    ----------
+    event : Event object.
+    observatory : Observatory object.
+    shower : Shower object.
+    atm_trans : bool, default True
+        Include the atmospheric transmision to transport photons.
+    tel_eff : bool, default True
+        Include the telescope efficiency to calculate the signals.
+        If False, 100% efficiency is assumed for a given wavelength interval.
+    **kwargs {wvl_ini, wvl_fin, wvl_step}
+        These parameters will be passed to the Signal constructor to modify
+        the wavelength interval when tel_eff==False. If None, the wavelength
+        interval defined in each telescope is used.
+    """
+    if not isinstance(shower, sm.Shower):
+        observatory, shower = (shower, observatory)
+        if not isinstance(shower, sm.Shower):
+            raise ValueError('The input shower is not valid')
+
+    if isinstance(event, GridEvent):
+        if isinstance(observatory, sm.Grid):
+            event.grid = observatory
+        else:
+            raise ValueError('The input grid is not valid')
+
+    if isinstance(observatory, (sm.Telescope, sm.Observatory)):
+        if isinstance(observatory, sm.Telescope):
+            telescope = observatory
+            event.observatory = sm.Observatory()
+            event.observatory.append(telescope)
+            event.observatory.N_tel = 1         
+        else:
+            event.observatory = observatory
+    else:
+        raise ValueError('The input observatory is not valid')
+
+    event.shower = shower
+    event.atmosphere = shower.atmosphere
+    event.track = shower.track
+    event.profile = shower.profile
+    event.cherenkov = shower.cherenkov
+    event.fluorescence = shower.fluorescence
+
+    event.atm_trans = atm_trans
+    event.tel_eff = tel_eff
+
+    event.projections = []
+    event.signals = []
+    for telescope in observatory:
+        projection = sm.Projection(telescope, event.track)
+        event.projections.append(projection)
+        signal = sm.Signal(
+            telescope, shower, projection, atm_trans, tel_eff, **kwargs)
+        event.signals.append(signal)
+    
+    event.images = None
 
 
 # Auxiliary functions #########################################################

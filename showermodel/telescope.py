@@ -13,15 +13,15 @@ _theta = 0.  # deg
 _az = 0.  # deg
 
 
-# Constructor #################################################################
-def _telescope(telescope, x, y, z, theta, alt, az, efficiency, apert, area,
-               N_pix, int_time):
+# Class #######################################################################
+class Telescope:
     """
-    Constructor of Telescope class and daughter classes.
+    Object containing the characteristics of a Cherenkov/fluorescence telescope.
 
     Parameters
     ----------
-    telescope : Telescope object.
+    tel_type : str
+        Name given to the telescope. Default to None.
     x : float
         East coordinate of the telescope in km.
     y : float
@@ -48,88 +48,6 @@ def _telescope(telescope, x, y, z, theta, alt, az, efficiency, apert, area,
         Number of camera pixels.
     int_time : float
         Integration time in microseconds of camera frames.
-    """
-    telescope.x = x
-    telescope.y = y
-    telescope.z = z
-    if alt is None:
-        alt = 90. - theta
-    else:
-        theta = 90. - alt
-    telescope.theta = theta
-    telescope.alt = alt
-    telescope.az = az
-
-    telescope.sin_theta = math.sin(math.radians(theta))
-    telescope.cos_theta = math.cos(math.radians(theta))
-    telescope.sin_az = math.sin(math.radians(az))
-    telescope.cos_az = math.cos(math.radians(az))
-
-    telescope.ux = telescope.sin_theta * telescope.sin_az
-    telescope.uy = telescope.sin_theta * telescope.cos_az
-    telescope.uz = telescope.cos_theta
-
-    # Coordinates of a point at 1km distance from the telescope in the north
-    # direction
-    x_north, y_north, z_north = telescope.hor_to_FoV(0., 1., 0.)
-    # Position angle of the the right-hand direction relative to north
-    # direction
-    phi_right = - telescope.xy_to_phi(x_north, y_north)  # (-270, 90]
-    telescope.phi_right = phi_right + 360. if phi_right < 0. else phi_right
-    # [0, 360)
-
-    if (apert is not None) or (N_pix is not None):
-        if apert is not None:
-            telescope.apert = apert
-            telescope.sol_angle = (
-                2. * math.pi * (1.-math.cos(math.radians(telescope.apert)/2.)))
-            # str
-
-        if N_pix is not None:
-            telescope.N_pix = N_pix
-
-        telescope.sol_angle_pix = telescope.sol_angle / telescope.N_pix  # str
-        telescope.apert_pix = (
-            2. * np.degrees(np.arccos(1.-telescope.sol_angle_pix/2./math.pi)))
-        # deg
-
-    if area is not None:
-        telescope.area = area
-
-    if int_time is not None:
-        telescope.int_time = int_time
-
-    if isinstance(efficiency, pd.DataFrame):
-        # Sorted to allow for interpolation
-        efficiency.sort_index(axis=0, ascending=True, inplace=True)
-        # The first column must be wavelength in nm
-        wvl = np.array(efficiency.iloc[:, 0])
-        telescope.wvl_cher = wvl
-        telescope.wvl_ini = wvl[0]
-        telescope.wvl_step = wvl[1] - wvl[0]
-        telescope.wvl_fin = wvl[-1] + telescope.wvl_step/2.
-        # -> wvl = np.arange(wvl_ini, wvl_fin, wvl_step)
-        if not np.all(np.diff(wvl) == telescope.wvl_step):
-            raise ValueError(
-                "The wavelength discretization step must be constant.")
-
-        # The second column must be efficiency in decimal fraction
-        eff = np.array(efficiency.iloc[:, 1])
-        if (not np.all(eff >= 0.)) or (not np.all(eff <= 1.)):
-            raise ValueError(
-                "Efficiency must be positive and in decimal fraction.")
-        telescope.eff_cher = eff
-        telescope.eff_fluo = np.interp(telescope.wvl_fluo, wvl, eff, left=0.,
-                                       right=0.)
-
-    else:
-        ValueError("The input efficiency data is not valid.")
-
-
-# Class #######################################################################
-class Telescope:
-    """
-    Object containing the characteristics of a Cherenkov/fluorescence telescope.
 
     Attributes
     ----------
@@ -724,3 +642,116 @@ class GridElement(Telescope):
         self.tel_type = tel_type
         _telescope(self, x, y, z, theta, alt, az, efficiency, apert, area,
                    N_pix, int_time)
+
+
+# Constructor #################################################################
+def _telescope(telescope, x, y, z, theta, alt, az, efficiency, apert, area,
+               N_pix, int_time):
+    """
+    Constructor of Telescope class and daughter classes.
+
+    Parameters
+    ----------
+    telescope : Telescope object.
+    x : float
+        East coordinate of the telescope in km.
+    y : float
+        North coordinate of the telescope in km.
+    z : float
+        Height of the telescope in km above ground level.
+    theta : float
+        Zenith angle in degrees of the telescope pointing direction.
+    alt : float
+        Altitude in degrees of the telescope pointing direction. If None,
+        theta is used. If given, theta is overwritten.
+    az : float
+        Azimuth angle (from north, clockwise) in degrees of the telescope
+        pointing direction.
+    efficiency : DataFrame
+        If None, the default efficiency of the selected tel_type. If given,
+        the DataFrame should have two columns with wavelength in nm
+        (with constant discretization step) and efficiency (decimal fraction).
+    apert : float
+        Angular diameter in degrees of the telescope field of view.
+    area : float
+        Detection area in m^2 (e.g., mirror area of an IACT).
+    N_pix : int
+        Number of camera pixels.
+    int_time : float
+        Integration time in microseconds of camera frames.
+    """
+    telescope.x = x
+    telescope.y = y
+    telescope.z = z
+    if alt is None:
+        alt = 90. - theta
+    else:
+        theta = 90. - alt
+    telescope.theta = theta
+    telescope.alt = alt
+    telescope.az = az
+
+    telescope.sin_theta = math.sin(math.radians(theta))
+    telescope.cos_theta = math.cos(math.radians(theta))
+    telescope.sin_az = math.sin(math.radians(az))
+    telescope.cos_az = math.cos(math.radians(az))
+
+    telescope.ux = telescope.sin_theta * telescope.sin_az
+    telescope.uy = telescope.sin_theta * telescope.cos_az
+    telescope.uz = telescope.cos_theta
+
+    # Coordinates of a point at 1km distance from the telescope in the north
+    # direction
+    x_north, y_north, z_north = telescope.hor_to_FoV(0., 1., 0.)
+    # Position angle of the the right-hand direction relative to north
+    # direction
+    phi_right = - telescope.xy_to_phi(x_north, y_north)  # (-270, 90]
+    telescope.phi_right = phi_right + 360. if phi_right < 0. else phi_right
+    # [0, 360)
+
+    if (apert is not None) or (N_pix is not None):
+        if apert is not None:
+            telescope.apert = apert
+            telescope.sol_angle = (
+                2. * math.pi * (1.-math.cos(math.radians(telescope.apert)/2.)))
+            # str
+
+        if N_pix is not None:
+            telescope.N_pix = N_pix
+
+        telescope.sol_angle_pix = telescope.sol_angle / telescope.N_pix  # str
+        telescope.apert_pix = (
+            2. * np.degrees(np.arccos(1.-telescope.sol_angle_pix/2./math.pi)))
+        # deg
+
+    if area is not None:
+        telescope.area = area
+
+    if int_time is not None:
+        telescope.int_time = int_time
+
+    if isinstance(efficiency, pd.DataFrame):
+        # Sorted to allow for interpolation
+        efficiency.sort_index(axis=0, ascending=True, inplace=True)
+        # The first column must be wavelength in nm
+        wvl = np.array(efficiency.iloc[:, 0])
+        telescope.wvl_cher = wvl
+        telescope.wvl_ini = wvl[0]
+        telescope.wvl_step = wvl[1] - wvl[0]
+        telescope.wvl_fin = wvl[-1] + telescope.wvl_step/2.
+        # -> wvl = np.arange(wvl_ini, wvl_fin, wvl_step)
+        if not np.all(np.diff(wvl) == telescope.wvl_step):
+            raise ValueError(
+                "The wavelength discretization step must be constant.")
+
+        # The second column must be efficiency in decimal fraction
+        eff = np.array(efficiency.iloc[:, 1])
+        if (not np.all(eff >= 0.)) or (not np.all(eff <= 1.)):
+            raise ValueError(
+                "Efficiency must be positive and in decimal fraction.")
+        telescope.eff_cher = eff
+        telescope.eff_fluo = np.interp(telescope.wvl_fluo, wvl, eff, left=0.,
+                                       right=0.)
+
+    else:
+        ValueError("The input efficiency data is not valid.")

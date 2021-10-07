@@ -17,6 +17,160 @@ from .track import _theta  # _theta = 0. degrees
 _prf_model = 'Greisen'
 
 
+# Class #######################################################################
+class Profile(pd.DataFrame):
+    """
+    DataFrame containing a shower profile discretization.
+
+    Use sm.Profile() to construct the default Profile object.
+
+    Parameters
+    ----------
+    E : float
+        Energy of the primary particle in MeV.
+    theta : float
+        Zenith angle in degrees of the apparent position of the source.
+    alt : float
+        Altitude in degrees of the apparent position of the source. If None,
+        theta is used. If given, theta is overwritten.
+    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame
+        If 'Greisen', the Greisen function for electromagnetic showers is used.
+        If 'Gaisser-Hillas', the Gaisser-Hillas function for hadron-induced
+        showers is used. If a DataFrame with an energy deposit profile is input,
+        it must have two columns with the slant depth in g/cm2 and dE/dX in
+        MeV.cm2/g. 
+    X_max : float
+        Slant depth in g/cm^2 at shower maximum. If None and prf_model is
+        'Greisen' or 'Gaisser-Hillas', a typical value of X_max for gamma or
+        proton showers is used. If None and a numerical energy deposit profile
+        is input, lambda_r = 36.7 g/cm^2 is the radiation length and
+        E_c = 81 MeV is the critical energy.
+    X0_GH : float
+        X0 parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
+        If None, a typical value for the input energy is used.
+    lambda_GH : float
+        Lambda parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
+        If None, a typical value for the input energy is used.
+    atmosphere : Atmosphere object.
+        If None, a new Atmosphere object is generated.
+    **kwargs {h0, h_top, N_steps, model}
+        Options to construct the new Atmosphere object when atmosphere==None.
+        If None, the default Atmosphere object is used.
+
+    Attributes
+    ----------
+    X : float
+        Column 0, slant depth in g/cm^2.
+    s : float
+        Column 1, shower age.
+    dX : float
+        Column 2, discretization step in g/cm^2 along the shower axis.
+    E_dep : float
+        Column 3, energy deposit in MeV at each discretiztion step.
+    N_ch : float
+        Column 4, number of charged particles.
+    atmosphere : Atmosphere object.
+    E : float
+        Energy of the primary particle.
+    theta : float
+        Zenith angle in degrees of the apparent position of the source.
+    alt : float
+        Altitude in degrees of the apparent position of the source.
+    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame.
+    X_max : float
+        Slant depth in g/cm^2 at shower maximum.
+    X0_GH : float
+        X0 parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
+    lambda_GH : float
+        lambda parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
+    dl : float
+        Size in km of the discretization step along the shower axis.
+
+    Methods
+    -------
+    Fluorescence : Calculate the fluorescence light production.
+    Cherenkov : Calculate the Cherenkov light production.
+    show : Show the shower profile, both number of charged particles and energy
+        deposit, as a function of slant depth.
+
+    See also
+    --------
+    Profile : DataFrame containing a shower profile discretization.
+    Shower : Make a discretization of a shower.
+    """
+    def __init__(self, E=_E, theta=_theta, alt=None, prf_model=_prf_model,
+                 X_max=None, X0_GH=None, lambda_GH=None, atmosphere=None,
+                 **kwargs):
+        super().__init__(columns=['X', 's', 'dX', 'E_dep', 'N_ch'])
+        _profile(self, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
+                 atmosphere, **kwargs)
+
+    def _Greisen_norm(self):
+        """
+        Calculate the normalization constant K that relates a Greisen profile
+        to the actual shower size N(s).
+        """
+        return _Greisen_norm(self.E, self.X_max)
+
+    def _GH_norm(self):
+        """
+        Calculate the normalization constant K that relates a Gaisser-Hillas
+        profile to the actual shower size N(s).
+        """
+        return _GH_norm(self.E, self.X_max, self.X0_GH, self.lambda_GH)
+
+    def _alpha(self, s):
+        """
+        Calculate the mean ionization loss rate per electron in MeV/g.cm^2 as a
+        function of shower age.
+        """
+        return _alpha(s)
+
+    def Fluorescence(self):
+        """
+        Calculate the fluorescence photon production from a shower profile
+        discretization.
+
+        Returns
+        -------
+        Fluorescece object.
+        """
+        return sm.Fluorescence(self)
+
+    def Cherenkov(self):
+        """
+        Calculate the Cherenkov light production from a shower profile
+        discretization.
+
+        Returns
+        -------
+        Cherenkov object.
+        """
+        return sm.Cherenkov(self)
+
+    def show(self):
+        """
+        Show the shower profile, both number of charged particles and energy
+        deposit, as a function of slant depth.
+
+        Returns
+        -------
+        (ax1, ax2) : AxesSubplot objects.
+        """
+        # Shower size
+        fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
+        ax1.plot(self.X, self.N_ch, 'r-')
+        ax1.axes.xaxis.set_label_text("Slant depth (g/cm$^2$)")
+        ax1.axes.yaxis.set_label_text("Number of charged particles")
+
+        # Energy deposit
+        ax2.plot(self.X, self.E_dep/self.dX, 'b-')
+        ax2.axes.xaxis.set_label_text("Slant depth (g/cm$^2$)")
+        ax2.axes.yaxis.set_label_text("Energy deposit (MeV·cm$^2$/g)")
+        plt.tight_layout()
+        return (ax1, ax2)
+
+
 # Constructor #################################################################
 def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
              atmosphere, **kwargs):
@@ -209,127 +363,6 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
 
     else:
         raise ValueError('The input model is not valid.')
-
-
-# Class #######################################################################
-class Profile(pd.DataFrame):
-    """
-    DataFrame containing a shower profile discretization.
-
-    Use sm.Profile() to construct the default Profile object.
-
-    Attributes
-    ----------
-    X : float
-        Column 0, slant depth in g/cm^2.
-    s : float
-        Column 1, shower age.
-    dX : float
-        Column 2, discretization step in g/cm^2 along the shower axis.
-    E_dep : float
-        Column 3, energy deposit in MeV at each discretiztion step.
-    N_ch : float
-        Column 4, number of charged particles.
-    atmosphere : Atmosphere object.
-    E : float
-        Energy of the primary particle.
-    theta : float
-        Zenith angle in degrees of the apparent position of the source.
-    alt : float
-        Altitude in degrees of the apparent position of the source.
-    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame.
-    X_max : float
-        Slant depth in g/cm^2 at shower maximum.
-    X0_GH : float
-        X0 parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
-    lambda_GH : float
-        lambda parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
-    dl : float
-        Size in km of the discretization step along the shower axis.
-
-    Methods
-    -------
-    Fluorescence : Calculate the fluorescence light production.
-    Cherenkov : Calculate the Cherenkov light production.
-    show : Show the shower profile, both number of charged particles and energy
-        deposit, as a function of slant depth.
-
-    See also
-    --------
-    Profile : DataFrame containing a shower profile discretization.
-    Shower : Make a discretization of a shower.
-    """
-    def __init__(self, E=_E, theta=_theta, alt=None, prf_model=_prf_model,
-                 X_max=None, X0_GH=None, lambda_GH=None, atmosphere=None,
-                 **kwargs):
-        super().__init__(columns=['X', 's', 'dX', 'E_dep', 'N_ch'])
-        _profile(self, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
-                 atmosphere, **kwargs)
-
-    def _Greisen_norm(self):
-        """
-        Calculate the normalization constant K that relates a Greisen profile
-        to the actual shower size N(s).
-        """
-        return _Greisen_norm(self.E, self.X_max)
-
-    def _GH_norm(self):
-        """
-        Calculate the normalization constant K that relates a Gaisser-Hillas
-        profile to the actual shower size N(s).
-        """
-        return _GH_norm(self.E, self.X_max, self.X0_GH, self.lambda_GH)
-
-    def _alpha(self, s):
-        """
-        Calculate the mean ionization loss rate per electron in MeV/g.cm^2 as a
-        function of shower age.
-        """
-        return _alpha(s)
-
-    def Fluorescence(self):
-        """
-        Calculate the fluorescence photon production from a shower profile
-        discretization.
-
-        Returns
-        -------
-        Fluorescece object.
-        """
-        return sm.Fluorescence(self)
-
-    def Cherenkov(self):
-        """
-        Calculate the Cherenkov light production from a shower profile
-        discretization.
-
-        Returns
-        -------
-        Cherenkov object.
-        """
-        return sm.Cherenkov(self)
-
-    def show(self):
-        """
-        Show the shower profile, both number of charged particles and energy
-        deposit, as a function of slant depth.
-
-        Returns
-        -------
-        (ax1, ax2) : AxesSubplot objects.
-        """
-        # Shower size
-        fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
-        ax1.plot(self.X, self.N_ch, 'r-')
-        ax1.axes.xaxis.set_label_text("Slant depth (g/cm$^2$)")
-        ax1.axes.yaxis.set_label_text("Number of charged particles")
-
-        # Energy deposit
-        ax2.plot(self.X, self.E_dep/self.dX, 'b-')
-        ax2.axes.xaxis.set_label_text("Slant depth (g/cm$^2$)")
-        ax2.axes.yaxis.set_label_text("Energy deposit (MeV·cm$^2$/g)")
-        plt.tight_layout()
-        return (ax1, ax2)
 
 
 # Auxiliary functions #########################################################

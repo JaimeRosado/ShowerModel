@@ -6,170 +6,6 @@ import showermodel as sm
 import matplotlib.pyplot as plt
 
 
-# Constructor #################################################################
-def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
-            **kwargs):
-    """
-    Calculate the signal produced by a shower detected by a telescope.
-
-    Parameters
-    ----------
-    signal : Signal object.
-    telescope : Telescope object.
-    shower : Shower object.
-    projection : Projection object
-        If None, it will generated from telescope and shower.
-    atm_trans : bool, default True
-        Include the atmospheric transmision to transport photons.
-    tel_eff : bool, default True
-        Include the telescope efficiency to calculate the signal. If False,
-        100% efficiency is assumed for a given wavelenght interval.
-    **kwargs {wvl_ini, wvl_fin, wvl_step}
-        These parameters will modify the wavelenght interval when
-        tel_eff==False. If None, the wavelength interval defined in the
-        telescope is used.
-    """
-    if not isinstance(telescope, sm.Telescope):
-        if not isinstance(telescope, sm.Shower):
-            raise ValueError('The input telescope is not valid')
-        else:
-            telescope, shower = (shower, telescope)
-    if not isinstance(shower, sm.Shower):
-        raise ValueError('The input shower is not valid')
-
-    # This function is normally called from Event. If not, projection must be
-    # generated.
-    if not isinstance(projection, sm.Projection):
-        projection = sm.Projection(telescope, shower.track)
-    atmosphere = shower.atmosphere
-    track = shower.track
-    fluorescence = shower.fluorescence
-    cherenkov = shower.cherenkov
-
-    # signal = Signal()
-    signal.shower = shower
-    signal.telescope = telescope
-    signal.projection = projection
-    signal.atmosphere = atmosphere
-    signal.track = track
-    signal.profile = shower.profile
-    signal.fluorescence = fluorescence
-    signal.cherenkov = cherenkov
-
-    signal.atm_trans = atm_trans
-    signal.tel_eff = tel_eff
-
-    if tel_eff:
-        # Wavelenght range to calculate the signal
-        wvl_ini = telescope.wvl_ini
-        wvl_fin = telescope.wvl_fin
-        wvl_step = telescope.wvl_step
-        wvl_cher = telescope.wvl_cher
-        eff_fluo = telescope.eff_fluo
-        eff_cher = telescope.eff_cher
-    else:
-        # User-defined wavalength range
-        wvl_ini = kwargs.get('wvl_ini', telescope.wvl_ini)
-        wvl_fin = kwargs.get('wvl_fin', telescope.wvl_fin)
-        wvl_step = kwargs.get('wvl_step', telescope.wvl_step)
-        wvl_cher = np.arange(wvl_ini, wvl_fin, wvl_step)
-    signal.wvl_ini = wvl_ini
-    signal.wvl_fin = wvl_fin
-    signal.wvl_step = wvl_step
-
-    # Only discretization points within the telescope field of view contributes
-    # to the signal. In addition, the very begninning of the shower profile is
-    # ignored to speed up calculations
-    points = projection[projection.FoV & (signal.profile.s > 0.01)].index
-    distance = np.array(projection.distance.loc[points])
-    theta = np.radians(projection.theta.loc[points])
-    alt = np.radians(projection.alt.loc[points])
-
-    # Solid angle fraction covered by the telescope area. Only discretization
-    # points within the telescope field of view contributes to the signal
-    collection = (telescope.area * np.cos(theta) / 4000000. / np.pi
-                  / distance**2)
-
-    # Collection efficiency for the angular distribution of Cherenkov light
-    # See F. Nerling et al., Astropart. Phys. 24(2006)241.
-    beta = np.radians(projection.beta.loc[points])
-    theta_c = np.radians(cherenkov.theta_c.loc[points])
-    theta_cc = np.radians(cherenkov.theta_cc.loc[points])
-    a = np.array(cherenkov.a.loc[points])
-    b = np.array(cherenkov.b.loc[points])
-    collection_cher = collection * 2. / np.sin(beta) * (
-        a / theta_c * np.exp(-beta / theta_c)
-        + b / theta_cc * np.exp(-beta / theta_cc))
-
-    # Relative fluorescence contribution from each shower point at each band
-    # (between wvl_ini and wvl_fin). The atmospheric transmission is included
-    # later
-    rel_fluo = fluorescence.loc[points]
-    if tel_eff:
-        rel_fluo *= eff_fluo  # 34 bands
-    # Selection of bands within the wavelenght range
-    rel_fluo = rel_fluo.loc[:, wvl_ini:wvl_fin]
-
-    if atm_trans:
-        # Atmospheric transmission at 350 nm. Only Rayleigh scattering is
-        # considered
-        X_vert = np.array(atmosphere.X_vert.loc[points])
-        rho = np.array(atmosphere.rho.loc[points])
-        thickness = np.array(atmosphere.h_to_Xv(atmosphere.h0 + telescope.z)
-                             - X_vert)
-        thickness[thickness != 0] = (thickness[thickness != 0]
-                                     / np.sin(alt[thickness != 0]))
-        thickness[thickness == 0] = (100000. * distance[thickness == 0]
-                                     * rho[thickness == 0])
-        # Only points within the telescope FoV, otherwise trans=0
-        trans = np.exp(-thickness / 1645.)
-
-        # Relative fluorescence contribution including atmospheric transmission
-        for wvl in rel_fluo:
-            rel_fluo[wvl] *= trans ** ((350. / wvl)**4)
-
-        # Wavelenght factor for Cherenkov contribution to signal from each
-        # shower point
-        wvl_factor = pd.DataFrame(index=points)
-        for wvl in wvl_cher:
-            wvl_factor[wvl] = trans ** ((350. / wvl)**4) / wvl**2
-            # wvl**2 -> (wvl**2 - wvl_step**2 / 4.)
-        if tel_eff:
-            wvl_factor *= eff_cher
-        wvl_factor = wvl_factor.sum(axis=1) * wvl_step / (1./290.-1./430.)
-
-    elif tel_eff:  # If atmospheric transmission is not included
-        # The wavelength factor of Cherenkov signal is the same for all
-        # shower points
-        wvl_factor = eff_cher / wvl_cher**2
-        # wvl_cher**2 -> (wvl_cher**2 - wvl_step**2 / 4.)
-        wvl_factor = wvl_factor.sum() * wvl_step / (1./290.-1./430.)
-
-    # If neither the atmospheric transmission nor the telescope efficiency are
-    # included
-    else:
-        # The wavelength factor of Cherenkov signal only depends on the
-        # integration wavelength interval
-        wvl_factor = (1. / wvl_ini - 1. / wvl_fin) / (1. / 290. - 1. / 430.)
-
-    # Number of photoelectrons due to fluorescence light emitted from each
-    # shower point
-    signal['Npe_fluo'] = rel_fluo.sum(axis=1) * collection
-    # Number of photoelectrons due to fluorescence light within the FoV
-    signal.Npe_fluo_sum = signal.Npe_fluo.sum()
-    # Number of photoelectrons due to Cherenkov light emitted from each shower
-    # point
-    signal['Npe_cher'] = (cherenkov.N_ph.loc[points] * collection_cher
-                          * wvl_factor)
-    # Number of photoelectrons due to Cherenkov light within the FoV
-    signal.Npe_cher_sum = signal.Npe_cher.sum()
-    # Total number of photoelectrons from both light components emitted at each
-    # shower point
-    signal['Npe_total'] = signal.sum(axis=1)
-    # Total number of photoelectrons
-    signal.Npe_total_sum = signal.Npe_cher_sum + signal.Npe_fluo_sum
-
-
 # Class #######################################################################
 class Signal(pd.DataFrame):
     """
@@ -182,8 +18,8 @@ class Signal(pd.DataFrame):
 
     Parameters
     ----------
-    telescope : Telescope object.
-    shower : Shower object.
+    telescope : Telescope object
+    shower : Shower object
     projection : Projection object
         If None, it will generated from telescope and shower.
     atm_trans : bool, default True
@@ -413,3 +249,167 @@ def _show(signal):
     plt.tight_layout()
 
     return (ax1, ax2)
+
+
+# Constructor #################################################################
+def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
+            **kwargs):
+    """
+    Calculate the signal produced by a shower detected by a telescope.
+
+    Parameters
+    ----------
+    signal : Signal object
+    telescope : Telescope object
+    shower : Shower object
+    projection : Projection object
+        If None, it will generated from telescope and shower.
+    atm_trans : bool, default True
+        Include the atmospheric transmision to transport photons.
+    tel_eff : bool, default True
+        Include the telescope efficiency to calculate the signal. If False,
+        100% efficiency is assumed for a given wavelenght interval.
+    **kwargs {wvl_ini, wvl_fin, wvl_step}
+        These parameters will modify the wavelenght interval when
+        tel_eff==False. If None, the wavelength interval defined in the
+        telescope is used.
+    """
+    if not isinstance(telescope, sm.Telescope):
+        if not isinstance(telescope, sm.Shower):
+            raise ValueError('The input telescope is not valid')
+        else:
+            telescope, shower = (shower, telescope)
+    if not isinstance(shower, sm.Shower):
+        raise ValueError('The input shower is not valid')
+
+    # This function is normally called from Event. If not, projection must be
+    # generated.
+    if not isinstance(projection, sm.Projection):
+        projection = sm.Projection(telescope, shower.track)
+    atmosphere = shower.atmosphere
+    track = shower.track
+    fluorescence = shower.fluorescence
+    cherenkov = shower.cherenkov
+
+    # signal = Signal()
+    signal.shower = shower
+    signal.telescope = telescope
+    signal.projection = projection
+    signal.atmosphere = atmosphere
+    signal.track = track
+    signal.profile = shower.profile
+    signal.fluorescence = fluorescence
+    signal.cherenkov = cherenkov
+
+    signal.atm_trans = atm_trans
+    signal.tel_eff = tel_eff
+
+    if tel_eff:
+        # Wavelenght range to calculate the signal
+        wvl_ini = telescope.wvl_ini
+        wvl_fin = telescope.wvl_fin
+        wvl_step = telescope.wvl_step
+        wvl_cher = telescope.wvl_cher
+        eff_fluo = telescope.eff_fluo
+        eff_cher = telescope.eff_cher
+    else:
+        # User-defined wavalength range
+        wvl_ini = kwargs.get('wvl_ini', telescope.wvl_ini)
+        wvl_fin = kwargs.get('wvl_fin', telescope.wvl_fin)
+        wvl_step = kwargs.get('wvl_step', telescope.wvl_step)
+        wvl_cher = np.arange(wvl_ini, wvl_fin, wvl_step)
+    signal.wvl_ini = wvl_ini
+    signal.wvl_fin = wvl_fin
+    signal.wvl_step = wvl_step
+
+    # Only discretization points within the telescope field of view contributes
+    # to the signal. In addition, the very begninning of the shower profile is
+    # ignored to speed up calculations
+    points = projection[projection.FoV & (signal.profile.s > 0.01)].index
+    distance = np.array(projection.distance.loc[points])
+    theta = np.radians(projection.theta.loc[points])
+    alt = np.radians(projection.alt.loc[points])
+
+    # Solid angle fraction covered by the telescope area. Only discretization
+    # points within the telescope field of view contributes to the signal
+    collection = (telescope.area * np.cos(theta) / 4000000. / np.pi
+                  / distance**2)
+
+    # Collection efficiency for the angular distribution of Cherenkov light
+    # See F. Nerling et al., Astropart. Phys. 24(2006)241.
+    beta = np.radians(projection.beta.loc[points])
+    theta_c = np.radians(cherenkov.theta_c.loc[points])
+    theta_cc = np.radians(cherenkov.theta_cc.loc[points])
+    a = np.array(cherenkov.a.loc[points])
+    b = np.array(cherenkov.b.loc[points])
+    collection_cher = collection * 2. / np.sin(beta) * (
+        a / theta_c * np.exp(-beta / theta_c)
+        + b / theta_cc * np.exp(-beta / theta_cc))
+
+    # Relative fluorescence contribution from each shower point at each band
+    # (between wvl_ini and wvl_fin). The atmospheric transmission is included
+    # later
+    rel_fluo = fluorescence.loc[points]
+    if tel_eff:
+        rel_fluo *= eff_fluo  # 34 bands
+    # Selection of bands within the wavelenght range
+    rel_fluo = rel_fluo.loc[:, wvl_ini:wvl_fin]
+
+    if atm_trans:
+        # Atmospheric transmission at 350 nm. Only Rayleigh scattering is
+        # considered
+        X_vert = np.array(atmosphere.X_vert.loc[points])
+        rho = np.array(atmosphere.rho.loc[points])
+        thickness = np.array(atmosphere.h_to_Xv(atmosphere.h0 + telescope.z)
+                             - X_vert)
+        thickness[thickness != 0] = (thickness[thickness != 0]
+                                     / np.sin(alt[thickness != 0]))
+        thickness[thickness == 0] = (100000. * distance[thickness == 0]
+                                     * rho[thickness == 0])
+        # Only points within the telescope FoV, otherwise trans=0
+        trans = np.exp(-thickness / 1645.)
+
+        # Relative fluorescence contribution including atmospheric transmission
+        for wvl in rel_fluo:
+            rel_fluo[wvl] *= trans ** ((350. / wvl)**4)
+
+        # Wavelenght factor for Cherenkov contribution to signal from each
+        # shower point
+        wvl_factor = pd.DataFrame(index=points)
+        for wvl in wvl_cher:
+            wvl_factor[wvl] = trans ** ((350. / wvl)**4) / wvl**2
+            # wvl**2 -> (wvl**2 - wvl_step**2 / 4.)
+        if tel_eff:
+            wvl_factor *= eff_cher
+        wvl_factor = wvl_factor.sum(axis=1) * wvl_step / (1./290.-1./430.)
+
+    elif tel_eff:  # If atmospheric transmission is not included
+        # The wavelength factor of Cherenkov signal is the same for all
+        # shower points
+        wvl_factor = eff_cher / wvl_cher**2
+        # wvl_cher**2 -> (wvl_cher**2 - wvl_step**2 / 4.)
+        wvl_factor = wvl_factor.sum() * wvl_step / (1./290.-1./430.)
+
+    # If neither the atmospheric transmission nor the telescope efficiency are
+    # included
+    else:
+        # The wavelength factor of Cherenkov signal only depends on the
+        # integration wavelength interval
+        wvl_factor = (1. / wvl_ini - 1. / wvl_fin) / (1. / 290. - 1. / 430.)
+
+    # Number of photoelectrons due to fluorescence light emitted from each
+    # shower point
+    signal['Npe_fluo'] = rel_fluo.sum(axis=1) * collection
+    # Number of photoelectrons due to fluorescence light within the FoV
+    signal.Npe_fluo_sum = signal.Npe_fluo.sum()
+    # Number of photoelectrons due to Cherenkov light emitted from each shower
+    # point
+    signal['Npe_cher'] = (cherenkov.N_ph.loc[points] * collection_cher
+                          * wvl_factor)
+    # Number of photoelectrons due to Cherenkov light within the FoV
+    signal.Npe_cher_sum = signal.Npe_cher.sum()
+    # Total number of photoelectrons from both light components emitted at each
+    # shower point
+    signal['Npe_total'] = signal.sum(axis=1)
+    # Total number of photoelectrons
+    signal.Npe_total_sum = signal.Npe_cher_sum + signal.Npe_fluo_sum
