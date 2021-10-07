@@ -23,7 +23,7 @@ A Python package for modelling cosmic-ray showers, their light production and it
 
     introduction
     tutorials/index
-    modules
+    package/package
     bibliography
 
 
