@@ -65,9 +65,9 @@ class Telescope:
         Integration time in microseconds of camera frames.
         Default to 0.01 us.
     sol_angle : float
-        Telescope field of view in stereoradians.
+        Telescope field of view in steradians.
     sol_angle_pix : float
-        Pixel field of view in steresorians.
+        Pixel field of view in steradians.
     apert_pix : float
         Angular diameter in degrees of the pixel FoV.
     wvl_ini : float
@@ -84,7 +84,7 @@ class Telescope:
         included in the model. See Fluorescence class.
     eff_fluo : ndarray
         Array containing the detection efficiency at these 34
-        wavelenghts. Default to 1.
+        wavelengths. Default to 1.
     wvl_cher : ndarray
         Array containing the range of wavelengths in nm defined by
         wvl_ini, wvl_fin and wvl_step
@@ -579,7 +579,7 @@ class IACT(Telescope):
                          0.079789755, 0.077237853, 0.074972054, 0.072399174,
                          0.069519165, 0.066662492, 0.063829159, 0.061106831,
                          0.058511426, 0.057261531, 0.057550245])
-    
+
     def __init__(self, x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
                  tel_type = 'IACT', efficiency=None, apert=None, area=None,
                  N_pix=None, int_time=None):
