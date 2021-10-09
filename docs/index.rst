@@ -1,12 +1,5 @@
-.. ShowerModel documentation master file, created by
-   sphinx-quickstart on Thu Jul  2 11:15:35 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 ShowerModel
 =======================================
-
-**version**:  |version|
 
 .. figure:: logo_showermodel.png
     :align: center

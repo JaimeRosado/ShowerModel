@@ -1,0 +1,19 @@
+# Required
+version: 2
+
+# Build documentation in the docs/ directory with Sphinx
+sphinx:
+   builder: html
+   configuration: docs/conf.py
+
+# Python requirements required to build your docs
+python:
+  version: "3.8"
+  install:
+    - method: pip
+      path: .
+      extra_requirements:
+        - docs
+
+# Don't build any extra formats
+formats: []
