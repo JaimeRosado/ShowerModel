@@ -1,9 +1,10 @@
 # coding: utf-8
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
 import showermodel as sm
-import matplotlib.pyplot as plt
 
 
 # Class #######################################################################
@@ -44,7 +45,7 @@ class Signal(pd.DataFrame):
         Column 2, total number of photoelectrons per discretization step.
     telescope : Telescope object.
     atm_trans : bool
-        True if the atmospheric transmision is included.
+        True if the atmospheric transmission is included.
     tel_eff : bool
         True if the telescope efficiency is included.
     wvl_ini : float
@@ -85,7 +86,7 @@ class Signal(pd.DataFrame):
                  tel_eff=True, **kwargs):
         super().__init__(columns=['Npe_cher', 'Npe_fluo', 'Npe_total'])
         _signal(self, telescope, shower, projection, atm_trans, tel_eff,
-            **kwargs)
+                **kwargs)
 
     def show_projection(self, shower_size=True, axes=True, max_theta=30.,
                         X_mark='X_max'):
@@ -208,7 +209,7 @@ def _show(signal):
     fluo_time = np.array(signal.Npe_fluo / Delta_time)
     total_time = cher_time + fluo_time
 
-    # Number of photoelectrons due to each light componente (and total) per
+    # Number of photoelectrons due to each light component (and total) per
     # unit of beta angle
     Delta_beta = np.degrees(track.dl / distance * np.sin(np.radians(beta)))
     cher_beta = np.array(signal.Npe_cher / Delta_beta)
@@ -248,7 +249,7 @@ def _show(signal):
     ax2.legend(loc=0)
     plt.tight_layout()
 
-    return (ax1, ax2)
+    return ax1, ax2
 
 
 # Constructor #################################################################
@@ -265,12 +266,12 @@ def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
     projection : Projection object
         If None, it will generated from telescope and shower.
     atm_trans : bool, default True
-        Include the atmospheric transmision to transport photons.
+        Include the atmospheric transmission to transport photons.
     tel_eff : bool, default True
         Include the telescope efficiency to calculate the signal. If False,
-        100% efficiency is assumed for a given wavelenght interval.
+        100% efficiency is assumed for a given wavelength interval.
     **kwargs {wvl_ini, wvl_fin, wvl_step}
-        These parameters will modify the wavelenght interval when
+        These parameters will modify the wavelength interval when
         tel_eff==False. If None, the wavelength interval defined in the
         telescope is used.
     """
@@ -305,7 +306,7 @@ def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
     signal.tel_eff = tel_eff
 
     if tel_eff:
-        # Wavelenght range to calculate the signal
+        # Wavelength range to calculate the signal
         wvl_ini = telescope.wvl_ini
         wvl_fin = telescope.wvl_fin
         wvl_step = telescope.wvl_step
@@ -313,7 +314,7 @@ def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
         eff_fluo = telescope.eff_fluo
         eff_cher = telescope.eff_cher
     else:
-        # User-defined wavalength range
+        # User-defined wavelength range
         wvl_ini = kwargs.get('wvl_ini', telescope.wvl_ini)
         wvl_fin = kwargs.get('wvl_fin', telescope.wvl_fin)
         wvl_step = kwargs.get('wvl_step', telescope.wvl_step)
@@ -323,7 +324,7 @@ def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
     signal.wvl_step = wvl_step
 
     # Only discretization points within the telescope field of view contributes
-    # to the signal. In addition, the very begninning of the shower profile is
+    # to the signal. In addition, the very beginning of the shower profile is
     # ignored to speed up calculations
     points = projection[projection.FoV & (signal.profile.s > 0.01)].index
     distance = np.array(projection.distance.loc[points])
@@ -352,7 +353,7 @@ def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
     rel_fluo = fluorescence.loc[points]
     if tel_eff:
         rel_fluo *= eff_fluo  # 34 bands
-    # Selection of bands within the wavelenght range
+    # Selection of bands within the wavelength range
     rel_fluo = rel_fluo.loc[:, wvl_ini:wvl_fin]
 
     if atm_trans:
@@ -373,7 +374,7 @@ def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
         for wvl in rel_fluo:
             rel_fluo[wvl] *= trans ** ((350. / wvl)**4)
 
-        # Wavelenght factor for Cherenkov contribution to signal from each
+        # Wavelength factor for Cherenkov contribution to signal from each
         # shower point
         wvl_factor = pd.DataFrame(index=points)
         for wvl in wvl_cher:

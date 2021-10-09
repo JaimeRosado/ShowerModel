@@ -189,7 +189,7 @@ class Shower:
             Include the telescope efficiency. If False, 100% efficiency is
             assumed for a given wavelength interval.
         **kwargs {wvl_ini, wvl_fin, wvl_step}
-            These parameters will modify the wavelenght interval when
+            These parameters will modify the wavelength interval when
             tel_eff==False. If None, the wavelength interval defined in the
             telescope is used.
 

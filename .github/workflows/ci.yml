@@ -35,30 +35,3 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
-
-  docs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: git fetch --tags
-
-      - name: Sphinx Build
-        uses: ammaraskar/sphinx-action@0.4
-        with:
-          docs-folder: "docs/"
-          pre-build-command: |
-            apt update --yes && apt install --yes git build-essential pandoc graphviz
-            pip install -U pip setuptools wheel
-            pip install -e .[docs]
-            python -c 'import showermodel; print(showermodel.__version__)'
-
-      - name: Deploy to gihub pages
-        # only run on push to master
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-        uses: JamesIves/github-pages-deploy-action@3.7.1
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: docs/_build/html
-          CLEAN: true
-          SINGLE_COMMIT: true
