@@ -93,14 +93,14 @@ class Atmosphere(pd.DataFrame):
         Returns
         -------
         Xv : float or array_like
-            Vertical depth in g/cm$^2$.
+            Vertical depth in g/cm^2.
         """
         Xv, rho = self._get_Xv_rho(h)
         return Xv
 
     def h_to_rho(self, h):
         """
-        Get mass density in g/cm$^3$ from height in km above sea level.
+        Get mass density in g/cm^3 from height in km above sea level.
 
         Parameters
         ----------
@@ -117,19 +117,19 @@ class Atmosphere(pd.DataFrame):
 
     def _get_Xv_rho(self, h):
         """
-        Get both the vertical depth in g/cm$^2$ and the mass density in g/cm$^3$.
+        Get both the vertical depth in g/cm^2 and the mass density in g/cm^3.
         from height in km above sea level.
         """
         return _get_Xv_rho(h, self.model)
 
     def Xv_to_h(self, Xv):
         """
-        Get height in km above sea level from vertical depth in g/cm$^2$.
+        Get height in km above sea level from vertical depth in g/cm^2.
 
         Parameters
         ----------
         Xv : float or array_like
-            Vertical depth in g/cm$^2$.
+            Vertical depth in g/cm^2.
 
         Returns
         -------
