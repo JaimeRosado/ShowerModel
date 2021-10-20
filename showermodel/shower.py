@@ -55,13 +55,14 @@ class Shower:
         If None, a typical value for the input energy is used.
     atmosphere : Atmosphere object.
         If None, a new Atmosphere object is generated.
-    **kwargs {h0, h_top, N_steps, model}
+    **kwargs : {h0, h_top, N_steps, model}
         Options to construct the new Atmosphere object when atmosphere==None.
         If None, the default Atmosphere object is used.
 
     Attributes
     ----------
-    atmosphere : Atmosphere object.
+    atmosphere : Atmosphere
+        Atmosphere object that is used.
     h0 : float
         Ground level in km above sea level.
     h_top : float
@@ -73,8 +74,10 @@ class Shower:
     model : int
         CORSIKA atmospheric model. Presently either 1 or 17. More models to
         be implemented.
-    track : Track object.
-    profile : Profile object.
+    track : Track
+        Track object that is generated.
+    profile : Profile
+        Profile object that is generated.
     E : float
         Energy of the primary particle in MeV.
     theta : float
@@ -95,30 +98,10 @@ class Shower:
         X0 parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
     lambda_GH : float
         Lambda parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
-    fluorescence : Fluorescence object.
-    cherenkov : Cherenkov object.
-
-    Methods
-    -------
-    copy : Copy a Shower object, but with optional changes.
-    Projection : Make a Projection object containing the coordinates of a
-        shower track relative to a telescope position.
-    Signal : Make a Signal object containing the signal produced by the shower
-        detected by a telescope.
-    Event : Make an Event object containing the characteristics of the shower,
-        an observatory and the signal produced by the shower in each telescope.
-    show_profile : Show the shower profile, both number of charged particles
-        and energy deposit, as a function of slant depth.
-    show_light_production : Show the production of both Cherenkov and
-        fluorescence photons in the 290 - 430 nm range as a function of slant
-        depth.
-    show_projection : Make a Projection object and show it.
-    show_signal : Make a Signal object and show it.
-    show_event : Make an Event object and show it.
-    show_geometry2D : Show a 2D plot of the shower track along with input
-        telescope positions.
-    show_geometry3D : Show a 3D plot of the shower track along with input
-        telescopes positions.
+    fluorescence : Fluorescence
+        Fluorescence object that is generated.
+    cherenkov : Cherenkov
+        Cherenkov object that is generated.
 
     See also
     --------
@@ -147,7 +130,7 @@ class Shower:
 
         Returns
         -------
-        Shower object.
+        shower : Shower
 
         See also
         --------
@@ -163,12 +146,13 @@ class Shower:
 
         Parameters
         ----------
-        telescope : Telescope object.
+        telescope : Telescope
+            Telescope object to be used.
 
         Returns
         -------
-        Projection object.
-        (ax1, ax2) : AxesSubplot objects.
+        projection : Projection
+        (ax1, ax2) : AxesSubplot
 
         See also
         --------
@@ -182,13 +166,14 @@ class Shower:
 
         Parameters
         ----------
-        telescope : Telescope object.
+        telescope : Telescope
+            Telescope object to be used.
         atm_trans : bool, default True
             Include the atmospheric transmission.
         tel_eff : bool, default True
             Include the telescope efficiency. If False, 100% efficiency is
             assumed for a given wavelength interval.
-        **kwargs {wvl_ini, wvl_fin, wvl_step}
+        **kwargs : {wvl_ini, wvl_fin, wvl_step}
             These parameters will modify the wavelength interval when
             tel_eff==False. If None, the wavelength interval defined in the
             telescope is used.
@@ -206,21 +191,22 @@ class Shower:
 
         Parameters
         ----------
-        observatory : Observatory object (may be a Grid object).
+        observatory : Observatory 
+            Observatory object (may be a Grid object).
         atm_trans : bool, default True
             Include the atmospheric transmision to calculate the signals.
         tel_eff : book, default True
             Include the telescope efficiency to calculate the signals.
             If False, 100% efficiency is assumed for a given
             wavelength interval.
-        **kwargs {wvl_ini, wvl_fin, wvl_step}
+        **kwargs : {wvl_ini, wvl_fin, wvl_step}
             These parameters will modify the wavelenght interval when
             tel_eff==False. If None, the wavelength interval defined in the
             telescope is used.
 
         Results
         -------
-        Event object.
+        event : Event
         """
         return sm.Event(observatory, self, atm_trans, tel_eff, **kwargs)
 
@@ -231,7 +217,8 @@ class Shower:
 
         Parameters
         ----------
-        telescope : Telescope object.
+        telescope : Telescope
+            Telescope object to be used.
         shower_size : book, default True
             Make the radii of the shower track points proportional to the
             shower size.
@@ -247,8 +234,8 @@ class Shower:
 
         Returns
         -------
-        Projection object.
-        (ax1, ax2) : PolarAxesSubpot objects.
+        projection : Projection
+        (ax1, ax2) : PolarAxesSubpot
 
         See also
         --------
@@ -269,7 +256,7 @@ class Shower:
 
         Returns
         -------
-        (ax1, ax2) : AxesSubplot objects.
+        (ax1, ax2) : AxesSubplot
         """
         return self.profile.show()
 
@@ -280,7 +267,7 @@ class Shower:
 
         Returns
         -------
-        (ax1, ax2) : AxesSubplot objects.
+        (ax1, ax2) : AxesSubplot
         """
         # Cherenkov
         fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
@@ -303,21 +290,22 @@ class Shower:
 
         Parameters
         ----------
-        telescope : Telescope object.
+        telescope : Telescope
+            Telescope object to be used.
         atm_trans : bool, default True
             Include the atmospheric transmision.
         tel_eff : bool, default True
             Include the telescope efficiency. If False, 100% efficiency is
             assumed for a given wavelength interval.
-        **kwargs {wvl_ini, wvl_fin, wvl_step}
+        **kwargs : {wvl_ini, wvl_fin, wvl_step}
             These parameters will modify the wavelenght interval when
             tel_eff==False. If None, the wavelength interval defined in the
             telescope is used.
 
         Results
         -------
-        Signal object.
-        (ax1, ax2) : AxesSubplot objects.
+        signal : Signal
+        (ax1, ax2) : AxesSubplot
         """
         signal = sm.Signal(telescope, self, atm_trans, tel_eff, **kwargs)
         ax1, ax2 = signal.show()
@@ -352,7 +340,7 @@ class Shower:
 
         Returns
         -------
-        AxesSubplot object.
+        ax : AxesSubplot
         """
         if X_mark == 'X_max':
             X_mark = self.X_max
@@ -392,7 +380,7 @@ class Shower:
 
         Returns
         -------
-        Axes3DSubplot object.
+        ax : Axes3DSubplot
         """
         if X_mark == 'X_max':
             X_mark = self.X_max
@@ -412,12 +400,12 @@ class Shower:
 
         Parameters
         ----------
-        grid : Grid object.
+        grid : Grid
             If None, a new Grid object is generated from the specificed
             dimensions and telescope characteristics.
             If given, {telescope, tel_type, ..., N_x, N_y} are not used.
-        telescope : Telescope object (when grid==None)
-            If None, the Grid object is constructed
+        telescope : Telescope
+            When grid==None. If telescope==None, the Grid object is constructed
             based on the default GridElement object.
         x_c : float
             x coordinate in km of the center of the grid.
@@ -446,17 +434,18 @@ class Shower:
         tel_eff : bool, default True
             Include the telescope efficiency to calculate the signal. If False,
             100% efficiency is assumed for a given wavelenght interval.
-        **kwargs {wvl_ini, wvl_fin, wvl_step}
+        **kwargs : {wvl_ini, wvl_fin, wvl_step}
             These parameters will modify the wavelenght interval when
             tel_eff==False. If None, the wavelength interval defined in the
             telescope is used.
 
         Returns
         -------
-        grid_event : GridEvent object.
-        ax : AxesSubplot object (if 1D grid).
-        (ax1, ax2, cbar) : AxesSubplot objects and Colorbar object
-            (if 2D grid).
+        grid_event : GridEvent
+        ax : AxesSubplot
+            If 1D grid.
+        (ax1, ax2, cbar) : AxesSubplot and Colorbar
+            If 2D grid.
         """
         if not isinstance(grid, sm.Grid):
             if grid is None:
@@ -575,7 +564,8 @@ def _shower(shower, E, theta, alt, az, x0, y0, prf_model, X_max, N_ch_max,
 
     Parameters
     ----------
-    shower : Shower object.
+    shower : Shower
+        Shower object.
     E : float
         Energy of the primary particle in MeV.
     theta : float
@@ -608,9 +598,9 @@ def _shower(shower, E, theta, alt, az, x0, y0, prf_model, X_max, N_ch_max,
     lambda_GH : float
         Lambda parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
         If None, a typical value for the input energy is used.
-    atmosphere : Atmosphere object.
+    atmosphere : Atmosphere
         If None, a new Atmosphere object is generated.
-    **kwargs {h0, h_top, N_steps, model}
+    **kwargs : {h0, h_top, N_steps, model}
         Options to construct the new Atmosphere object when atmosphere==None.
         If None, the default Atmosphere object is used.
     """

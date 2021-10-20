@@ -41,7 +41,7 @@ class Track(pd.DataFrame):
         West coordinate in km of shower impact point at ground.
     atmosphere : Atmosphere object
         If None, a new Atmosphere object is generated.
-    **kwargs {h0, h_top, N_steps, model}
+    **kwargs : {h0, h_top, N_steps, model}
         Options to construct the new Atmosphere object when atm==None.
         If None, the default Atmosphere object is used.
 
@@ -102,15 +102,6 @@ class Track(pd.DataFrame):
     dl : float
         Size in km of discretization step along the shower axis.
 
-    Methods
-    -------
-    h_to_xyz : Get the spatial coordinates from height above sea level.
-    z_to_t : Get travel time mass density from height.
-    X_to_xyz : Get the spatial coordinates from slanth depth.
-    Projection : Make a Projection object containing the coordinates of a
-        shower track relative to a telescope position.
-    show_projection : Make a Projection object and show it.
-
     See also
     --------
     Shower : Make a discretization of a shower.
@@ -126,11 +117,11 @@ class Track(pd.DataFrame):
 
         Parameters
         ----------
-        h : float or array_like.
+        h : float or array_like
 
         Returns
         -------
-        x, y, z : float or array_like.
+        x, y, z : float or array_like
         """
         h = np.array(h)
         z = h - self.atmosphere.h0
@@ -144,11 +135,11 @@ class Track(pd.DataFrame):
 
         Parameters
         ----------
-        z : float or array_like.
+        z : float or array_like
 
         Returns
         -------
-        t : float or array_like.
+        t : float or array_like
         """
         return (self.z_top - z) / self.uz / 0.2998
 
@@ -158,11 +149,11 @@ class Track(pd.DataFrame):
 
         Parameters
         ----------
-        X : float or array_like.
+        X : float or array_like
 
         Returns
         -------
-        x, y, z : float or array_like.
+        x, y, z : float or array_like
         """
         Xv = X * self.uz
         h = self.atmosphere.Xv_to_h(Xv)
@@ -176,11 +167,11 @@ class Track(pd.DataFrame):
 
         Parameters
         ----------
-        telescope : Telescope object.
+        telescope : Telescope
 
         Returns
         -------
-        Projection object.
+        projection : Projection
 
         See also
         --------
@@ -199,7 +190,8 @@ class Track(pd.DataFrame):
 
         Parameters
         ----------
-        telescope : Telescope object.
+        telescope : Telescope
+            Telescope object to be used.
         axes : bool, default True
             Show the axes of both coordinate systems of reference.
         max_theta : float
@@ -211,8 +203,8 @@ class Track(pd.DataFrame):
 
         Returns
         -------
-        Projection object.
-        (ax1, ax2) : PolarAxesSubplot objects.
+        projection : Projection
+        (ax1, ax2) : PolarAxesSubplot
 
         See also
         --------
@@ -248,7 +240,7 @@ class Track(pd.DataFrame):
 
         Returns
         -------
-        AxesSubplot object.
+        ax : AxesSubplot
         """
         from ._tools import show_geometry
         return show_geometry(self, observatory, '2d', x_min, x_max, y_min,
@@ -277,12 +269,12 @@ class Track(pd.DataFrame):
             no mark is included.
         xy_proj : bool, default True
             Show the xy projection of the shower track.
-        pointing : book, default False
+        pointing : bool, default False
             Show the telescope axes.
 
         Returns
         -------
-        Axes3DSubplot object.
+        ax : Axes3DSubplot
         """
         from ._tools import show_geometry
         return show_geometry(self, observatory, '3d', x_min, x_max, y_min,
@@ -297,7 +289,7 @@ def _track(track, theta, alt, az, x0, y0, atmosphere, **kwargs):
 
     Parameters
     ----------
-    track : Track object
+    track : Track
     theta : float
         Zenith angle in degrees of the apparent position of the source.
     alt : float
@@ -310,9 +302,9 @@ def _track(track, theta, alt, az, x0, y0, atmosphere, **kwargs):
         East coordinate in km of shower impact point at ground.
     y0 : float
         West coordinate in km of shower impact point at ground.
-    atmosphere : Atmosphere object
+    atmosphere : Atmosphere
         If None, a new Atmosphere object is generated.
-    **kwargs {h0, h_top, N_steps, model}
+    **kwargs : {h0, h_top, N_steps, model}
         Options to construct the new Atmosphere object when atm==None.
         If None, the default Atmosphere object is used.
     """
