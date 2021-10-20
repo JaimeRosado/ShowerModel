@@ -113,13 +113,13 @@ class Telescope:
     uz : float
         z coordinate of a unit vector parallel to the telescope pointing
         direction.
-    sin_theta = float
+    sin_theta : float
         Sine of theta (cosine of alt).
-    cos_theta = float
+    cos_theta : float
         Cosine of theta (sine of alt).
-    sin_az = float
+    sin_az : float
         Sine of az.
-    cos_az = float
+    cos_az : float
         Cosine of az.
     phi_right : float
         Position angle phi in degrees of the right-hand direction from
