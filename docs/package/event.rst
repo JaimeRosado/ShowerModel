@@ -5,5 +5,4 @@ Event
 
 .. automodule:: showermodel.event
    :members:
-   :undoc-members:
    :show-inheritance:

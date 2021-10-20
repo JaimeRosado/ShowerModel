@@ -20,21 +20,21 @@ class Fluorescence(pd.DataFrame):
 
     Parameters
     ----------
-    profile : Profile object.
+    profile : Profile
+        Profile object to be used.
 
     Attributes
     ----------
     296 : float
         Column 0, number of fluorescence photons in the band centered at 296 nm.
+    298 : float
+        Column 1, number of fluorescence photons in the band centered at 298 nm.
+    ... :float
+        Column ...
     428 : float
         Column 33, number of fluorescence photons in the band centered at 428 nm.
-    profile : Profile object.
-    atmosphere : Atmosphere object.
-
-    Methods
-    -------
-    show : Show the production of fluorescence photons in the 290 - 430 nm
-        range as a function of slant depth.
+    profile : Profile
+    atmosphere : Atmosphere
     """
     # Parameters of the fluorescence model (34 bands)
     #     wvl(nm),   Irel,   PP0,  PPw,     a
@@ -92,13 +92,13 @@ class Fluorescence(pd.DataFrame):
 
         Returns
         -------
-        ax : AxesSubplot object.
+        ax : AxesSubplot
         """
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(5, 5))
         ax.plot(self.profile.X, self.sum(axis=1), 'b-')
-        ax.axes.xaxis.set_label_text("Slant depth (g/cm$^2$)")
+        ax.axes.xaxis.set_label_text("Slant depth (g/cm^2)")
         ax.axes.yaxis.set_label_text(
-            "Fluorescence production (Photons·cm$^2$/g)")
+            "Fluorescence production (Photons·cm^2/g)")
         return ax
 
 
@@ -109,8 +109,8 @@ def _fluorescence(fluorescence, profile):
 
     Parameters
     ----------
-    fluorescence : Fluorescence object.
-    profile : Profile object.
+    fluorescence : Fluorescence
+    profile : Profile
     """
     # Number of fluorescence photons at 337nm
     N0_337 = fluorescence.Y0_337 * profile.E_dep

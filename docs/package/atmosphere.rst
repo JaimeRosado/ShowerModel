@@ -5,5 +5,4 @@ Atmosphere
 
 .. automodule:: showermodel.atmosphere
    :members:
-   :undoc-members:
    :show-inheritance:
