@@ -36,13 +36,13 @@ class Event():
     ----------
     event_type : str
         Name given to the event. Default to None.
-    shower : Shower.
-    track : Track.
-    profile : Profile.
-    fluorescence : Fluorescence.
-    cherenkov : Cherenkov.
-    atmosphere : Atmosphere.
-    observatory : Observatory.
+    shower : Shower
+    track : Track
+    profile : Profile
+    fluorescence : Fluorescence
+    cherenkov : Cherenkov
+    atmosphere : Atmosphere
+    observatory : Observatory
     projections : list
         List of Projection objects, one per telescope.
     signals : list
@@ -269,8 +269,10 @@ class Event():
         Returns
         -------
         grid_event : GridEvent
-        ax : AxesSubplot (if 1D grid).
-        (ax1, ax2, cbar) : AxesSubplot and Colorbar object (if 2D grid)
+        ax : AxesSubplot 
+            If 1D grid.
+        (ax1, ax2, cbar) : AxesSubplot and Colorbar
+            If 2D grid.
         """
         if not isinstance(grid, sm.Grid):
             if grid is None:
@@ -315,7 +317,8 @@ class Event():
 
         Returns
         -------
-        images : List of Image objects
+        images : list
+            List of Image objects.
 
         See also
         --------

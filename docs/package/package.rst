@@ -6,6 +6,7 @@ ShowerModel package
 .. toctree::
 
     atmosphere
+    cherenkov
     event
     fluorescence
     image

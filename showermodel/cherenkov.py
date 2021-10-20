@@ -22,10 +22,11 @@ class Cherenkov(pd.DataFrame):
 
     Parameters
     ----------
-    profile : Profile object.
+    profile : Profile
+        Profile object to be used.
 
-    Atributes
-    ---------
+    Attributes
+    ----------
     N_ph : int
         Column 0, number of Cherenkov photons in the 290 - 430 nm range.
     a : float
@@ -37,12 +38,7 @@ class Cherenkov(pd.DataFrame):
     theta_cc : float
         Column 4, fourth parameter (degrees) of the angular distribution.
     profile : Profile object.
-    atmosphere : Atmosphere object.
-
-    Methods
-    -------
-    show : Show the production of Cherenkov photons in the 290 - 430 nm range
-    as a function of slant depth.
+    atmosphere : Atmosphere
     """
     def __init__(self, profile):
         super().__init__(columns=['N_ph', 'a', 'theta_c', 'b', 'theta_cc'])
@@ -63,13 +59,13 @@ class Cherenkov(pd.DataFrame):
 
         Returns
         -------
-        ax : AxesSubplot object.
+        ax : AxesSubplot
         """
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(5, 5))
         ax.plot(self.profile.X, self.N_ph, 'r-')
-        ax.axes.xaxis.set_label_text("Slant depth (g/cm$^2$)")
+        ax.axes.xaxis.set_label_text("Slant depth (g/cm^2)")
         ax.axes.yaxis.set_label_text(
-            "Cherenkov production (photons·cm$^2$/g)")
+            "Cherenkov production (photons·cm^2/g)")
         return ax
 
 
@@ -80,8 +76,8 @@ def _cherenkov(cherenkov, profile):
 
     Parameters
     ----------
-    cherenkov : Cherenkov object.
-    profile : Profile object.
+    cherenkov : Cherenkov
+    profile : Profile
     """
     # cherenkov = _Cherenkov(columns=['N_ph', 'a', 'theta_c', 'b', 'theta_cc'])
     cherenkov.profile = profile
