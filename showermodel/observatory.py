@@ -68,6 +68,9 @@ class Observatory(list):
         _observatory(self)
 
     def show(self):
+        """
+        Show the telescope positions and indexes of the observatory in a 2D plot.
+        """
         return _show(self)
 
 
@@ -209,7 +212,7 @@ def _observatory(observatory):
 
     Parameters
     -----------
-    observatory : Observatory object.
+    observatory : Observatory
     """
     # observatory = Observatory([*telescopes])
     observatory.N_tel = len(observatory)
@@ -233,8 +236,8 @@ def _array25(observatory, telescope, x_c, y_c, z_c, theta, alt, az, R,
 
     Parameters
     ----------
-    observatory : Array25 object
-    telescope : Telescope object
+    observatory : Array25
+    telescope : Telescope
         If None, the default IACT object is used.
     x_c : float
         East coordinate in km of the center of the array.
@@ -325,8 +328,8 @@ def _grid(grid, telescope, x_c, y_c, z_c, theta, alt, az, size_x,
 
     Parameters
     ----------
-    grid : Grid object
-    telescope : Telescope object
+    grid : Grid
+    telescope : Telescope
         If None, the default GridElement object is used.
     x_c : float
         East coordinate in km of the center of the grid.
