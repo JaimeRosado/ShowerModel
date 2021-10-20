@@ -181,7 +181,7 @@ class Telescope:
 
         Returns
         -------
-        Telescope object.
+        telescope : Telescope
         """
         kwargs['x'] = kwargs.get('x', self.x)
         kwargs['y'] = kwargs.get('y', self.y)
