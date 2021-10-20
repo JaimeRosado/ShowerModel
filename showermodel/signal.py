@@ -19,16 +19,18 @@ class Signal(pd.DataFrame):
 
     Parameters
     ----------
-    telescope : Telescope object
-    shower : Shower object
-    projection : Projection object
+    telescope : Telescope
+        Telescope object to be used.
+    shower : Shower
+        Shower object to be used.
+    projection : Projection
         If None, it will generated from telescope and shower.
     atm_trans : bool, default True
         Include the atmospheric transmision to transport photons.
     tel_eff : bool, default True
         Include the telescope efficiency to calculate the signal. If False,
         100% efficiency is assumed for a given wavelenght interval.
-    **kwargs {wvl_ini, wvl_fin, wvl_step}
+    **kwargs : {wvl_ini, wvl_fin, wvl_step}
         These parameters will modify the wavelenght interval when
         tel_eff==False. If None, the wavelength interval defined in the
         telescope is used.
@@ -43,7 +45,8 @@ class Signal(pd.DataFrame):
         fluorescence light.
     Npe_total : float
         Column 2, total number of photoelectrons per discretization step.
-    telescope : Telescope object.
+    telescope : Telescope
+        Telescope object.
     atm_trans : bool
         True if the atmospheric transmission is included.
     tel_eff : bool
@@ -60,27 +63,22 @@ class Signal(pd.DataFrame):
         Sum of photoelectrons due to fluorescence light.
     Npe_total_sum : float
         Sum of photoelectrons due to both light components.
-    shower : Shower object.
-    projection : Projection object.
-    fluorescence : Fluorescence object.
-    cherenkov : Cherenkov object.
-    profile : Profile object.
-    track : Track object.
-    telescope : Telescope object.
-    atmosphere : Atmosphere object.
-
-    Methods
-    -------
-    show_projection : Show the projection of the shower track viewed by the
-        telescope in both zenith and camera projections.
-    show_profile : Show the shower profile, both number of charged particles
-        and energy deposit, as a function of slant depth.
-    show_light_production : Show the production of both Cherenkov and
-        fluorescence photons in the 290 - 430 nm range as a function of slant
-        depth.
-    show : Show the signal evolution as a function of both time and beta angle
-        (relative to the shower axis direction).
-    Image : Generate a time-varying shower image.
+    shower : Shower
+        Shower object.
+    projection : Projection
+        Projection object.
+    fluorescence : Fluorescence
+        Fluorescence object.
+    cherenkov : Cherenkov
+        Cherenkov object.
+    profile : Profile
+        Profile object.
+    track : Track
+        Track object.
+    telescope : Telescope
+        Telescope object.
+    atmosphere : Atmosphere
+        Atmosphere object.
     """
     def __init__(self, telescope, shower, projection=None, atm_trans=True,
                  tel_eff=True, **kwargs):
@@ -124,7 +122,7 @@ class Signal(pd.DataFrame):
 
         Returns
         -------
-        (ax1, ax2) : AxesSubplot objects.
+        (ax1, ax2) : AxesSubplot
         """
         return self.profile.show()
 
@@ -135,7 +133,7 @@ class Signal(pd.DataFrame):
 
         Returns
         -------
-        (ax1, ax2) : AxesSubplot objects.
+        (ax1, ax2) : AxesSubplot
         """
         return self.shower.show_light_production()
 
@@ -151,7 +149,7 @@ class Signal(pd.DataFrame):
 
         Returns
         -------
-        (ax1, ax2) : AxesSubplot objects.
+        (ax1, ax2) : AxesSubplot
         """
         return _show(self)
 
@@ -173,11 +171,11 @@ class Signal(pd.DataFrame):
         int_time : float
             Integration time in microseconds of a camera frame.
         NSB : float
-            Night sky background in MHz/m$^2$/deg$^2$.
+            Night sky background in MHz/m^2/deg^2.
 
         Returns
         -------
-        Image object
+        image : Image
         """
         return sm.Image(self, N_pix, int_time, NSB)
 
@@ -260,17 +258,17 @@ def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
 
     Parameters
     ----------
-    signal : Signal object
-    telescope : Telescope object
-    shower : Shower object
-    projection : Projection object
+    signal : Signal
+    telescope : Telescope
+    shower : Shower
+    projection : Projection
         If None, it will generated from telescope and shower.
     atm_trans : bool, default True
         Include the atmospheric transmission to transport photons.
     tel_eff : bool, default True
         Include the telescope efficiency to calculate the signal. If False,
         100% efficiency is assumed for a given wavelength interval.
-    **kwargs {wvl_ini, wvl_fin, wvl_step}
+    **kwargs : {wvl_ini, wvl_fin, wvl_step}
         These parameters will modify the wavelength interval when
         tel_eff==False. If None, the wavelength interval defined in the
         telescope is used.

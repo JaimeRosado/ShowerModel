@@ -63,9 +63,9 @@ class Cherenkov(pd.DataFrame):
         """
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(5, 5))
         ax.plot(self.profile.X, self.N_ph, 'r-')
-        ax.axes.xaxis.set_label_text("Slant depth (g/cm^2)")
+        ax.axes.xaxis.set_label_text("Slant depth (g/cm$^2$)")
         ax.axes.yaxis.set_label_text(
-            "Cherenkov production (photons·cm^2/g)")
+            "Cherenkov production (photons·cm$^2$/g)")
         return ax
 
 

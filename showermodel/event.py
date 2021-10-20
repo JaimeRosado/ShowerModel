@@ -506,9 +506,9 @@ def _show_distribution(grid_event):
         # Color bar attached to second plot
         cbar = fig.colorbar(psm)
         if grid_event.tel_eff:  # With telescope efficiency
-            cbar.ax.set_ylabel('Photoelectrons / m^2')
+            cbar.ax.set_ylabel('Photoelectrons / m$^2$')
         else:        # Without telescope efficiency
-            cbar.ax.set_ylabel('Photons / m^2')
+            cbar.ax.set_ylabel('Photons / m$^2$')
 
         return ax1, ax2, cbar
 
@@ -529,9 +529,9 @@ def _show_distribution(grid_event):
             ax.axes.xaxis.set_label_text('x (km)')
 
         if grid_event.tel_eff:  # With telescope efficiency
-            ax.axes.yaxis.set_label_text('Photoelectrons / m^2')
+            ax.axes.yaxis.set_label_text('Photoelectrons / m$^2$')
         else:        # Without telescope efficiency
-            ax.axes.yaxis.set_label_text('Photons / m^2')
+            ax.axes.yaxis.set_label_text('Photons / m$^2$')
 
         ax.plot(x, signal_cher, 'r--', label='Cherenkov')
         ax.plot(x, signal_fluo, 'b--', label='Fluorescence')

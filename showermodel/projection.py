@@ -42,9 +42,12 @@ class Projection(pd.DataFrame):
     FoV : bool
         Column 7, true if the shower point is within the telescope field of
         view, False otherwise.
-    atmosphere : Atmosphere object.
-    track : Track object.
-    telescope : Telescope object.
+    atmosphere : Atmosphere
+        Atmosphere object that is used.
+    track : Track
+        Track object that is used.
+    telescope : Telescope
+        Telescope object that is used.
     distance_top : float
         Distance in km to shower point at the top of the atmosphere.
     beta_top : float

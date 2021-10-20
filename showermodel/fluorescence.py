@@ -96,9 +96,9 @@ class Fluorescence(pd.DataFrame):
         """
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(5, 5))
         ax.plot(self.profile.X, self.sum(axis=1), 'b-')
-        ax.axes.xaxis.set_label_text("Slant depth (g/cm^2)")
+        ax.axes.xaxis.set_label_text("Slant depth (g/cm$^2$)")
         ax.axes.yaxis.set_label_text(
-            "Fluorescence production (Photons·cm^2/g)")
+            "Fluorescence production (Photons·cm$^2$/g)")
         return ax
 
 

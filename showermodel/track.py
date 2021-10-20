@@ -39,7 +39,7 @@ class Track(pd.DataFrame):
         East coordinate in km of shower impact point at ground.
     y0 : float
         West coordinate in km of shower impact point at ground.
-    atmosphere : Atmosphere object
+    atmosphere : Atmosphere
         If None, a new Atmosphere object is generated.
     **kwargs : {h0, h_top, N_steps, model}
         Options to construct the new Atmosphere object when atm==None.

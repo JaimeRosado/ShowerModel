@@ -35,7 +35,7 @@ class Shower:
         East coordinate in km of shower impact point at ground.
     y0 : float
         West coordinate in km of shower impact point at ground.
-    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame
+    prf_model : 'Greisen', 'Gaisser-Hillas' or DataFrame
         If 'Greisen', the Greisen function for electromagnetic showers is used.
         If 'Gaisser-Hillas', the Gaisser-Hillas function for hadron-induced
         showers is used. If a DataFrame with an energy deposit profile is input,
@@ -53,7 +53,7 @@ class Shower:
     lambda_GH : float
         Lambda parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
         If None, a typical value for the input energy is used.
-    atmosphere : Atmosphere object.
+    atmosphere : Atmosphere
         If None, a new Atmosphere object is generated.
     **kwargs : {h0, h_top, N_steps, model}
         Options to construct the new Atmosphere object when atmosphere==None.
@@ -91,7 +91,7 @@ class Shower:
         East coordinate in km of shower impact point at ground.
     y0 : float
         North coordinate in km of shower impact point at ground.
-    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame.
+    prf_model : 'Greisen', 'Gaisser-Hillas' or DataFrame.
     X_max : float
         Slant depth in g/cm^2 at shower maximum.
     X0_GH : float
@@ -195,7 +195,7 @@ class Shower:
             Observatory object (may be a Grid object).
         atm_trans : bool, default True
             Include the atmospheric transmision to calculate the signals.
-        tel_eff : book, default True
+        tel_eff : bool, default True
             Include the telescope efficiency to calculate the signals.
             If False, 100% efficiency is assumed for a given
             wavelength interval.
@@ -222,7 +222,7 @@ class Shower:
         shower_size : book, default True
             Make the radii of the shower track points proportional to the
             shower size.
-        axes : book, default True
+        axes : bool, default True
             Show the axes of both frames of reference.
         max_theta : float, default 30 degrees
             Maximum offset angle in degrees relative to the telescope
