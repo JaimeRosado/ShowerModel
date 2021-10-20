@@ -22,7 +22,8 @@ class Observatory(list):
 
     Parameters
     ----------
-    *telescopes : Telescope objects
+    *telescopes : Telescope
+        List of telescopes objects to be included.
     obs_type : str
         Name given to the observatory. Default to None.
 
@@ -42,11 +43,6 @@ class Observatory(list):
         Size of the observatory in km across the x direction.
     size_y : float
         Size of the observatory in km across the y direction.
-    R : float
-        Radius of the observatory in km (only Array25 objects).
-    rot_angle : float
-        Rotation angle in degrees (clock-wise) of the array
-        (only Array25 objects).
     N_x : int
         Number of cells across the x direction (only Grid objects).
     N_y : int
@@ -62,11 +58,6 @@ class Observatory(list):
         (e.g., mirror area of an IACT).
     tel_N_pix : int
         Number of camera pixels.
-
-    Methods
-    -------
-    show : Show the telescope positions and indexes of the observatory in a
-    2D plot.
     """
     # obs_type = None
     def __init__(self, *telescopes, obs_type=None):
@@ -92,7 +83,7 @@ class Array25(Observatory):
 
     Parameters
     ----------
-    telescope : Telescope object
+    telescope : Telescope
         If None, the default IACT object is used.
     x_c : float
         East coordinate in km of the center of the array.
@@ -155,7 +146,7 @@ class Grid(Observatory):
 
     Parameters
     ----------
-    telescope : Telescope object.
+    telescope : Telescope
         If None, the default GridElement object is used.
     x_c : float
         East coordinate in km of the center of the grid.

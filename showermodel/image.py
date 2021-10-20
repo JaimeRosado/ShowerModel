@@ -19,7 +19,8 @@ class Image:
 
     Parameters
     ----------
-    signal : Signal object.
+    signal : Signal
+        Signal object to be used.
     lat_profile : bool, default True
         Use a NKG lateral profile to spread the signal. If False, a linear
         shower is assumed.
@@ -30,11 +31,11 @@ class Image:
         Integration time in microseconds of a camera frame. If not
         given, the predefined value in the Telescope object is used.
     NSB : float
-        Night sky background in MHz/m$^2$/deg$^2$.
+        Night sky background in MHz/m^2/deg^2.
 
     Attributes
     ----------
-    signal : Signal object.
+    signal : Signal
     lat_profile : bool
         Bool indicating wether a NKG lateral profile is used to
         spread the signal. If False, a linear shower is assumed.
@@ -53,15 +54,9 @@ class Image:
         pixel values at each frame. Array elements not corresponding to any
         camera pixel are set to -inf.
     NSB : float
-        Night sky background in MHz/m$^2$/deg$^2$.
+        Night sky background in MHz/m^2/deg^2.
     NSB_pix : float
         Mean number of background photoelectrons per pixel and frame.
-
-    Methods
-    -------
-    show : Show a camera frame or the sum of all them including random
-        background.
-    animate : Show an animation of camera frames.
     """
     def __init__(self, signal, lat_profile=True, N_pix=None, int_time=None, NSB=40.):
         _image(self, signal, lat_profile, N_pix, int_time, NSB)
@@ -76,7 +71,7 @@ class Image:
         frame : int
             Frame number. If not given, the sum of frames is shown.
         NSB : float
-            Night sky background in MHz/m$^2$/deg$^2$. If not given, the one
+            Night sky background in MHz/m^2/deg^2. If not given, the one
             defined in Image is used.
         ax : AxesSubplot object
             Axes instance where the plot is generated. In not given, a new
@@ -84,7 +79,7 @@ class Image:
 
         Returns
         -------
-        axes : AxesSubplot object.
+        axes : AxesSubplot
         """
         N_pix = self.N_pix
         N_pix_r = self.N_pix_r
@@ -142,12 +137,12 @@ class Image:
         Parameters
         ----------
         NSB : float
-            Night sky background in MHz/m$^2$/deg$^2$. If not given, the one
+            Night sky background in MHz/m^2/deg^2. If not given, the one
             defined in Image is used.
 
         Returns
         -------
-        ani : HTML object.
+        ani : HTML
         """
         N_pix = self.N_pix
         N_pix_r = self.N_pix_r
@@ -211,8 +206,8 @@ def _image(image, signal, lat_profile, N_pix, int_time, NSB):
 
     Parameters
     ----------
-    image : Image object.
-    signal : Signal object.
+    image : Image
+    signal : Signal
     lat_profile : bool, default True
         Use a NKG lateral profile to spread the signal. If False, a linear
         shower is assumed.
@@ -223,7 +218,7 @@ def _image(image, signal, lat_profile, N_pix, int_time, NSB):
         Integration time in microseconds of a camera frame. If not
         given, the predefined value in the Telescope object is used.
     NSB : float
-        Night sky background in MHz/m$^2$/deg$^2$.
+        Night sky background in MHz/m^2/deg^2.
     """
     image.NSB = NSB
     image.lat_profile = lat_profile
