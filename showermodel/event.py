@@ -18,14 +18,16 @@ class Event():
 
     Parameters
     ----------
-    observatory : Observatory object.
-    shower : Shower object.
+    observatory : Observatory
+        Observatory that observes the shower.
+    shower : Shower
+        Shower to be observed.
     atm_trans : bool, default True
         Include the atmospheric transmision to transport photons.
     tel_eff : bool, default True
         Include the telescope efficiency to calculate the signals.
         If False, 100% efficiency is assumed for a given wavelength interval.
-    **kwargs {wvl_ini, wvl_fin, wvl_step}
+    **kwargs : {wvl_ini, wvl_fin, wvl_step}
         These parameters will be passed to the Signal constructor to modify
         the wavelength interval when tel_eff==False. If None, the wavelength
         interval defined in each telescope is used.
@@ -34,40 +36,24 @@ class Event():
     ----------
     event_type : str
         Name given to the event. Default to None.
-    shower : Shower object.
-    track : Track object.
-    profile : Profile object.
-    fluorescence : Fluorescence object.
-    cherenkov : Cherenkov object.
-    atmosphere : Atmosphere object.
-    observatory : Observatory object.
-    projections : List of Projection objects.
-    signals : List of Signal objects.
-    images : List of Image objects
+    shower : Shower.
+    track : Track.
+    profile : Profile.
+    fluorescence : Fluorescence.
+    cherenkov : Cherenkov.
+    atmosphere : Atmosphere.
+    observatory : Observatory.
+    projections : list
+        List of Projection objects, one per telescope.
+    signals : list
+        List of Signal objects, one per telescope.
+    images : list or None
+        List of Image objects, one per telescope.
         Only available if generated via the method make_images.
     atm_trans : bool
         True if the atmospheric transmision is included.
     tel_eff : bool
         True if the telescope efficiency is included.
-
-    Methods
-    -------
-    show_projection : Show the projection of the shower track viewed by a
-        telescope in both zenith and camera projections.
-    show_profile : Show the shower profile, both number of charged particles
-        and energy deposit, as a function of slant depth.
-    show_light_production : Show the production of both Cherenkov and
-        fluorescence photons in the 290 - 430 nm range as a function of
-        slant depth.
-    show_signal : Show the signal evolution as a function of both time and beta
-        angle (relative to the shower axis direction) for a chosen telescope of
-        the observatory.
-    show_geometry2D : Show the shower track together with the telescope
-        positions in a 2D plot.
-    show_geometry3D : Show the shower track together with the telescope
-        positions in a 3D plot.
-    make_images : Generate shower images.
-    show_images : Show shower images (if already exist).
     """
 
     def __init__(self, observatory, shower, event_type=None, atm_trans=True,
@@ -100,7 +86,7 @@ class Event():
 
         Returns
         -------
-        (ax1, ax2) : PolarAxesSubplot objects.
+        (ax1, ax2) : PolarAxesSubplot
         """
         if X_mark == 'X_max':
             X_mark = self.shower.X_max
@@ -117,7 +103,7 @@ class Event():
 
         Returns
         -------
-        (ax1, ax2) : AxesSubplot objects.
+        (ax1, ax2) : AxesSubplot
         """
         return self.profile.show()
 
@@ -128,7 +114,7 @@ class Event():
 
         Returns
         -------
-        (ax1, ax2) : AxesSubplot objects.
+        (ax1, ax2) : AxesSubplot
         """
         return self.shower.show_light_production()
 
@@ -145,7 +131,7 @@ class Event():
 
         Returns
         -------
-        (ax1, ax2) : AxesSubplot objects.
+        (ax1, ax2) : AxesSubplot
         """
         signal = self.signals[tel_index]
         return signal.show()
@@ -192,7 +178,7 @@ class Event():
 
         Returns
         -------
-        ax : AxesSubplot object.
+        ax : AxesSubplot
         """
         if X_mark == 'X_max':
             X_mark = self.shower.X_max
@@ -237,7 +223,7 @@ class Event():
 
         Returns
         -------
-        ax : Axes3DSubplot object.
+        ax : Axes3DSubplot
         """
         if X_mark == 'X_max':
             X_mark = self.shower.X_max
@@ -252,7 +238,7 @@ class Event():
                           N_y=10, atm_trans=None, tel_eff=None, **kwargs):
         """
         Make a GridEvent object and show the distribution of photons
-        (or photoelectrons) per m$^2$ in an either 1D or 2D plot, depending on
+        (or photoelectrons) per m^2 in an either 1D or 2D plot, depending on
         the grid dimensions.
 
         Parameters
@@ -275,17 +261,16 @@ class Event():
         tel_eff : bool, default True
             Include the telescope efficiency to calculate the signals. If None,
             this option is set to be the same as the original Event object.
-        **kwargs {wvl_ini, wvl_fin, wvl_step}
+        **kwargs : {wvl_ini, wvl_fin, wvl_step}
             These parameters will be passed to the Signal constructor to modify
             the wavelength interval when tel_eff==False. If None, the wavelength
             interval the grid telescopes is used.
 
         Returns
         -------
-        grid_event : GridEvent object.
-        ax : AxesSubplot object (if 1D grid).
-        (ax1, ax2, cbar) : AxesSubplot objects and Colorbar object
-            (if 2D grid).
+        grid_event : GridEvent
+        ax : AxesSubplot (if 1D grid).
+        (ax1, ax2, cbar) : AxesSubplot and Colorbar object (if 2D grid)
         """
         if not isinstance(grid, sm.Grid):
             if grid is None:
@@ -326,11 +311,11 @@ class Event():
             Use a NKG lateral profile to spread the signal. If False,
             a linear shower is assumed.
         NSB : float
-            Night sky background in MHz/m$^2$/deg$^2$.
+            Night sky background in MHz/m^2/deg^2.
 
         Returns
         -------
-        images : List of Image objects.
+        images : List of Image objects
 
         See also
         --------
@@ -375,11 +360,15 @@ class GridEvent(Event):
     'GridEvent' and the attribute observatory is replaced by grid. The method
     show_distribution does not accept arguments.
     """
-    event_type = 'GridEvent'
+
+    def __init__(self, grid, shower, atm_trans=True,
+                 tel_eff=True, **kwargs):
+        self.event_type = 'GridEvent'
+        _event(self, grid, shower, atm_trans, tel_eff, **kwargs)
 
     def show_distribution(self):  # Overwrite the method of the parent class
         """
-        Show the distribution of photons (or photoelectrons) per m$^2$ in an
+        Show the distribution of photons (or photoelectrons) per m^2 in an
         either 1D or 2D plot, depending on the grid dimensions.
         """
         return _show_distribution(self)
@@ -395,15 +384,18 @@ def _event(event, observatory, shower, atm_trans, tel_eff, **kwargs):
 
     Parameters
     ----------
-    event : Event object.
-    observatory : Observatory object.
-    shower : Shower object.
+    event : Event
+        Event to be generated.
+    observatory : Observatory
+        Observatory that observes the shower.
+    shower : Shower
+        Shower to be observed.
     atm_trans : bool, default True
         Include the atmospheric transmision to transport photons.
     tel_eff : bool, default True
         Include the telescope efficiency to calculate the signals.
         If False, 100% efficiency is assumed for a given wavelength interval.
-    **kwargs {wvl_ini, wvl_fin, wvl_step}
+    **kwargs : {wvl_ini, wvl_fin, wvl_step}
         These parameters will be passed to the Signal constructor to modify
         the wavelength interval when tel_eff==False. If None, the wavelength
         interval defined in each telescope is used.
@@ -455,7 +447,7 @@ def _event(event, observatory, shower, atm_trans, tel_eff, **kwargs):
 # Auxiliary functions #########################################################
 def _show_distribution(grid_event):
     """
-    Show the distribution of photons (or photoelectrons) per m$^2$ in an either
+    Show the distribution of photons (or photoelectrons) per m^2 in an either
     1D or 2D plot, depending on the grid dimensions.
     """
     grid = grid_event.grid
@@ -511,9 +503,9 @@ def _show_distribution(grid_event):
         # Color bar attached to second plot
         cbar = fig.colorbar(psm)
         if grid_event.tel_eff:  # With telescope efficiency
-            cbar.ax.set_ylabel('Photoelectrons / m$^2$')
+            cbar.ax.set_ylabel('Photoelectrons / m^2')
         else:        # Without telescope efficiency
-            cbar.ax.set_ylabel('Photons / m$^2$')
+            cbar.ax.set_ylabel('Photons / m^2')
 
         return ax1, ax2, cbar
 
@@ -534,9 +526,9 @@ def _show_distribution(grid_event):
             ax.axes.xaxis.set_label_text('x (km)')
 
         if grid_event.tel_eff:  # With telescope efficiency
-            ax.axes.yaxis.set_label_text('Photoelectrons / m$^2$')
+            ax.axes.yaxis.set_label_text('Photoelectrons / m^2')
         else:        # Without telescope efficiency
-            ax.axes.yaxis.set_label_text('Photons / m$^2$')
+            ax.axes.yaxis.set_label_text('Photons / m^2')
 
         ax.plot(x, signal_cher, 'r--', label='Cherenkov')
         ax.plot(x, signal_fluo, 'b--', label='Fluorescence')
