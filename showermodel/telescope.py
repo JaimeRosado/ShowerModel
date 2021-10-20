@@ -125,24 +125,6 @@ class Telescope:
         Position angle phi in degrees of the right-hand direction from
         the telescope point of view.
 
-    Methods
-    -------
-    copy : Copy the Telescope object, but with optional changes.
-    hor_to_FoV : Convert cartesian coordinates from horizontal system to FoV
-        system.
-    FoV_to_hor : Convert cartesian coordinates from FoV system to horizontal
-        system.
-    thetaphi_to_altaz : Convert FoV coordinates theta/phi to horizontal
-        coordinates alt/az.
-    altaz_to_thetaphi : Convert horizontal coordinates alt/az to FoV
-        coordinates theta/phi.
-    spherical : Calculate the spherical coordinates in both horizontal and FoV
-        systems.
-    abs_to_rel : Calculate the x, y, z coordinates relative to the telescope
-        position from the 'absolute' x, y, z coordinates.
-    distance : Calculate the distance in km between the point x, y, z
-        ('absolute' coordinates) and the telescope position.
-
     See also
     --------
     IACT : IACT class, daughter of Telescope class.
@@ -193,7 +175,7 @@ class Telescope:
 
         Parameters
         ----------
-        **kwargs {x, y, z, ...}
+        **kwargs : {x, y, z, ...}
             Optional changes to the original telescope
             attributes, including class attributes.
 
@@ -232,12 +214,11 @@ class Telescope:
 
         Parameters
         ----------
-        alt : float or array_like.
-        az : float or array_like.
+        alt, az : float or array_like
 
         Returns
         -------
-        theta, phi : float or array_like.
+        theta, phi : float or array_like
 
         See also
         --------
@@ -274,13 +255,11 @@ class Telescope:
 
         Parameters
         ----------
-        x_hor : float or array_like.
-        y_hor : float or array_like.
-        z_hor : float or array_like.
+        x_hor, y_hor, z_hor : float or array_like
 
         Returns
         -------
-        x_FoV, y_FoV, z_FoV : float or array_like.
+        x_FoV, y_FoV, z_FoV : float or array_like
 
         See also
         --------
@@ -308,12 +287,11 @@ class Telescope:
 
         Parameters
         ----------
-        theta : float or array_like.
-        phi : float or array_like.
+        theta, phi : float or array_like
 
         Returns
         -------
-        alt, az : float or array_like.
+        alt, az : float or array_like
 
         See also
         --------
@@ -349,13 +327,11 @@ class Telescope:
 
         Parameters
         ----------
-        x_FoV : float or array_like.
-        y_FoV : float or array_like.
-        z_FoV : float or array_like.
+        x_FoV, y_FoV, z_FoV : float or array_like
 
         Returns
         -------
-        x_hor, y_hor, z_hor : float or array_like.
+        x_hor, y_hor, z_hor : float or array_like
 
         See also
         --------
@@ -388,6 +364,14 @@ class Telescope:
         """
         Calculate the distance in km between the point x, y, z
         ('absolute' coordinates) and the telescope position.
+
+        Parameters
+        ----------
+        x, y, z : float or array_like
+
+        Returns
+        -------
+        distance: float or array_like
         """
         x_rel, y_rel, z_rel = self.abs_to_rel(x, y, z)
         return np.sqrt(x_rel**2 + y_rel**2 + z_rel**2)
@@ -399,11 +383,11 @@ class Telescope:
 
         Parameters
         ----------
-        x, y, z : float or array_like.
+        x, y, z : float or array_like
 
         Returns
         -------
-        distance, alt, az, theta, phi : float or array_like.
+        distance, alt, az, theta, phi : float or array_like
         """
         x_hor, y_hor, z_hor = self.abs_to_rel(x, y, z)
         distance = np.sqrt(x_hor**2 + y_hor**2 + z_hor**2)
@@ -451,11 +435,11 @@ class Telescope:
 
         Parameters
         ----------
-        track : Track object or Shower object.
+        track : Track or Shower
 
         Returns
         -------
-        Projection object.
+        projection : Projection
 
         See also
         --------
@@ -473,7 +457,8 @@ class Telescope:
 
         Parameters
         ----------
-        track : Track object or Shower object.
+        track : Track or Shower
+            Track object to be used.
         axes : bool, default True
             Show the axes of both coordinate systems of reference.
         max_theta : float, default 30 degrees
@@ -485,8 +470,8 @@ class Telescope:
 
         Returns
         -------
-        Projection object.
-        (ax1, ax2) : PolarAxesSubplot objects.
+        projection : Projection
+        (ax1, ax2) : PolarAxesSubplot
 
         See also
         --------
@@ -506,12 +491,8 @@ class IACT(Telescope):
     Daughter class of Telescope.
 
     tel_type is set to 'IACT' and the following default values are used:
-    apert = 8 deg
-    area = 113.097 m^2
-    N_pix = 1800
-    wvl_ini = 280 nm
-    wvl_fin = 600 nm
-    wvl_step = 3nm
+    apert = 8 deg, area = 113.097 m^2, N_pix = 1800, wvl_ini = 280 nm,
+    wvl_fin = 600 nm, wvl_step = 3nm
 
     The detection efficiency is taken similar to MST telescopes of CTA.
     """
@@ -593,11 +574,8 @@ class GridElement(Telescope):
     Daughter class of Telescope used to calculate ground distributions. 
 
     tel_type is set to 'GridElement' and the following default values are used:
-    apert = 180 deg
-    N_pix = 1
-    int_time = 10 us
-
-    The detection efficiency is assumed to be 1.
+    apert = 180 deg, N_pix = 1, int_time = 10 us. The detection efficiency is
+    assumed to be 1.
 
     See also
     --------
@@ -652,7 +630,7 @@ def _telescope(telescope, x, y, z, theta, alt, az, efficiency, apert, area,
 
     Parameters
     ----------
-    telescope : Telescope object.
+    telescope : Telescope
     x : float
         East coordinate of the telescope in km.
     y : float

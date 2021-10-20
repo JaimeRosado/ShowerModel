@@ -15,8 +15,10 @@ class Projection(pd.DataFrame):
 
     Parameters
     ----------
-    telescope : Telescope object
-    track : Track object or Shower object
+    telescope : Telescope
+        Telescope object to be used.
+    track : Track or Shower
+        Track object to be used.
 
     Attributes
     ----------
@@ -63,21 +65,6 @@ class Projection(pd.DataFrame):
         Offset angle in degrees of the apparent source position.
     phi_inf : float
         Position angle in degrees of the apparent source position.
-
-    Methods
-    -------
-    show : Show the projection of the shower track viewed by the telescope in
-        both horizontal and FoV coordinates systems.
-    hor_to_FoV : Convert cartesian coordinates from horizontal system to
-        FoV system.
-    FoV_to_hor : Convert cartesian coordinates from FoV system to horizontal
-        system.
-    thetaphi_to_altaz : Convert FoV coordinates theta/phi to horizontal
-        coordinates alt/az.
-    altaz_to_thetaphi : Convert horizontal coordinates alt/az to FoV
-        coordinates theta/phi.
-    spherical : Calculate the spherical coordinates in both horizontal and
-        FoV systems.
     """
     def __init__(self, telescope, track):
         super().__init__(columns=['distance', 'alt', 'az', 'theta', 'phi',
@@ -102,7 +89,7 @@ class Projection(pd.DataFrame):
 
         Returns
         -------
-        ax1, ax2 : PolarAxesSubplot objects.
+        ax1, ax2 : PolarAxesSubplot
         """
         from ._tools import show_projection
         return show_projection(self, None, False, axes, max_theta, X_mark)
@@ -114,12 +101,11 @@ class Projection(pd.DataFrame):
 
         Parameters
         ----------
-        alt : float or array_like.
-        az : float or array_like.
+        alt, az : float or array_like
 
         Returns
         -------
-        theta, phi : float or array-like objects.
+        theta, phi : float or array-like
 
         See also
         --------
@@ -140,13 +126,11 @@ class Projection(pd.DataFrame):
 
         Parameters
         ----------
-        x_hor : Scalar or array-like.
-        y_hor : Scalar or array-like.
-        z_hor : Scalar or array-like.
+        x_hor, y_hor, z_hor : float or array-like
 
         Returns
         -------
-        x_FoV, y_FoV, z_FoV : Scalars or array_like.
+        x_FoV, y_FoV, z_FoV : floar or array_like
 
         See also
         --------
@@ -163,12 +147,11 @@ class Projection(pd.DataFrame):
 
         Parameters
         ----------
-        theta : float or array_like.
-        phi : float or array_like.
+        theta, phi : float or array_like
 
         Returns
         -------
-        alt, az : float or array_like.
+        alt, az : float or array_like
 
         See also
         --------
@@ -189,9 +172,7 @@ class Projection(pd.DataFrame):
 
         Parameters
         ----------
-        x_FoV : float or array_like.
-        y_FoV : float or array_like.
-        z_FoV : float or array_like.
+        x_FoV, y_FoV, z_FoV : float or array_like
 
         Returns
         -------
@@ -209,15 +190,15 @@ class Projection(pd.DataFrame):
     def spherical(self, x, y, z):
         """
         Calculate the spherical coordinates in both horizontal and FoV systems
-        the 'absolute' x, y, z coordinates.
+        from the 'absolute' x, y, z coordinates.
 
         Parameters
         ----------
-        x, y, z : float or array_like.
+        x, y, z : float or array_like
 
         Returns
         -------
-        distance, alt, az, theta, phi : float or array_like.
+        distance, alt, az, theta, phi : float or array_like
         """
         return self.telescope.spherical(x, y, z)
 
@@ -232,9 +213,9 @@ def _projection(projection, telescope, track):
 
     Parameters
     ----------
-    projection : Projection object.
-    telescope : Telescope object.
-    track : Track object or Shower object.
+    projection : Projection
+    telescope : Telescope
+    track : Track or Shower
     """
     from .telescope import Telescope
     from .track import Track
