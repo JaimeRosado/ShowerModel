@@ -64,12 +64,6 @@ class Atmosphere(pd.DataFrame):
         CORSIKA atmospheric model. Presently either 1 or 17. More models to
         be implemented.
 
-    Methods
-    -------
-    h_to_Xv : Get vertical depth from height.
-    h_to_rho : Get mass density from height.
-    Xv_to_h : Get height from vertical depth.
-
     See also
     --------
     Track : DataFrame containing a shower track discretization.

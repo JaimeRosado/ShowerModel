@@ -33,7 +33,7 @@ class Profile(pd.DataFrame):
     alt : float
         Altitude in degrees of the apparent position of the source. If None,
         theta is used. If given, theta is overwritten.
-    prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame
+    prf_model : 'Greisen', 'Gaisser-Hillas' or DataFrame
         If 'Greisen', the Greisen function for electromagnetic showers is used.
         If 'Gaisser-Hillas', the Gaisser-Hillas function for hadron-induced
         showers is used. If a DataFrame with an energy deposit profile is input,
@@ -53,7 +53,7 @@ class Profile(pd.DataFrame):
         If None, a typical value for the input energy is used.
     atmosphere : Atmosphere object.
         If None, a new Atmosphere object is generated.
-    **kwargs {h0, h_top, N_steps, model}
+    **kwargs : {h0, h_top, N_steps, model}
         Options to construct the new Atmosphere object when atmosphere==None.
         If None, the default Atmosphere object is used.
 
@@ -85,13 +85,6 @@ class Profile(pd.DataFrame):
         lambda parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
     dl : float
         Size in km of the discretization step along the shower axis.
-
-    Methods
-    -------
-    Fluorescence : Calculate the fluorescence light production.
-    Cherenkov : Calculate the Cherenkov light production.
-    show : Show the shower profile, both number of charged particles and energy
-        deposit, as a function of slant depth.
 
     See also
     --------
@@ -133,7 +126,7 @@ class Profile(pd.DataFrame):
 
         Returns
         -------
-        Fluorescece object.
+        fluorescence : Fluorescece
         """
         return sm.Fluorescence(self)
 
@@ -144,7 +137,7 @@ class Profile(pd.DataFrame):
 
         Returns
         -------
-        Cherenkov object.
+        cherenkov : Cherenkov
         """
         return sm.Cherenkov(self)
 
@@ -155,7 +148,7 @@ class Profile(pd.DataFrame):
 
         Returns
         -------
-        (ax1, ax2) : AxesSubplot objects.
+        (ax1, ax2) : AxesSubplot
         """
         # Shower size
         fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
@@ -179,7 +172,7 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
 
     Parameters
     ----------
-    profile :  Profile object
+    profile :  Profile
     E : float
         Energy of the primary particle in MeV.
     theta : float
@@ -207,7 +200,7 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
         If None, a typical value for the input energy is used.
     atmosphere : Atmosphere object.
         If None, a new Atmosphere object is generated.
-    **kwargs {h0, h_top, N_steps, model}
+    **kwargs : {h0, h_top, N_steps, model}
         Options to construct the new Atmosphere object when atmosphere==None.
         If None, the default Atmosphere object is used.
     """
