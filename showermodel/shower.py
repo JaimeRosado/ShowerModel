@@ -219,7 +219,7 @@ class Shower:
         ----------
         telescope : Telescope
             Telescope object to be used.
-        shower_size : book, default True
+        shower_size : bool, default True
             Make the radii of the shower track points proportional to the
             shower size.
         axes : bool, default True
