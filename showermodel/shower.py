@@ -178,9 +178,9 @@ class Shower:
             tel_eff==False. If None, the wavelength interval defined in the
             telescope is used.
 
-        Results
+        Returns
         -------
-        Signal object.
+        signal : Signal
         """
         return sm.Signal(telescope, self, atm_trans, tel_eff, **kwargs)
 
@@ -204,7 +204,7 @@ class Shower:
             tel_eff==False. If None, the wavelength interval defined in the
             telescope is used.
 
-        Results
+        Returns
         -------
         event : Event
         """
@@ -302,7 +302,7 @@ class Shower:
             tel_eff==False. If None, the wavelength interval defined in the
             telescope is used.
 
-        Results
+        Returns
         -------
         signal : Signal
         (ax1, ax2) : AxesSubplot
