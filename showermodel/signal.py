@@ -75,10 +75,21 @@ class Signal(pd.DataFrame):
         Profile object.
     track : Track
         Track object.
-    telescope : Telescope
-        Telescope object.
     atmosphere : Atmosphere
         Atmosphere object.
+
+    Methods
+    -------
+    show_projection()
+        Show the projection of the shower track viewed by the telescope.
+    show_profile()
+        Show the shower profile as a function of slant depth.
+    show_light_production()
+        Show the production photons as a function of slant depth.
+    show()
+        Show the signal evolution.
+    Image()
+        Generate a time-varying shower image.
     """
     def __init__(self, telescope, shower, projection=None, atm_trans=True,
                  tel_eff=True, **kwargs):

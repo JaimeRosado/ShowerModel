@@ -68,6 +68,21 @@ class Projection(pd.DataFrame):
         Offset angle in degrees of the apparent source position.
     phi_inf : float
         Position angle in degrees of the apparent source position.
+
+    Methods
+    -------
+    show()
+        Show the projection of the shower track viewed by the telescope.
+    hor_to_FoV()
+        Convert cartesian coordinates from horizontal system to FoV system.
+    FoV_to_hor()
+        Convert cartesian coordinates from FoV system to horizontal system.
+    thetaphi_to_altaz()
+        Convert FoV coordinates theta/phi to horizontal coordinates alt/az.
+    altaz_to_thetaphi()
+        Convert horizontal coordinates alt/az to FoV coordinates theta/phi.
+    spherical()
+        Calculate the spherical coordinates in both horizontal and FoV systems.
     """
     def __init__(self, telescope, track):
         super().__init__(columns=['distance', 'alt', 'az', 'theta', 'phi',

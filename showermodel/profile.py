@@ -51,7 +51,7 @@ class Profile(pd.DataFrame):
     lambda_GH : float
         Lambda parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
         If None, a typical value for the input energy is used.
-    atmosphere : Atmosphere object.
+    atmosphere : Atmosphere
         If None, a new Atmosphere object is generated.
     **kwargs : {h0, h_top, N_steps, model}
         Options to construct the new Atmosphere object when atmosphere==None.
@@ -69,7 +69,8 @@ class Profile(pd.DataFrame):
         Column 3, energy deposit in MeV at each discretiztion step.
     N_ch : float
         Column 4, number of charged particles.
-    atmosphere : Atmosphere object.
+    atmosphere : Atmosphere
+        Atomosphere object.
     E : float
         Energy of the primary particle.
     theta : float
@@ -85,6 +86,15 @@ class Profile(pd.DataFrame):
         lambda parameter in g/cm2 for prf_model=='Gaisser-Hillas'.
     dl : float
         Size in km of the discretization step along the shower axis.
+
+    Methods
+    -------
+    Fluorescence()
+        Calculate the fluorescence light production.
+    Cherenkov()
+        Calculate the Cherenkov light production.
+    show()
+        Show the shower profile as a function of slant depth.
 
     See also
     --------

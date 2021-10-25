@@ -54,6 +54,26 @@ class Event():
         True if the atmospheric transmision is included.
     tel_eff : bool
         True if the telescope efficiency is included.
+
+    Methods
+    -------
+    show_projection()
+        Show the projection of the shower track viewed by a telescope.
+    show_profile()
+        Show the shower profile as a function of slant depth.
+    show_light_production()
+        Show the production of both Cherenkov and fluorescence photons as a
+        function of slant depth.
+    show_signal()
+        Show the signal evolution for a chosen telescope of the observatory.
+    show_geometry2D()
+        Show the shower track and the telescope positions in a 2D plot.
+    show_geometry3D()
+        Show the shower track and the telescope positions in a 3D plot.
+    make_images()
+        Generate shower images.
+    show_images()
+        Show shower images (if already exist).
     """
 
     def __init__(self, observatory, shower, event_type=None, atm_trans=True,

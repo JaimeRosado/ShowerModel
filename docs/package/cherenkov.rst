@@ -3,7 +3,9 @@
 Cherenkov
 ===================
 
-.. automodule:: showermodel.cherenkov
-   :members:
-   :undoc-members:
+.. autoclass:: showermodel.cherenkov.Cherenkov
    :show-inheritance:
+
+*Methods:*
+   .. automethod:: showermodel.cherenkov.Cherenkov.show
+      :noindex:

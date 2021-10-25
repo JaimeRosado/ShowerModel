@@ -102,6 +102,20 @@ class Track(pd.DataFrame):
     dl : float
         Size in km of discretization step along the shower axis.
 
+    Methods
+    -------
+    h_to_xyz()
+        Get the spatial coordinates from height above sea level.
+    z_to_t()
+        Get travel time mass density from height.
+    X_to_xyz()
+        Get the spatial coordinates from slanth depth.
+    Projection()
+        Make a Projection object containing the coordinates of a
+        shower track relative to a telescope position.
+    show_projection()
+        Make a Projection object and show it.
+
     See also
     --------
     Shower : Make a discretization of a shower.

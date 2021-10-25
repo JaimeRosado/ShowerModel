@@ -57,7 +57,12 @@ class Observatory(list):
         Detection area of each telescope in m^2
         (e.g., mirror area of an IACT).
     tel_N_pix : int
-        Number of camera pixels.        
+        Number of camera pixels.
+
+    Methods
+    -------
+    show()
+        Show the telescope positions and indexes in a 2D plot.
     """
     # obs_type = None
     def __init__(self, *telescopes, obs_type=None):
@@ -110,6 +115,10 @@ class Array25(Observatory):
 
     Attributes
     ----------
+    obs_type : str
+        Set to 'Array25'.
+    N_tel : int
+        Set to 25.
     x_c : float
         East coordinate in km of the center of the array.
     y_c : float
@@ -176,6 +185,10 @@ class Grid(Observatory):
 
     Attributes
     ----------
+    obs_type : str
+        Set to 'Grid'.
+    N_tel : int
+        Set to N_x*N_y.
     x_c : float
         East coordinate in km of the center of the grid.
     y_c : float

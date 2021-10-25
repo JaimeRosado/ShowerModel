@@ -64,6 +64,15 @@ class Atmosphere(pd.DataFrame):
         CORSIKA atmospheric model. Presently either 1 or 17. More models to
         be implemented.
 
+    Methods
+    -------
+    h_to_Xv()
+        Get vertical depth from height.
+    h_to_rho()
+        Get mass density from height.
+    Xv_to_h()
+        Get height from vertical depth.
+
     See also
     --------
     Track : DataFrame containing a shower track discretization.
@@ -87,7 +96,6 @@ class Atmosphere(pd.DataFrame):
         Returns
         -------
         Xv : float or array_like
-            Vertical depth in g/cm^2.
         """
         Xv, rho = self._get_Xv_rho(h)
         return Xv
@@ -104,7 +112,6 @@ class Atmosphere(pd.DataFrame):
         Returns
         -------
         rho : float or array_like
-            Mass density in g/cm^3.
         """
         Xv, rho = self._get_Xv_rho(h)
         return rho
@@ -128,7 +135,6 @@ class Atmosphere(pd.DataFrame):
         Returns
         -------
         h : float or array_like
-            Height in km.
         """
         if Xv == 0:
             return self.h_top

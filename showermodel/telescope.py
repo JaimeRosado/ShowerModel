@@ -125,6 +125,27 @@ class Telescope:
         Position angle phi in degrees of the right-hand direction from
         the telescope point of view.
 
+    Methods
+    -------
+    copy()
+        Copy the Telescope object, but with optional changes.
+    hor_to_FoV()
+        Convert cartesian coordinates from horizontal system to FoV system.
+    FoV_to_hor()
+        Convert cartesian coordinates from FoV system to horizontal system.
+    thetaphi_to_altaz()
+        Convert FoV coordinates theta/phi to horizontal coordinates alt/az.
+    altaz_to_thetaphi()
+        Convert horizontal coordinates alt/az to FoV coordinates theta/phi.
+    spherical()
+        Calculate the spherical coordinates in both horizontal and FoV systems.
+    abs_to_rel()
+        Calculate the x, y, z coordinates relative to the telescope
+        position from the 'absolute' x, y, z coordinates.
+    distance()
+        Calculate the distance in km between the point x, y, z
+        ('absolute' coordinates) and the telescope position.
+
     See also
     --------
     IACT : IACT class, daughter of Telescope class.

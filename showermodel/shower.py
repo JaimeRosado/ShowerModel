@@ -103,6 +103,34 @@ class Shower:
     cherenkov : Cherenkov
         Cherenkov object that is generated.
 
+    Methods
+    -------
+    copy()
+        Copy a Shower object, but with optional changes.
+    Projection()
+        Make a Projection object containing the coordinates of a
+        shower track relative to a telescope position.
+    Signal()
+        Make a Signal object containing the signal produced by the shower
+        detected by a telescope.
+    Event()
+        Make an Event object containing the characteristics of the shower,
+        an observatory and the signal produced by the shower in each telescope.
+    show_profile()
+        Show the shower profile, both number of charged particles
+        and energy deposit, as a function of slant depth.
+    show_light_production()
+        Show the production of both Cherenkov and fluorescence photons
+        as a function of slant depth.
+    show_projection()
+        Make a Projection object and show it.
+    show_signal()
+        Make a Signal object and show it.
+    show_geometry2D()
+        Show a 2D plot of the shower track and input telescope positions.
+    show_geometry3D()
+        Show a 3D plot of the shower track and input telescopes positions.
+
     See also
     --------
     Atmosphere : DataFrame containing the atmosphere discretization.

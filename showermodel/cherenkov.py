@@ -37,8 +37,13 @@ class Cherenkov(pd.DataFrame):
         Column 3, third parameter of the angular distribution.
     theta_cc : float
         Column 4, fourth parameter (degrees) of the angular distribution.
-    profile : Profile object.
+    profile : Profile
     atmosphere : Atmosphere
+
+    Methods
+    -------
+    show()
+        Show the production of Cherenkov photons as a function of slant depth.
     """
     def __init__(self, profile):
         super().__init__(columns=['N_ph', 'a', 'theta_c', 'b', 'theta_cc'])

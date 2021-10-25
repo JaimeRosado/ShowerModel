@@ -57,6 +57,13 @@ class Image:
         Night sky background in MHz/m^2/deg^2.
     NSB_pix : float
         Mean number of background photoelectrons per pixel and frame.
+
+    Methods
+    -------
+    show()
+        Show a camera frame or the sum of all them including background.
+    animate()
+        Show an animation of camera frames.
     """
     def __init__(self, signal, lat_profile=True, N_pix=None, int_time=None, NSB=40.):
         _image(self, signal, lat_profile, N_pix, int_time, NSB)
