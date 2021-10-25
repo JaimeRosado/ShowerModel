@@ -79,6 +79,14 @@ class Observatory(list):
         """
         return _show(self)
 
+    def append(self, telescope):
+        """
+        Overwrite the append method to increase N_tel.
+
+        """
+        super().append(telescope)
+        self.N_tel+=1
+
 
 class Array25(Observatory):
     """
