@@ -38,7 +38,7 @@ class Track(pd.DataFrame):
     x0 : float
         East coordinate in km of shower impact point at ground.
     y0 : float
-        West coordinate in km of shower impact point at ground.
+        North coordinate in km of shower impact point at ground.
     atmosphere : Atmosphere
         If None, a new Atmosphere object is generated.
     **kwargs : {h0, h_top, N_steps, model}
@@ -56,7 +56,7 @@ class Track(pd.DataFrame):
     t : float
         Column 3, travel time in microseconds. t=0 at the top of the atmosphere.
         The shower is assumed to propates with the speed of light.
-    atmosphere : Atmosphere object.
+    atmosphere : Atmosphere
     theta : float
         Zenith angle in degrees of the apparent position of the source.
     alt : float
