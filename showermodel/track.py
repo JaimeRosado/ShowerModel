@@ -171,6 +171,8 @@ class Track(pd.DataFrame):
         """
         Xv = X * self.uz
         h = self.atmosphere.Xv_to_h(Xv)
+        if h is None:
+            return None, None, None
         return self.h_to_xyz(h)
 
     def Projection(self, telescope):

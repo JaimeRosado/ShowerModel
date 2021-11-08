@@ -138,14 +138,22 @@ class Atmosphere(pd.DataFrame):
         -------
         h : float
         """
-        if Xv == 0:
+        if Xv==0:
             return self.h_top
+        elif Xv<0.:
+            return None
+        elif Xv>self.Xv_total:
+            return None
 
-        h_lower = self.h[self.X_vert > Xv].max()  # Lower bound for h
-        h_upper = self.h[self.X_vert < Xv].min()  # Lower bound for h
+        h = np.append(self.h0, self.h)
+        h = np.append(h, self.h_top)
+        X_vert = np.append(self.Xv_total, self.X_vert)
+        X_vert = np.append(X_vert, 0.)
+        h_lower = h[X_vert > Xv].max()  # Lower bound for h
+        h_upper = h[X_vert < Xv].min()  # Lower bound for h
         # Upper and lower bounds for Xv (corresponding to h_lower and  h_upper)
-        Xv_upper = self.X_vert[self.X_vert > Xv].min()
-        Xv_lower = self.X_vert[self.X_vert < Xv].max()
+        Xv_upper = X_vert[X_vert > Xv].min()
+        Xv_lower = X_vert[X_vert < Xv].max()
         # An exponential atmosphere is assumed to interpolate h
         # The approximation is good enough for the top atmosphere too
         # (more or less linear)
