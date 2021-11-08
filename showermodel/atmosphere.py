@@ -60,6 +60,8 @@ class Atmosphere(pd.DataFrame):
         Number of discretization steps.
     h_step : float
         Size of discretization step in km.
+    Xv_total : float
+        Total vertical depth of the atmosphere.
     model : int
         CORSIKA atmospheric model. Presently either 1 or 17. More models to
         be implemented.
@@ -193,8 +195,10 @@ def _atmosphere(atmosphere, h0, h_top, N_steps, model):
     atmosphere.h = height[1:] - atmosphere.h_step/2.
 
     # Vertical depth and density from the input model
-    Xv, rho = atmosphere._get_Xv_rho(atmosphere.h)
+    Xv, rho = atmosphere._get_Xv_rho(h0)
+    atmosphere.Xv_total = Xv
 
+    Xv, rho = atmosphere._get_Xv_rho(atmosphere.h)
     atmosphere.X_vert = Xv
     atmosphere.rho = rho
 
