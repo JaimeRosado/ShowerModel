@@ -131,12 +131,12 @@ class Atmosphere(pd.DataFrame):
 
         Parameters
         ----------
-        Xv : float or array_like
+        Xv : float
             Vertical depth in g/cm^2.
 
         Returns
         -------
-        h : float or array_like
+        h : float
         """
         if Xv == 0:
             return self.h_top

@@ -163,11 +163,11 @@ class Track(pd.DataFrame):
 
         Parameters
         ----------
-        X : float or array_like
+        X : float
 
         Returns
         -------
-        x, y, z : float or array_like
+        x, y, z : float
         """
         Xv = X * self.uz
         h = self.atmosphere.Xv_to_h(Xv)
