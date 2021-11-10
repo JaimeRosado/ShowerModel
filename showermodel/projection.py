@@ -9,7 +9,7 @@ class Projection(pd.DataFrame):
     """
     DataFrame containing the projection of a shower track.
 
-    The track is viewed from a telescope poisition in both horizontal
+    The track is viewed from a telescope position in both horizontal
     coordinates system and FoV coordinates system as well as the fraction of
     the track within the telescope field of view.
 
@@ -40,7 +40,7 @@ class Projection(pd.DataFrame):
         of the shower, where time=0 for photons produced at the top of the
         atmosphere.
     FoV : bool
-        Column 7, true if the shower point is within the telescope field of
+        Column 7, True if the shower point is within the telescope field of
         view, False otherwise.
     atmosphere : Atmosphere
         Atmosphere object that is used.
