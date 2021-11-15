@@ -83,7 +83,7 @@ class Fluorescence(pd.DataFrame):
     # Y0_337=7.05 ph/MeV is the fluorescence yield of the band at 337nm in
     # dry air at reference conditions
     # J. Rosado et al. Astropart. Phys. 55(2014)51.
-    Y0_337 = 7.05
+    Y0_337 = 7.04
     
     def __init__(self, profile):
         columns = [wvl[0] for wvl in self.model]
