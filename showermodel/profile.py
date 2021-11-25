@@ -42,9 +42,8 @@ class Profile(pd.DataFrame):
     X_max : float
         Slant depth in g/cm^2 at shower maximum. If None and prf_model is
         'Greisen' or 'Gaisser-Hillas', a typical value of X_max for gamma or
-        proton showers is used. If None and a numerical energy deposit profile
-        is input, lambda_r = 36.7 g/cm^2 is the radiation length and
-        E_c = 81 MeV is the critical energy.
+        proton showers is calculated from the radiation length
+        lambda_r = 36.7 g/cm^2 and the critical energy E_c = 81 MeV.
     X0_GH : float
         X0 parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
         If None, a typical value for the input energy is used.
@@ -199,9 +198,8 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
     X_max : float
         Slant depth in g/cm^2 at shower maximum. If None and prf_model is
         'Greisen' or 'Gaisser-Hillas', a typical value of X_max for gamma or
-        proton showers is used. If None and a numerical energy deposit profile
-        is input, lambda_r = 36.7 g/cm^2 is the radiation length and
-        E_c = 81 MeV is the critical energy.
+        proton showers is calculated from the radiation length
+        lambda_r = 36.7 g/cm^2 and the critical energy E_c = 81 MeV.
     X0_GH : float
         X0 parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
         If None, a typical value for the input energy is used.
