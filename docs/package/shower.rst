@@ -27,3 +27,5 @@ Shower
       :noindex:
    .. automethod:: showermodel.shower.Shower.show_geometry3D
       :noindex:
+   .. automethod:: showermodel.shower.Shower.show_distribution
+      :noindex:

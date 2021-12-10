@@ -130,6 +130,9 @@ class Shower:
         Show a 2D plot of the shower track and input telescope positions.
     show_geometry3D()
         Show a 3D plot of the shower track and input telescopes positions.
+    show_distribution()
+        Make a GridEvent object and show the distribution of photons
+        per m^2 in a 1D or 2D plot.
 
     See also
     --------
@@ -423,7 +426,7 @@ class Shower:
                           **kwargs):
         """
         Make a GridEvent object and show the distribution of photons
-        (or photoelectrons) per m$^2$ in an either 1D or 2D plot, depending on
+        (or photoelectrons) per m^2 in an either 1D or 2D plot, depending on
         the grid dimensions.
 
         Parameters
