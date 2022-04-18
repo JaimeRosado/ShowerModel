@@ -486,7 +486,8 @@ class Shower:
                 raise ValueError('The input grid is not valid')
 
         grid_event = sm.GridEvent(grid, self, atm_trans, tel_eff, **kwargs)
-        return grid_event, grid_event.show_distribution()
+        #return grid_event, grid_event.show_distribution()
+        return grid_event.show_distribution()
 
 
 # Auxiliary functions #########################################################
