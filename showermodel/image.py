@@ -124,7 +124,7 @@ class Image:
             image += noise
         # A given frame is shown
         elif frame < N_frames:
-            image = frames[frame]
+            image = frames[frame].copy()
             # Noise of a single frame
             noise = np.array(np.random.poisson(NSB_pix, (N, N)), float)
             image += noise
@@ -154,7 +154,7 @@ class Image:
         N_pix = self.N_pix
         N_pix_r = self.N_pix_r
         N_frames = self.N_frames
-        frames = self.frames
+        frames = self.frames.copy()
         # Image size
         N = 2 * N_pix_r +1
 
@@ -178,7 +178,7 @@ class Image:
         fig = plt.figure()
         extent = (-N_pix_r-0.5, N_pix_r+0.5, -N_pix_r-0.5, N_pix_r+0.5)
         # Same color scale for all frames
-        vmax = frames.max()
+        vmax = frames.max()+NSB_pix+NSB_pix**0.5
         vmin = 0.
         # List of AxesSubplot objects to pass to ArtistAnimation function
         ims = []
