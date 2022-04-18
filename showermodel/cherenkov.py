@@ -87,12 +87,13 @@ def _cherenkov(cherenkov, profile):
     # cherenkov = _Cherenkov(columns=['N_ph', 'a', 'theta_c', 'b', 'theta_cc'])
     cherenkov.profile = profile
     cherenkov.atmosphere = profile.atmosphere
-    C_E = _E_factor(profile.s, profile.atmosphere.E_th, profile.E/2.)
+    E_th = profile.atmosphere.E_th[profile.index]
+    C_E = _E_factor(profile.s, E_th, profile.E/2.)
     cherenkov.N_ph = (2. * np.pi / 137.036 * (1. / 290. - 1. / 430.)
                       * 1e12 * C_E * profile.N_ch * profile.dl)
 
     cherenkov.a = 0.42489 + 0.58371 * profile.s - 0.082373 * profile.s**2
-    cherenkov.theta_c = np.degrees(0.62694 / profile.atmosphere.E_th**0.6059)
+    cherenkov.theta_c = np.degrees(0.62694 / E_th**0.6059)
     cherenkov.b = 0.055108 - 0.095587 * profile.s + 0.056952 * profile.s**2
     theta_cc = np.array((10.509 - 4.9444 * profile.s) * cherenkov.theta_c)
     theta_cc[theta_cc < 0.] = 0.
