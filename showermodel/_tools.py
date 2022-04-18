@@ -43,14 +43,18 @@ def show_projection(projection, profile, shower_size, axes, max_theta, X_mark):
     phi = np.array(np.radians(projection.phi))
     theta = np.array(projection.theta)
 
-    az_line = np.insert(az, 0, np.radians(projection.az_0))
-    az_line = np.append(az_line, np.radians(projection.az_inf))
-    alt_line = np.insert(alt, 0, projection.alt_0)
-    alt_line = np.append(alt_line, projection.alt_inf)
-    phi_line = np.insert(phi, 0, np.radians(projection.phi_0))
-    phi_line = np.append(phi_line, np.radians(projection.phi_inf))
-    theta_line = np.insert(theta, 0, projection.theta_0)
-    theta_line = np.append(theta_line, projection.theta_inf)
+    #az_line = np.insert(az, 0, np.radians(projection.az_0))
+    #az_line = np.append(az_line, np.radians(projection.az_inf))
+    az_line = np.append(az, np.radians(projection.az_inf))
+    #alt_line = np.insert(alt, 0, projection.alt_0)
+    #alt_line = np.append(alt_line, projection.alt_inf)
+    alt_line = np.append(alt, projection.alt_inf)
+    #phi_line = np.insert(phi, 0, np.radians(projection.phi_0))
+    #phi_line = np.append(phi_line, np.radians(projection.phi_inf))
+    phi_line = np.append(phi, np.radians(projection.phi_inf))
+    #theta_line = np.insert(theta, 0, projection.theta_0)
+    #theta_line = np.append(theta_line, projection.theta_inf)
+    theta_line = np.append(theta, projection.theta_inf)
 
     ax1.scatter(az, alt, c='r', s=shw_size, marker='o')
     ax1.plot(az_line, alt_line, 'r-')
@@ -173,6 +177,8 @@ def show_geometry(obj, observatory, mode, x_min, x_max, y_min, y_max,
     x_track = np.array(track.x[data_range])
     y_track = np.array(track.y[data_range])
     z_track = np.array(track.z[data_range])
+    if len(x_track)==0:
+        raise ValueError('The shower track is outside the plot frame.')
 
     # Telescope positions
     coords = [(telescope.x, telescope.y, telescope.z) for telescope
@@ -187,17 +193,17 @@ def show_geometry(obj, observatory, mode, x_min, x_max, y_min, y_max,
     y_line = y_track.copy()
     z_line = z_track.copy()
     # The observation level is lower than the lowest track point
-    if z_tel_min < z_track.min():
-        x_line = np.insert(x_line, 0,
-                           track.x0 + z_tel_min * track.ux / track.uz)
-        y_line = np.insert(y_line, 0,
-                           track.y0 + z_tel_min * track.uy / track.uz)
-        z_line = np.insert(z_line, 0, z_tel_min)
+#    if z_tel_min < z_track.min():
+#        x_line = np.insert(x_line, 0,
+#                           track.x0 + z_tel_min * track.ux / track.uz)
+#        y_line = np.insert(y_line, 0,
+#                           track.y0 + z_tel_min * track.uy / track.uz)
+#        z_line = np.insert(z_line, 0, z_tel_min)
     # The observation level is higher than the highest track point
-    if z_tel_max > z_track.max():
-        x_line = np.append(x_line, track.x0 + z_tel_max * track.ux / track.uz)
-        y_line = np.append(y_line, track.y0 + z_tel_max * track.uy / track.uz)
-        z_line = np.append(z_line, z_tel_max)
+#    if z_tel_max > z_track.max():
+#        x_line = np.append(x_line, track.x0 + z_tel_max * track.ux / track.uz)
+#        y_line = np.append(y_line, track.y0 + z_tel_max * track.uy / track.uz)
+#        z_line = np.append(z_line, z_tel_max)
     z_min = z_line.min()
     z_max = z_line.max()
 
