@@ -126,6 +126,11 @@ def _fluorescence(fluorescence, profile):
     
     P0 = fluorescence.P0
     T0 = fluorescence.T0
+    
+    atm = profile.atmosphere.iloc[profile.index]
+    P = atm.P
+    temp = atm.temp
+    P_w = atm.P_w
 
     # Number of emitted photons at wavelength wvl as a function of pressure P,
     # temperature T and partial pressure P_w of water vapor:
@@ -134,12 +139,9 @@ def _fluorescence(fluorescence, profile):
         # water vapor is available
         if PPw == 0:
             fluorescence[wvl] = (
-                N0_337 * I_rel * (1. + P0 / PP0)
-                / (1. + profile.atmosphere.P / PP0
-                   * (T0 / profile.atmosphere.temp)**(0.5 - a)))
+                N0_337 * I_rel * (1. + P0 / PP0) / (1. + P / PP0
+                   * (T0 / temp)**(0.5 - a)))
         else:
             fluorescence[wvl] = (
-                N0_337 * I_rel * (1. + P0 / PP0)
-                / (1. + ((profile.atmosphere.P - profile.atmosphere.P_w) / PP0
-                         + profile.atmosphere.P_w / PPw)
-                   * (T0 / profile.atmosphere.temp)**(0.5 - a)))
+                N0_337 * I_rel * (1. + P0 / PP0) / (1. + ((P - P_w) / PP0
+                   + P_w / PPw) * (T0 / temp)**(0.5 - a)))
