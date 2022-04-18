@@ -36,9 +36,9 @@ class Profile(pd.DataFrame):
     prf_model : 'Greisen', 'Gaisser-Hillas' or DataFrame
         If 'Greisen', the Greisen function for electromagnetic showers is used.
         If 'Gaisser-Hillas', the Gaisser-Hillas function for hadron-induced
-        showers is used. If a DataFrame with an energy deposit profile is input,
-        it must have two columns with the slant depth in g/cm2 and dE/dX in
-        MeV.cm2/g. 
+        showers is used. If a DataFrame with an energy deposit profile is
+        input, it must have two columns with the slant depth in g/cm2 and
+        dE/dX in MeV.cm2/g. 
     X_max : float
         Slant depth in g/cm^2 at shower maximum. If None and prf_model is
         'Greisen' or 'Gaisser-Hillas', a typical value of X_max for gamma or
@@ -50,6 +50,10 @@ class Profile(pd.DataFrame):
     lambda_GH : float
         Lambda parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
         If None, a typical value for the input energy is used.
+    zi : float, default None
+        Height in km of the first interaction point of the shower. If None,
+        the shower is assumed to begin at the top of the atmosphere (theta<90)
+        or at ground level (theta>90).
     atmosphere : Atmosphere
         If None, a new Atmosphere object is generated.
     **kwargs : {h0, h_top, N_steps, model}
@@ -101,10 +105,10 @@ class Profile(pd.DataFrame):
     Shower : Make a discretization of a shower.
     """
     def __init__(self, E=_E, theta=_theta, alt=None, prf_model=_prf_model,
-                 X_max=None, X0_GH=None, lambda_GH=None, atmosphere=None,
+                 X_max=None, X0_GH=None, lambda_GH=None, zi=None, atmosphere=None,
                  **kwargs):
         super().__init__(columns=['X', 's', 'dX', 'E_dep', 'N_ch'])
-        _profile(self, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
+        _profile(self, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH, zi,
                  atmosphere, **kwargs)
 
     def _Greisen_norm(self):
@@ -174,7 +178,7 @@ class Profile(pd.DataFrame):
 
 
 # Constructor #################################################################
-def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
+def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH, zi,
              atmosphere, **kwargs):
     """
     Constructor of Profile class.
@@ -206,6 +210,8 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
     lambda_GH : float
         Lambda parameter in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
         If None, a typical value for the input energy is used.
+    zi : float, default None
+        Height in km of the first interaction point of the shower. 
     atmosphere : Atmosphere object.
         If None, a new Atmosphere object is generated.
     **kwargs : {h0, h_top, N_steps, model}
@@ -235,19 +241,31 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
         theta = 90. - alt
     profile.theta = theta
     profile.alt = alt
-    uz = np.cos(math.radians(theta))
+    if theta==180.:
+        uz = -1.
+    else:
+        uz = np.cos(math.radians(theta))
 
-    X = np.array(atmosphere.X_vert / uz)   # Slant depth in g/cm^2
-    profile.X = X
+    #Slant depth in g/cm^2 (following track.X_to_xyz())
+    if zi is None:
+        if uz>0.:
+            Xv_i = 0.
+        else:
+            Xv_i = atmosphere.Xv_total
+    else:
+        Xv_i = atmosphere.h_to_Xv(zi + atmosphere.h0)
 
-    # Length in km travelled trhough one atmospheric slice
-    profile.dl = atmosphere.h_step / uz
-    # Depth in g/cm^2 travelled trhough one atmospheric slice
-    profile.dX = 100000. * profile.dl * profile.atmosphere.rho
+    X = (atmosphere.X_vert - Xv_i) / uz
+    points = atmosphere[(X>0.) & (atmosphere.X_vert>0.)].index
+    profile.X = X[points]
+
+    # Length in km travelled through one atmospheric slice
+    profile.dl = atmosphere.h_step / abs(uz)
+    # Depth in g/cm^2 travelled through one atmospheric slice
+    profile.dX = 100000. * profile.dl * atmosphere.rho[points]
 
     profile.prf_model = prf_model
 
-    N_ch = np.zeros_like(X)
     # DataFrame containing dE/dX at steps in X
     if isinstance(prf_model, pd.DataFrame):
         # Sorted to allow for interpolation
@@ -272,13 +290,13 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
             """)
 
         profile.X_max = X_max
-        s = 3. * X / (X + 2. * X_max)  # Shower age
+        s = 3. * profile.X / (profile.X + 2. * X_max)  # Shower age
         profile.s = s
 
         profile.X0_GH = None
         profile.lambda_GH = None
 
-        dE_dX = np.interp(X, X_model, dE_dX_model, left=0., right=0.)
+        dE_dX = np.interp(profile.X, X_model, dE_dX_model, left=0., right=0.)
         profile.E_dep = dE_dX * profile.dX
         profile.N_ch = dE_dX / profile._alpha(profile.s)
 
@@ -299,7 +317,7 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
             # E_c=81 MeV is the critical energy in air
             X_max = 36.7 * np.log(E / 81.)
         profile.X_max = X_max
-        s = 3. * X / (X + 2. * X_max)  # Shower age
+        s = 3. * profile.X / (profile.X + 2. * X_max)  # Shower age
         profile.s = s
 
         profile.X0_GH = None
@@ -308,10 +326,8 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
         # Greisen profile: N_ch = 0.31/sqrt(t_max) * exp[ t * (1-3/2*log(s)) ]
         # where t=X/lambda_r ,
         # lambda_r = 36.7 g/cm^2 is the radiation length in air
-        N_ch[s > 0] = (0.31 / np.sqrt(X_max/36.7)
-                       * np.exp(X[s > 0] / 36.7 * (1.-1.5*np.log(s[s > 0]))))
-        # s>0 prevents from errors for discretization steps with X=0,
-        # where the atmosphere is undefined
+        N_ch = (0.31 / np.sqrt(X_max/36.7)
+                * np.exp(profile.X / 36.7 * (1.-1.5*np.log(s))))
 
         # Shower size with an energy cut of 1MeV
         profile.N_ch = profile._Greisen_norm() * N_ch
@@ -319,7 +335,7 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
         # Deposited energy in each slice: E_dep = alpha * N_ch * dX,
         # where  alpha(s) is the mean ionization energy loss per electron for
         # an energy cut of 1MeV
-        profile.E_dep = profile._alpha(profile.s) * profile.N_ch * profile.dX
+        profile.E_dep = profile._alpha(s) * profile.N_ch * profile.dX
 
     elif prf_model == 'Gaisser-Hillas':
         # If not given, a typical value according to Heitler model is used
@@ -328,7 +344,7 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
             # lambda_r = 36.7 g/cm2 radiation lenght in air
             # E_c=81 MeV is the critical energy in air
         profile.X_max = X_max
-        s = 3. * X / (X + 2. * X_max)  # Shower age
+        s = 3. * profile.X / (profile.X + 2. * X_max)  # Shower age
         profile.s = s
 
         # If not given, typical values according to Auger data are used
@@ -347,11 +363,11 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH,
         # N_ch = N_ch_max * [ (X-X0) / (X_max-X0) ]**( (X_max-X0) / lambda )
         # * exp[ -(X-X_max) / lambda ]
         X_min = max(X0_GH, 0.)  # X0_GH is expected to be negative
+        N_ch = 0. * profile.X
         N_ch[X > X_min] = (
             ((X[X > X_min]-X0_GH) / (X_max-X0_GH))**((X_max-X0_GH)/lambda_GH)
             * np.exp(-(X[X > X_min]-X_max) / lambda_GH))
-        # X>X_min prevents from errors for discretization steps with X=0,
-        # where the atmosphere is undefined
+        # X>X_min prevents from errors for discretization steps with X<=0,
         # or with X<X0_GH, where the GH profile is undefined
 
         # Shower size with an energy cut of 1MeV
@@ -404,8 +420,9 @@ def _GH_norm(E, X_max, X0_GH, lambda_GH):
     # Gaisser-Hillas profile:
     # N_ch = N_ch_max*[(X-X0)/(X_max-X0)]**((X_max-X0)/lambda)
     # *exp[-(X-X_max)/lambda]
-    N_GH = (((X-X0_GH) / (X_max-X0_GH))**((X_max-X0_GH) / lambda_GH)
-            * np.exp(-(X-X_max)/lambda_GH))
+    N_GH = np.zeros_like(X)
+    N_GH[X>X0_GH] = (((X[X>X0_GH]-X0_GH)/(X_max-X0_GH))**((X_max-X0_GH)/lambda_GH)
+                     *np.exp(-(X[X>X0_GH]-X_max)/lambda_GH))
 
     # Normalization constant K= E / int[alpha(s) * N_g(s) * dX/ds *ds]
     # where dX/ds = (X+2*X_max) / (3-s)
