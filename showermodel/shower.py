@@ -31,10 +31,11 @@ class Shower:
     az : float
         Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
-    x0 : float
-        East coordinate in km of shower impact point at ground.
-    y0 : float
-        West coordinate in km of shower impact point at ground.
+    x0, y0 : float
+        East and north coordinates in km of shower impact point at ground.
+    xi, yi, zi : float, default None
+        East, north and height coordinates in km of the first interaction point
+        of the shower. If given, x0 and y0 are ignored.
     prf_model : 'Greisen', 'Gaisser-Hillas' or DataFrame
         If 'Greisen', the Greisen function for electromagnetic showers is used.
         If 'Gaisser-Hillas', the Gaisser-Hillas function for hadron-induced
@@ -87,10 +88,11 @@ class Shower:
     az : float
         Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
-    x0 : float
-        East coordinate in km of shower impact point at ground.
-    y0 : float
-        North coordinate in km of shower impact point at ground.
+    x0, y0, z0 : float or None
+        Coordinates in km of shower impact point at ground (z0=0).
+        Set to None for ascending showers beginning at zi>0.
+    xi, yi, zi : float
+        Coordinates in km of the first interaction point of the shower.
     prf_model : 'Greisen', 'Gaisser-Hillas' or DataFrame.
     X_max : float
         Slant depth in g/cm^2 at shower maximum.
@@ -141,17 +143,15 @@ class Shower:
     Profile : DataFrame containing a shower profile discretization.
     """
     def __init__(self, E=_E, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
-                 prf_model=_prf_model, X_max=None, N_ch_max=None, X0_GH=None,
-                 lambda_GH=None, atmosphere=None, **kwargs):
-        _shower(self, E, theta, alt, az, x0, y0, prf_model, X_max, N_ch_max,
-                X0_GH, lambda_GH, atmosphere, **kwargs)
+                 xi=_x0, yi=_y0, zi=None, prf_model=_prf_model, X_max=None,
+                 N_ch_max=None, X0_GH=None, lambda_GH=None, atmosphere=None,
+                 **kwargs):
+        _shower(self, E, theta, alt, az, x0, y0, xi, yi, zi, prf_model, X_max,
+                N_ch_max, X0_GH, lambda_GH, atmosphere, **kwargs)
 
     def copy(self, **kwargs):
         """
         Copy a Shower object, but with optional changes.
-
-        Depending on the input arguments, some attributes (or all them) will be
-        aliases of those of the original Shower object.
 
         Parameters
         ----------
@@ -165,7 +165,7 @@ class Shower:
 
         See also
         --------
-        Shower : Constructor of Shower object.
+        Shower : Make a discretization of a shower.
         """
         return _copy(self, **kwargs)
 
@@ -493,100 +493,32 @@ class Shower:
 def _copy(shower, atmosphere=None, **kwargs):
     """
     Copy a Shower object, but with optional changes.
-
-    Depending on the input arguments, some attributes (or all them) will be
-    aliases of those of the orginal Shower object.
     """
-    E = kwargs.get('E', shower.E)
-    if kwargs.get('alt') is None:
-        theta = kwargs.get('theta', shower.theta)
-        alt = 90. - theta
+    kwargs['E'] = kwargs.get('E', shower.E)
+    # If 'alt' in kwargs and != None, theta is not used
+    kwargs['theta'] = kwargs.get('theta', shower.theta)
+    kwargs['az'] = kwargs.get('az', shower.az)
+    # xi, yi, zi are used unless zi is not given but x0 or y0 are specified
+    if kwargs.get('zi') is None and (kwargs.get('x0') is not None
+                                     or kwargs.get('y0') is not None):
+        kwargs['x0'] = kwargs.get('x0', shower.x0)
+        kwargs['y0'] = kwargs.get('y0', shower.y0)
     else:
-        alt = kwargs('alt')
-        theta = 90. - alt
-    az = kwargs.get('az', shower.az)
-    x0 = kwargs.get('x0', shower.x0)
-    y0 = kwargs.get('y0', shower.y0)
-    X_max = kwargs.get('X_max', shower.X_max)
-    prf_model = kwargs.get('prf_model', shower.prf_model)
-    X0_GH = kwargs.get('X0_GH', shower.X0_GH)
-    lambda_GH = kwargs.get('lambda_GH', shower.lambda_GH)
-    h0 = kwargs.get('h0', shower.h0)
-    h_top = kwargs.get('h_top', shower.h_top)
-    N_steps = kwargs.get('N_steps', shower.N_steps)
-    model = kwargs.get('model', shower.model)
+        kwargs['xi'] = kwargs.get('xi', shower.xi)
+        kwargs['yi'] = kwargs.get('yi', shower.yi)
+        kwargs['zi'] = kwargs.get('zi', shower.zi)
+    kwargs['X_max'] = kwargs.get('X_max', shower.X_max)
+    kwargs['prf_model'] = kwargs.get('prf_model', shower.prf_model)
+    kwargs['X0_GH'] = kwargs.get('X0_GH', shower.X0_GH)
+    kwargs['lambda_GH'] = kwargs.get('lambda_GH', shower.lambda_GH)
+    kwargs['atmosphere'] = kwargs.get('atmosphere', shower.atmosphere)
 
-    if isinstance(atmosphere, sm.Atmosphere):
-        # If the key argument atmosphere is passed with a valid atmosphere,
-        # the function generates a new shower from scratch using that
-        # atmosphere (h0, h_top, etc. not used)
-        return Shower(E, theta, az, x0, y0, X_max, atmosphere)
-
-    elif atmosphere is None:
-        # If no key argument atmosphere is passed and some atmospheric
-        # parameters are changed, a new atmosphere is generated and the shower
-        # object is generated from scratch using those parameters
-        if ((h0 != shower.h0) or (h_top != shower.h_top)
-                or (N_steps != shower.N_steps) or (model != shower.model)):
-            atmosphere = sm.Atmosphere(h0, h_top, N_steps, model)
-            return Shower(E, theta, az, x0, y0, X_max, atmosphere)
-
-        else:
-            # If the atmospheric parameters are the same as the original
-            # atmosphere a new Shower object is generated with an alias of the
-            # original atmosphere
-            shower_c = Shower()
-            shower_c.atmosphere = shower.atmosphere  # New alias
-
-            # Attributes are overwritten
-            shower_c.E = E
-            shower_c.theta = theta
-            shower_c.alt = alt
-            shower_c.az = az
-            shower_c.x0 = x0
-            shower_c.y0 = y0
-            shower_c.prf_model = prf_model
-            shower_c.X_max = X_max
-            shower_c.X0_GH = X0_GH
-            shower_c.lambda_GH = lambda_GH
-            shower_c.h0 = h0
-            shower_c.h_top = h_top
-            shower_c.N_steps = N_steps
-            shower_c.model = model
-
-    else:
-        raise ValueError('The input atmosphere is not valid.')
-
-    # Update of track, profile, fluorescence and cherenkov
-    if ((theta == shower.theta) and (az == shower.az) and (x0 == shower.x0)
-            and (y0 == shower.y0)):  # If the same track is also used
-        shower_c.track = shower.track  # New alias
-    else:
-        # Otherwise a new track is generated from the input parameters
-        shower_c.track = sm.Track(theta, None, az, x0, y0, atmosphere)
-
-    # If the same profile is used
-    if ((E == shower.E) and (theta == shower.theta)
-            and (prf_model == shower.prf_model) and (X_max == shower.X_max)
-            and (X0_GH == shower.X0_GH) and (lambda_GH == shower.lambda_GH)):
-        # New alias for profile, fluorescence and cherenkov
-        shower_c.profile = shower.profile
-        shower_c.fluorescence = shower.fluorescence
-        shower_c.cherenkov = shower.cherenkov
-    else:   # Otherwise a new profile is generates from the input parameters
-        shower_c.profile = sm.Profile(E, theta, None, prf_model, X_max, X0_GH,
-                                      lambda_GH, atmosphere)
-        # Fluorescence emission
-        shower_c.fluorescence = shower_c.profile.Fluorescence()
-        # Cherenkov emission
-        shower_c.cherenkov = shower_c.profile.Cherenkov()
-
-    return shower_c
+    return Shower(**kwargs)
 
 
 # Constructor #################################################################
-def _shower(shower, E, theta, alt, az, x0, y0, prf_model, X_max, N_ch_max,
-            X0_GH, lambda_GH, atmosphere, **kwargs):
+def _shower(shower, E, theta, alt, az, x0, y0, xi, yi, zi, prf_model, X_max,
+            N_ch_max, X0_GH, lambda_GH, atmosphere, **kwargs):
     """
     Constructor of Shower object.
 
@@ -607,10 +539,11 @@ def _shower(shower, E, theta, alt, az, x0, y0, prf_model, X_max, N_ch_max,
     az : float
         Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
-    x0 : float
-        East coordinate in km of shower impact point at ground.
-    y0 : float
-        West coordinate in km of shower impact point at ground.
+    x0, y0, z0 : float or None
+        Coordinates in km of shower impact point at ground (z0=0).
+        Set to None for ascending showers beginning at zi>0.
+    xi, yi, zi : float
+        Coordinates in km of the first interaction point of the shower.
     prf_model : {'Greisen', 'Gaisser-Hillas'} or DataFrame
         If 'Greisen', the Greisen function for electromagnetic showers is used.
         If 'Gaisser-Hillas', the Gaisser-Hillas function for hadron-induced
@@ -651,8 +584,6 @@ def _shower(shower, E, theta, alt, az, x0, y0, prf_model, X_max, N_ch_max,
     shower.theta = theta
     shower.alt = alt
     shower.az = az
-    shower.x0 = x0
-    shower.y0 = y0
 
     # Atmosphere
     shower.atmosphere = atmosphere
@@ -663,11 +594,17 @@ def _shower(shower, E, theta, alt, az, x0, y0, prf_model, X_max, N_ch_max,
     shower.model = atmosphere.model
 
     # Shower track
-    shower.track = sm.Track(theta, None, az, x0, y0, atmosphere)
+    shower.track = sm.Track(theta, None, az, x0, y0, xi, yi, zi, atmosphere)
+    shower.x0 = shower.track.x0
+    shower.y0 = shower.track.y0
+    shower.z0 = shower.track.z0
+    shower.xi = shower.track.xi
+    shower.yi = shower.track.yi
+    shower.zi = shower.track.zi
 
     # Shower profile
     profile = sm.Profile(E, theta, None, prf_model, X_max, X0_GH, lambda_GH,
-                         atmosphere)
+                         zi, atmosphere)
     shower.profile = profile
 
     shower.prf_model = profile.prf_model
