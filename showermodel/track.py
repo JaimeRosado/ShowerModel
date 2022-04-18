@@ -35,10 +35,11 @@ class Track(pd.DataFrame):
     az : float
         Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
-    x0 : float
-        East coordinate in km of shower impact point at ground.
-    y0 : float
-        North coordinate in km of shower impact point at ground.
+    x0, y0 : float
+        East and north coordinates in km of shower impact point at ground.
+    xi, yi, zi : float, default None
+        East, north and height coordinates in km of the first interaction point
+        of the shower. If given, x0 and y0 are ignored.
     atmosphere : Atmosphere
         If None, a new Atmosphere object is generated.
     **kwargs : {h0, h_top, N_steps, model}
@@ -54,8 +55,8 @@ class Track(pd.DataFrame):
     z : float
         Column 2, height in km from ground level.
     t : float
-        Column 3, travel time in microseconds. t=0 at the top of the atmosphere.
-        The shower is assumed to propates with the speed of light.
+        Column 3, travel time in microseconds. t=0 at the first interaction
+        point. The shower is assumed to propagates with the speed of light.
     atmosphere : Atmosphere
     theta : float
         Zenith angle in degrees of the apparent position of the source.
@@ -64,41 +65,24 @@ class Track(pd.DataFrame):
     az : float
         Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
-    ux : float
-        East coordinate of a unit vector parallel to  the shower axis
-        (upwards).
-    uy : float
-        North coordinate of a unit vector parallel to the shower axis
-        (upwards).
-    uz : float
-        Vertical coordinate of a unit vector parallel to the shower axis
-        (upwards).
-    vx : float
-        East coordinate of a unit vector perpendicular to shower axis and
+    ux, uy, uz : float
+        Coordinates of a unit vector pointing to the source position
+        (antiparallel to the shower propagation vector).
+    vx, vy, vz : float
+        Coordinates of a unit vector perpendicular to the shower axis and
         parallel to horizontal plane.
-    vy : float
-        North coordinate of a unit vector perpendicular to shower axis and
-        parallel to horizontal plane.
-    vz : =0. always
-        Vertical coordinate of vector v.
-    wx : float
-        East coordinate of a unit vector perpendicular to both u and v.
-    wy : float
-        North coordinate of a unit vector perpendicular to both u and v.
-    wz : float
-        Vertical coordinate of a unit vector perpendicular to both u and v.
-    x0 : float
-        East coordinate in km of shower impact point at ground.
-    y0 : float
-        North coordinate in km of shower impact point at ground.
-    t0 : float
-        Travel time in microseconds at ground level.
-    x_top : float
-        East coordinate in km of shower at the top of the atmosphere.
-    y_top : float
-        North coordinate in km of shower at the top of the atmosphere.
-    z_top : float
-        Height in km of the top of the atmosphere from ground level.
+    wx, wy, wz : float
+        Coordinates of a unit vector perpendicular to both u and v.
+    x0, y0, z0 : float or None
+        Coordinates in km of shower impact point at ground (z0=0).
+        Set to None for ascending showers beginning at zi>0.
+    xi, yi, zi : float
+        Coordinates in km of the first interaction point of the shower.
+    t_total : float
+        Total travel time in microseconds.
+    x_top, y_top, z_top : float or None
+        Coordinates in km of shower at the top of the atmosphere.
+        Set to None for descending showers beginning at zi<z_top.
     dl : float
         Size in km of discretization step along the shower axis.
 
@@ -108,8 +92,10 @@ class Track(pd.DataFrame):
         Get the spatial coordinates from height above sea level.
     z_to_t()
         Get travel time mass density from height.
+    Xv_to_xyz()
+        Get the spatial coordinates from vertical depth.
     X_to_xyz()
-        Get the spatial coordinates from slanth depth.
+        Get the spatial coordinates from travel depth.
     Projection()
         Make a Projection object containing the coordinates of a
         shower track relative to a telescope position.
@@ -121,9 +107,9 @@ class Track(pd.DataFrame):
     Shower : Make a discretization of a shower.
     """
     def __init__(self, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
-                 atmosphere=None, **kwargs):
+                 xi=_x0, yi=_y0, zi=None, atmosphere=None, **kwargs):
         super().__init__(columns=['x', 'y', 'z', 't'])
-        _track(self, theta, alt, az, x0, y0, atmosphere, **kwargs)
+        _track(self, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, **kwargs)
 
     def h_to_xyz(self, h):
         """
@@ -135,13 +121,23 @@ class Track(pd.DataFrame):
 
         Returns
         -------
-        x, y, z : float or array_like
+        x, y, z : float, array_like or None
         """
         h = np.array(h)
         z = h - self.atmosphere.h0
-        x = self.x0 + z * self.ux / self.uz
-        y = self.y0 + z * self.uy / self.uz
-        return 1.*x, 1.*y, 1.*z
+        dist = (self.zi - z) / self.uz
+        x = self.xi - dist * self.ux
+        y = self.yi - dist * self.uy
+        try: # for dist being a float
+            if dist<0.:
+                return None, None, None
+            else:
+                return 1.*x, 1.*y, 1.*z
+        except Exception: # for dist being an array
+            x[dist<0.] = None
+            y[dist<0.] = None
+            z[dist<0.] = None
+            return x, y, z
 
     def z_to_t(self, z):
         """
@@ -153,13 +149,40 @@ class Track(pd.DataFrame):
 
         Returns
         -------
-        t : float or array_like
+        t : float, array_like or None
         """
-        return (self.z_top - z) / self.uz / 0.2998
+        z = np.array(z)
+        t = (self.zi - z) /self.uz / 0.2998
+        try: # for t being a float
+            if t<0.:
+                return None, None, None
+            else:
+                return 1.*t
+        except Exception: # for t being an array
+            t[t<0.] = None
+            return t
+
+    def Xv_to_xyz(self, Xv):
+        """
+        Get the x, y, z coordinates from vertical depth.
+
+        Parameters
+        ----------
+        Xv : float
+
+        Returns
+        -------
+        x, y, z : float or None
+        """
+        h = self.atmosphere.Xv_to_h(Xv)
+        if h is None:
+            return None, None, None
+        else:
+            return self.h_to_xyz(h)
 
     def X_to_xyz(self, X):
         """
-        Get the x, y, z coordinates from slant depth.
+        Get the x, y, z coordinates from travel depth.
 
         Parameters
         ----------
@@ -167,13 +190,20 @@ class Track(pd.DataFrame):
 
         Returns
         -------
-        x, y, z : float
+        x, y, z : float or None
         """
-        Xv = X * self.uz
+        if self.uz>0. and self.z_top is not None:
+            # Descending shower from the top of the atmosphere
+            Xv = X * self.uz
+        else: # Ascending or descending from zi
+            hi = self.zi + self.atmosphere.h0
+            Xv_i = self.atmosphere.h_to_Xv(hi)
+            Xv = Xv_i + X * self.uz
         h = self.atmosphere.Xv_to_h(Xv)
         if h is None:
             return None, None, None
-        return self.h_to_xyz(h)
+        else:
+            return self.h_to_xyz(h)
 
     def Projection(self, telescope):
         """
@@ -207,7 +237,6 @@ class Track(pd.DataFrame):
         Parameters
         ----------
         telescope : Telescope
-            Telescope object to be used.
         axes : bool, default True
             Show the axes of both coordinate systems of reference.
         max_theta : float
@@ -299,7 +328,7 @@ class Track(pd.DataFrame):
 
 
 # Constructor #################################################################
-def _track(track, theta, alt, az, x0, y0, atmosphere, **kwargs):
+def _track(track, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, **kwargs):
     """
     Constructor of Track class.
 
@@ -314,10 +343,8 @@ def _track(track, theta, alt, az, x0, y0, atmosphere, **kwargs):
     az : float
         Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
-    x0 : float
-        East coordinate in km of shower impact point at ground.
-    y0 : float
-        West coordinate in km of shower impact point at ground.
+    x0, y0 : float
+    xi, yi, zi : float
     atmosphere : Atmosphere
         If None, a new Atmosphere object is generated.
     **kwargs : {h0, h_top, N_steps, model}
@@ -329,33 +356,41 @@ def _track(track, theta, alt, az, x0, y0, atmosphere, **kwargs):
     elif atmosphere is None:
         atmosphere = sm.Atmosphere(**kwargs)
     else:
-        raise ValueError('The input atmosphereis not valid.')
-
-    # The columns of the output DataFrame includes, at each discretization step
-    # of are: coordinates (x,y,z) in km and the travel time t in us
-    # track = Track(columns=['x', 'y', 'z', 't'])
+        raise ValueError('The input atmosphere is not valid.')
     track.atmosphere = atmosphere
+    z_top = atmosphere.h_top - atmosphere.h0
 
-    # The input parameters along with some geometric parameters are also
-    # included as atributes of the DataFrame. The angles are stored in degrees
     if alt is None:
+        if theta<0. or theta>180. or theta==90.:
+            raise ValueError('The input theta value is not valid.')
         alt = 90. - theta
     else:
+        if alt<-90. or alt>=90.:
+            raise ValueError('The input alt value is not valid.')
         theta = 90. - alt
+    
+    # The input parameters along with some geometric parameters are also
+    # included as atributes of the DataFrame. The angles are stored in degrees
     track.theta = theta
     track.alt = alt
-    theta = math.radians(theta)
-    cos_theta = math.cos(theta)
-    sin_theta = math.sin(theta)
+    if theta==180.:
+        theta = math.pi
+        cos_theta = -1.
+        sin_theta = 0.
+    else:
+        theta = math.radians(theta)
+        cos_theta = math.cos(theta)
+        sin_theta = math.sin(theta)
     track.az = az
     az = math.radians(az)
     cos_az = math.cos(az)
     sin_az = math.sin(az)
 
     # Coordinates of the unit vector pointing at the arrival shower direction
+    # opposite to the shower propogation vector
     track.ux = sin_theta * sin_az
     track.uy = sin_theta * cos_az
-    track.uz = cos_theta
+    track.uz = cos_theta # uz<0 for ascending showers
 
     # Coordinates of a unit vector perpendicular to u and parallel to
     # horizontal xy plane
@@ -368,23 +403,89 @@ def _track(track, theta, alt, az, x0, y0, atmosphere, **kwargs):
     track.wy = cos_theta * cos_az
     track.wz = -sin_theta
 
-    # Core position at ground level (z=0) and on the top of the atmosphere
-    # (z=zmax)
-    track.x0 = x0
-    track.y0 = y0
-    track.z_top = atmosphere.h_top - atmosphere.h0
-    track.x_top = x0 + track.z_top * track.ux / track.uz
-    track.y_top = y0 + track.z_top * track.uy / track.uz
+    # Distance in km travelled through one atmospheric slice
+    track.dl = atmosphere.h_step / abs(track.uz)
 
-    # Total travel time in us, where t=0 corresponds to the moment when the
-    # shower enters the atmosphere
-    track.t0 = track.z_top / track.uz / 0.2998
+    z = atmosphere.h - atmosphere.h0
+    if zi is None:
+        track.x0 = x0
+        track.y0 = y0
+        track.z0 = 0.
+        dist_top = z_top / track.uz
+        track.z_top = z_top
+        track.x_top = x0 + dist_top * track.ux
+        track.y_top = y0 + dist_top * track.uy
 
-    # Distance in km travelled trhough one atmospheric slice
-    track.dl = atmosphere.h_step / track.uz
+        # Total travel time in us, where t=0 corresponds to the moment when the
+        # shower begins
+        track.t_total = abs(dist_top) / 0.2998
 
-    # Coordinates along the shower track
-    track.z = atmosphere.h - atmosphere.h0
-    track.x = x0 + track.z * track.ux / track.uz
-    track.y = y0 + track.z * track.uy / track.uz
-    track.t = (track.z_top - track.z) / track.uz / 0.2998  # Travel time
+        # Coordinates along the shower track
+        track.z = z
+        dist = z / track.uz
+        track.x = x0 + dist * track.ux
+        track.y = y0 + dist * track.uy
+
+        if track.uz>0.: # descending shower from the top of the atmosphere
+            track.zi = track.z_top
+            track.xi = track.x_top
+            track.yi = track.y_top
+            # Travel time
+            track.t = (dist_top - dist) / 0.2998
+        else: # ascending shower from ground
+            track.zi = track.z0
+            track.xi = track.x0
+            track.yi = track.y0
+            # Travel time
+            track.t = abs(dist) / 0.2998
+
+    else:
+        track.xi = xi
+        track.yi = yi
+        track.zi = zi
+
+        if track.uz>0: # descending shower from arbitrary initial height
+            if zi==z_top:
+                track.z_top = zi
+                track.x_top = xi
+                track.y_top = yi
+            else:
+                track.z_top = None
+                track.x_top = None
+                track.y_top = None
+            points = atmosphere[z<=zi].index
+            track.z0 = 0.
+            dist = zi / track.uz
+            track.x0 = xi - dist * track.ux
+            track.y0 = yi - dist * track.uy
+
+            # Total travel time in us, where t=0 corresponds to the moment when
+            # the shower begins
+            track.t_total = zi / track.uz / 0.2998
+
+        else: # ascending shower from arbitrary initial height
+            if zi==0.:
+                track.z0 = 0.
+                track.x0 = xi
+                track.y0 = yi
+            else:
+                track.z0 = None
+                track.x0 = None
+                track.y0 = None
+            points = atmosphere[z>=zi].index
+            track.z_top = z_top
+            dist = (zi - z_top) / track.uz
+            track.x_top = xi - dist * track.ux
+            track.y_top = yi - dist * track.uy
+            
+            # Total travel time in us, where t=0 corresponds to the moment when
+            # the shower begins
+            track.t_total = dist / 0.2998
+
+        # Coordinates along the shower track
+        track.z = z[points]
+        dist = (zi - track.z) / track.uz
+        track.x = xi - dist * track.ux
+        track.y = yi - dist * track.uy
+        # Travel time
+        track.t = dist / 0.2998
