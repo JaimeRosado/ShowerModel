@@ -57,6 +57,10 @@ class Projection(pd.DataFrame):
         Distance in km to the shower impact point at ground.
     beta_0 : float
         Beta angle in degrees of the shower impact point at ground.
+    distance_i : float
+        Distance in km to the first interaction point of the shower.
+    beta_i : float
+        Beta angle in degrees of the first interaction point of the shower.
     distance_min : float
         Minimum distance in km to (infinite) line going to the
         shower axis.
@@ -262,6 +266,13 @@ def _projection(projection, telescope, track):
     projection.track = track
     projection.telescope = telescope
 
+    # Apparent position of the cosmic-ray source
+    projection.alt_inf = track.alt
+    projection.az_inf = track.az
+    theta_inf, phi_inf = telescope.altaz_to_thetaphi(track.alt, track.az)
+    projection.theta_inf = theta_inf
+    projection.phi_inf = phi_inf
+
     # Shower spherical coordinates in both zenith and camera projections
     distance, alt, az, theta, phi = telescope.spherical(track.x, track.y,
                                                         track.z)
@@ -271,65 +282,110 @@ def _projection(projection, telescope, track):
     projection.theta = theta
     projection.phi = phi
 
-    # Coordinates of the shower impact point at ground level relative to
+    # Coordinates of first interaction point of the shower relative to
     # the telescope position
-    distance_0, alt_0, az_0, theta_0, phi_0 = telescope.spherical(track.x0,
-                                                                  track.y0, 0.)
-    projection.distance_0 = distance_0
-    projection.alt_0 = alt_0
-    projection.az_0 = az_0
-    projection.theta_0 = theta_0
-    projection.phi_0 = phi_0
+    distance_i, alt_i, az_i, theta_i, phi_i = telescope.spherical(track.xi,
+                                              track.yi, track.zi)
+    projection.distance_i = distance_i
+    projection.alt_i = alt_i
+    projection.az_i = az_i
+    projection.theta_i = theta_i
+    projection.phi_i = phi_i
+    # Angle formed by the shower axis (backwards) and the vector going
+    # from the telescope position to the first interaction point
+    xi, yi, zi = telescope.abs_to_rel(track.xi, track.yi, track.zi)
+    proj_u_i = xi * track.ux + yi * track.uy + zi * track.uz
+    beta_i = telescope.zr_to_theta(proj_u_i, distance_i)
 
     # Coordinates of the shower point at the top of the atmosphere relative to
     # the telescope position
-    distance_top = telescope.distance(track.x_top, track.y_top, track.z_top)
+    if track.z_top is None:
+        distance_top = None
+        beta_top = None
+    elif track.z_top==track.zi:
+        distance_top = distance_i
+        proj_u_top = proj_u_i
+        beta_top = beta_i
+    else:
+        distance_top = telescope.distance(track.x_top, track.y_top, track.z_top)
+        # Angle formed by the shower axis (backwards) and the vector going
+        # from the telescope position to the first interaction point
+        x_top, y_top, z_top = telescope.abs_to_rel(track.x_top, track.y_top,
+                                                   track.z_top)
+        proj_u_top = x_top * track.ux + y_top * track.uy + z_top * track.uz
+        beta_top = telescope.zr_to_theta(proj_u_top, distance_top)
     projection.distance_top = distance_top
 
-    # Apparent position of the cosmic-ray source
-    projection.alt_inf = track.alt
-    projection.az_inf = track.az
-    theta_inf, phi_inf = telescope.altaz_to_thetaphi(track.alt, track.az)
-    projection.theta_inf = theta_inf
-    projection.phi_inf = phi_inf
+    # Coordinates of the shower impact point at ground level relative to
+    # the telescope position and minimum shower-to-telescope distance
+    if track.z0 is None:
+        distance_0 = None
+        beta_0 = None
+        projection.alt_0 = None
+        projection.az_0 = None
+        projection.theta_0 = None
+        projection.phi_0 = None
+        # Minimum shower-to-telescope distance
+        distance_min = distance_i * np.sin(np.radians(beta_i))
+    elif track.z0==track.zi:
+        distance_0 = distance_i
+        proj_u_0 = proj_u_i
+        beta_0 = beta_i
+        projection.alt_0 = alt_i
+        projection.az_0 = az_i
+        projection.theta_0 = theta_i
+        projection.phi_0 = phi_i
+        # Minimum shower-to-telescope distance
+        distance_min = distance_i * np.sin(np.radians(beta_i))
+    else:
+        distance_0, alt_0, az_0, theta_0, phi_0 = telescope.spherical(track.x0,
+                                                  track.y0, track.z0)
+        projection.alt_0 = alt_0
+        projection.az_0 = az_0
+        projection.theta_0 = theta_0
+        projection.phi_0 = phi_0
+        # Angle formed by the shower axis (backwards) and the vector going
+        # from the telescope position to the shower impact point at ground
+        x0, y0, z0 = telescope.abs_to_rel(track.x0, track.y0, track.z0)
+        proj_u_0 = x0 * track.ux + y0 * track.uy + z0 * track.uz
+        beta_0 = telescope.zr_to_theta(proj_u_0, distance_0)
+        if distance_0<distance_i:
+            # Minimum shower-to-telescope distance
+            distance_min = distance_0 * np.sin(np.radians(beta_0))
+        else:
+            distance_min = distance_i * np.sin(np.radians(beta_i))
+    projection.distance_0 = distance_0
 
-    # Angle formed by the shower axis (upwards) and the vector going from the
-    # telescope position to the shower impact point at ground
-    x0, y0, z0 = telescope.abs_to_rel(track.x0, track.y0, 0.)
-    beta_0 = telescope.zr_to_theta(x0 * track.ux + y0 * track.uy
-                                   + z0 * track.uz, distance_0)
-    # Minimum shower-to-telescope distance
-    distance_min = distance_0 * np.sin(np.radians(beta_0))
-    projection.distance_min = distance_min
     # Half radius of the telescope mirror in km
     half_R = np.sqrt(telescope.area / np.pi) / 2000.
     # If the telescope is too close to the shower axis
+    x, y, z = telescope.abs_to_rel(track.x, track.y, track.z)
+    proj_u = x * track.ux + y * track.uy + z * track.uz
     if distance_min < half_R:
         # Force minimum beta due the finite dimensions of the telescope mirror
-        beta = telescope.xy_to_phi(distance, half_R)
-        projection.beta = beta
-        projection.beta_0 = telescope.xy_to_phi(distance_0, half_R)
-        projection.beta_top = telescope.xy_to_phi(distance_top, half_R)
+        beta = telescope.xy_to_phi(proj_u, half_R)
+        beta_i = telescope.xy_to_phi(proj_u_i, half_R)
+        if track.z0 is not None:
+            beta_0 = telescope.xy_to_phi(proj_u_0, half_R)
+        if track.z_top is not None:     
+            beta_top = telescope.xy_to_phi(proj_u_top, half_R)
     else:
-        x, y, z = telescope.abs_to_rel(track.x, track.y, track.z)
-        beta = telescope.zr_to_theta(x * track.ux + y * track.uy
-                                     + z * track.uz, distance)
-        projection.beta = beta
-        projection.beta_0 = beta_0
-        x_top, y_top, z_top = telescope.abs_to_rel(track.x_top, track.y_top,
-                                                   track.z_top)
-        projection.beta_top = (
-            telescope.zr_to_theta(x_top * track.ux + y_top * track.uy
-                                  + z_top * track.uz, distance_top))
+        beta = telescope.zr_to_theta(proj_u, distance)
+
+    projection.beta = beta
+    projection.beta_i = beta_i
+    projection.beta_0 = beta_0
+    projection.beta_top = beta_top
 
     # Travel time of photons reaching the telescope, with time=0 for photons
-    # emitted at the top of the atmosphere. Equivalent to
-    # projection.time = track.t - (distance_top - distance) / 0.2998
+    # emitted from the first interaction point. Equivalent to
+    # projection.time = track.t - (distance_i - distance) / 0.2998
     # except for distance_min<half_R
-    projection.time = (track.t - distance_top / 0.2998
-                       * (1. - np.sin(np.radians(projection.beta_top))
-                          / np.sin(np.radians(beta))))
+    projection.time = (track.t - distance_i / 0.2998
+                       * (1. - np.sin(np.radians(projection.beta_i))
+                       / np.sin(np.radians(beta))))
 
     # FoV = True for shower points within the telescope field of view
     projection.FoV = ((projection.theta <= telescope.apert/2.)
                       & (projection.distance > 0.))
+
