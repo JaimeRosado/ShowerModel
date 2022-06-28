@@ -6,7 +6,7 @@
 [![pypi](https://img.shields.io/pypi/v/ShowerModel.svg)](https://pypi.org/project/ShowerModel)
 [![Documentation Status](https://readthedocs.org/projects/showermodel/badge/?version=latest)](https://showermodel.readthedocs.io/en/latest/?badge=latest)
 
-![ShowerModel logo](docs/logo_showermodel.png)
+![ShowerModel logo](logo_showermodel.png)
 
 A Python package for modelling cosmic-ray showers, their light production and their detection.
 
