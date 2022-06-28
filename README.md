@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/JaimeRosado/ShowerModel/workflows/CI/badge.svg?branch=master)](https://github.com/JaimeRosado/ShowerModel/actions?query=workflow%3ACI+branch%3Amaster)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JaimeRosado/ShowerModel/master?filepath=notebooks)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5589819.svg)](https://doi.org/10.5281/zenodo.5589819)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6773258.svg)](https://doi.org/10.5281/zenodo.6773258)
 [![pypi](https://img.shields.io/pypi/v/ShowerModel.svg)](https://pypi.org/project/ShowerModel)
 [![Documentation Status](https://readthedocs.org/projects/showermodel/badge/?version=latest)](https://showermodel.readthedocs.io/en/latest/?badge=latest)
 
