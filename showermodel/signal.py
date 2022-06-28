@@ -385,7 +385,7 @@ def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
 
         # Wavelength factor for Cherenkov contribution to signal from each
         # shower point
-        wvl_factor = pd.DataFrame(index=points)
+        wvl_factor = pd.DataFrame(index=points, columns=wvl_cher)
         for wvl in wvl_cher:
             wvl_factor[wvl] = trans ** ((350. / wvl)**4) / wvl**2
             # wvl**2 -> (wvl**2 - wvl_step**2 / 4.)
