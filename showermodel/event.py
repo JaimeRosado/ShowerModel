@@ -81,7 +81,7 @@ class Event():
         self.event_type = event_type
         _event(self, observatory, shower, atm_trans, tel_eff, **kwargs)
 
-    def show_projection(self, tel_index=0, shower_size=True, axes=True,
+    def show_projection(self, tel_index=0, shower_Edep=True, axes=True,
                         max_theta=30., X_mark='X_max'):
         """
         Show the projection of the shower track viewed by a chosen telescope in
@@ -91,9 +91,9 @@ class Event():
         ----------
         tel_index : int
             Index of the chosen telescope of the observatory.
-        shower_size : bool, default True
+        shower_Edep : bool, default True
             Make the radii of the shower track points proportional to the
-            shower size.
+            energy deposited in each step length.
         axes : bool, default True
             Show the axes of both frames of reference.
         max_theta : float, default 30 degrees
@@ -113,7 +113,7 @@ class Event():
         projection = self.projections[tel_index]
         profile = self.profile
         from ._tools import show_projection
-        return show_projection(projection, profile, shower_size, axes,
+        return show_projection(projection, profile, shower_Edep, axes,
                                max_theta, X_mark)
 
     def show_profile(self):
@@ -167,7 +167,7 @@ class Event():
                                              self.atm_trans))
 
     def show_geometry2D(self, x_min=-1., x_max=1., y_min=-1, y_max=1.,
-                        X_mark='X_max', shower_size=True, signal_size=True,
+                        X_mark='X_max', shower_Edep=True, signal_size=True,
                         tel_index=False):
         """
         Show the shower track together with the telescope positions in a
@@ -187,9 +187,9 @@ class Event():
             Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure, default to X_max. If X_mark is set to None,
             no mark is included.
-        shower_size : bool, default True
+        shower_Edep : bool, default True
             Make the radii of the shower track points proportional to the
-            shower size.
+            energy deposited in each step length.
         signal_size : bool
             Make the radii of the telescope position points proportional to
             the signal.
@@ -206,11 +206,11 @@ class Event():
                        else self.observatory)
         from ._tools import show_geometry
         return show_geometry(self, observatory, '2d', x_min, x_max, y_min,
-                             y_max, X_mark, shower_size, signal_size,
+                             y_max, X_mark, shower_Edep, signal_size,
                              tel_index, False, False)
 
     def show_geometry3D(self, x_min=-1., x_max=1., y_min=-1, y_max=1.,
-                        X_mark='X_max', shower_size=True, signal_size=True,
+                        X_mark='X_max', shower_Edep=True, signal_size=True,
                         xy_proj=True, pointing=False):
         """
         Show the shower track together with the telescope positions in a
@@ -230,9 +230,9 @@ class Event():
             Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure, default to X_max. If X_mark is set to None,
             no mark is included.
-        shower_size : bool, default True
+        shower_Edep : bool, default True
             Make the radii of the shower track points proportional to the
-            shower size.
+            energy deposited in each step length.
         signal_size : bool, default True
             Make the radii of the telescope position points proportional to
             the signal.
@@ -251,7 +251,7 @@ class Event():
                        else self.observatory)
         from ._tools import show_geometry
         return show_geometry(self, observatory, '3d', x_min, x_max, y_min,
-                             y_max, X_mark, shower_size, signal_size, False,
+                             y_max, X_mark, shower_Edep, signal_size, False,
                              xy_proj, pointing)
 
     def show_distribution(self, grid=None, size_x=2., size_y=2., N_x=10,

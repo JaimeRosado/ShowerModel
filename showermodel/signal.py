@@ -97,7 +97,7 @@ class Signal(pd.DataFrame):
         _signal(self, telescope, shower, projection, atm_trans, tel_eff,
                 **kwargs)
 
-    def show_projection(self, shower_size=True, axes=True, max_theta=30.,
+    def show_projection(self, shower_Edep=True, axes=True, max_theta=30.,
                         X_mark='X_max'):
         """
         Show the projection of the shower track viewed by the telescope in both
@@ -105,9 +105,9 @@ class Signal(pd.DataFrame):
 
         Parameters
         ----------
-        shower_size : bool, default True
+        shower_Edep : bool, default True
             Make the radii of the shower track points proportional to
-            the shower size.
+            the energy deposited in each step length.
         axes : bool, default True
             Show the axes of both frames of reference.
         max_theta : float, default 30 degrees
@@ -123,7 +123,7 @@ class Signal(pd.DataFrame):
         projection = self.projection
         profile = self.profile
         from ._tools import show_projection
-        return show_projection(projection, profile, shower_size, axes,
+        return show_projection(projection, profile, shower_Edep, axes,
                                max_theta, X_mark)
 
     def show_profile(self):

@@ -12,7 +12,7 @@ warnings.filterwarnings(
     UserWarning)
 
 
-def show_projection(projection, profile, shower_size, axes, max_theta, X_mark):
+def show_projection(projection, profile, shower_Edep, axes, max_theta, X_mark):
     """
     Show the projection of the shower track viewed by the telescope in both
     horizontal and FoV coordinates systems.
@@ -30,13 +30,13 @@ def show_projection(projection, profile, shower_size, axes, max_theta, X_mark):
     ax2.set_title('FoV coordinates theta/phi', y=1.1)
 
     # Only available for shower and event
-    if shower_size:
+    if shower_Edep:
         # For the shower track, the point radius is proportional to the shower
         # size
-        shw_size = profile.N_ch
-        shw_size = 50. * np.sqrt(shw_size / shw_size.max())
+        shw_Edep = profile.E_dep
+        shw_Edep = 50. * np.sqrt(shw_Edep / shw_Edep.max())
     else:
-        shw_size = 20
+        shw_Edep = 20
 
     az = np.array(np.radians(projection.az))
     alt = np.array(projection.alt)
@@ -56,9 +56,9 @@ def show_projection(projection, profile, shower_size, axes, max_theta, X_mark):
     #theta_line = np.append(theta_line, projection.theta_inf)
     theta_line = np.append(theta, projection.theta_inf)
 
-    ax1.scatter(az, alt, c='r', s=shw_size, marker='o')
+    ax1.scatter(az, alt, c='r', s=shw_Edep, marker='o')
     ax1.plot(az_line, alt_line, 'r-')
-    ax2.scatter(phi, theta, c='r', s=shw_size, marker='o')
+    ax2.scatter(phi, theta, c='r', s=shw_Edep, marker='o')
     ax2.plot(phi, theta, 'r-')
 
     # Coordinates of the telescope FoV limits in FoV projection
@@ -153,7 +153,7 @@ def show_projection(projection, profile, shower_size, axes, max_theta, X_mark):
 
 
 def show_geometry(obj, observatory, mode, x_min, x_max, y_min, y_max,
-                  X_mark, shower_size, signal_size, tel_index, xy_proj,
+                  X_mark, shower_Edep, signal_size, tel_index, xy_proj,
                   pointing):
     """
     Show a shower track together with the telescope positions of an observatory
@@ -207,13 +207,12 @@ def show_geometry(obj, observatory, mode, x_min, x_max, y_min, y_max,
     z_min = z_line.min()
     z_max = z_line.max()
 
-    if shower_size:  # Only available for shower and event
-        # For the shower track, the point radius is proportional to the shower
-        # size
-        shw_size = obj.profile.N_ch[data_range]
-        shw_size = 50. * np.sqrt(shw_size / shw_size.max())
+    if shower_Edep:  # Only available for shower and event
+        # For the shower track, the point radius is proportional to Edep
+        shw_Edep = obj.profile.E_dep[data_range]
+        shw_Edep = 50. * np.sqrt(shw_Edep / shw_Edep.max())
     else:
-        shw_size = 20
+        shw_Edep = 20
 
     if signal_size:  # Only available for event, when some signal is produced
         # For the telescope positions, the point radius is prportional to
@@ -236,7 +235,7 @@ def show_geometry(obj, observatory, mode, x_min, x_max, y_min, y_max,
         # Shower track line in red
         ax.plot(x_line, y_line, 'r-')
         # Shower track points in red
-        ax.scatter(x_track, y_track, c='r', s=shw_size, marker='o')
+        ax.scatter(x_track, y_track, c='r', s=shw_Edep, marker='o')
 
         if tel_index:
             for tel_index, telescope in enumerate(observatory):
@@ -258,7 +257,7 @@ def show_geometry(obj, observatory, mode, x_min, x_max, y_min, y_max,
             # xy projection of shower track line in red
             ax.plot(x_line, y_line, 'r--', zs=z_min, zdir='z')
             # Shower track points in red
-        ax.scatter(x_track, y_track, z_track, c='r', s=shw_size, marker='o')
+        ax.scatter(x_track, y_track, z_track, c='r', s=shw_Edep, marker='o')
 
         if pointing:
             # Arrows pointing to the telescope axis direction
