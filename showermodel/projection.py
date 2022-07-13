@@ -48,19 +48,12 @@ class Projection(pd.DataFrame):
         Track object that is used.
     telescope : Telescope
         Telescope object that is used.
-    distance_top : float
-        Distance in km to shower point at the top of the atmosphere.
-    beta_top : float
-        Beta angle in degrees of the shower point at the top of the
-        atmosphere.
-    distance_0 : float
-        Distance in km to the shower impact point at ground.
-    beta_0 : float
-        Beta angle in degrees of the shower impact point at ground.
-    distance_i : float
-        Distance in km to the first interaction point of the shower.
-    beta_i : float
-        Beta angle in degrees of the first interaction point of the shower.
+    distance_top, alt_top, ..., beta_top : float or None
+        Coordinates of the shower point at the top of the atmosphere (if any).
+    distance_0, alt_0, ..., beta_0 : float or None
+        Coordinates of the shower impact point at ground (if any).
+    distance_i, alt_i, ..., beta_i : float or None
+        Coordinates of the first interaction point of the shower.
     distance_min : float
         Minimum distance in km to (infinite) line going to the
         shower axis.
@@ -302,12 +295,25 @@ def _projection(projection, telescope, track):
     if track.z_top is None:
         distance_top = None
         beta_top = None
+        projection.alt_top = None
+        projection.az_top = None
+        projection.theta_top = None
+        projection.phi_top = None
     elif track.z_top==track.zi:
         distance_top = distance_i
         proj_u_top = proj_u_i
         beta_top = beta_i
+        projection.alt_top = alt_i
+        projection.az_top = az_i
+        projection.theta_top = theta_i
+        projection.phi_top = phi_i
     else:
-        distance_top = telescope.distance(track.x_top, track.y_top, track.z_top)
+        distance_top, alt_top, az_top, theta_top, phi_top = telescope.spherical(
+            track.x_top, track.y_top, track.z_top)
+        projection.alt_top = alt_top
+        projection.az_top = az_top
+        projection.theta_top = theta_top
+        projection.phi_top = phi_top
         # Angle formed by the shower axis (backwards) and the vector going
         # from the telescope position to the first interaction point
         x_top, y_top, z_top = telescope.abs_to_rel(track.x_top, track.y_top,

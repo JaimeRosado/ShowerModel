@@ -38,34 +38,48 @@ def show_projection(projection, profile, shower_Edep, axes, max_theta, X_mark):
     else:
         shw_Edep = 20
 
-    az = np.array(np.radians(projection.az))
+    az = np.array(np.radians(projection.az)) # polar plots use radians
     alt = np.array(projection.alt)
     phi = np.array(np.radians(projection.phi))
     theta = np.array(projection.theta)
-
-    #az_line = np.insert(az, 0, np.radians(projection.az_0))
-    #az_line = np.append(az_line, np.radians(projection.az_inf))
-    az_line = np.append(az, np.radians(projection.az_inf))
-    #alt_line = np.insert(alt, 0, projection.alt_0)
-    #alt_line = np.append(alt_line, projection.alt_inf)
-    alt_line = np.append(alt, projection.alt_inf)
-    #phi_line = np.insert(phi, 0, np.radians(projection.phi_0))
-    #phi_line = np.append(phi_line, np.radians(projection.phi_inf))
-    phi_line = np.append(phi, np.radians(projection.phi_inf))
-    #theta_line = np.insert(theta, 0, projection.theta_0)
-    #theta_line = np.append(theta_line, projection.theta_inf)
-    theta_line = np.append(theta, projection.theta_inf)
+    az_line = az.copy()
+    alt_line = alt.copy()
+    phi_line = phi.copy()
+    theta_line = theta.copy()
+    
+    if projection.alt_i>projection.alt.max(): # descending shower
+        az_line = np.append(az_line, np.radians(projection.az_i))
+        alt_line = np.append(alt_line, projection.alt_i)
+        phi_line = np.append(phi_line, np.radians(projection.phi_i))
+        theta_line = np.append(theta_line, projection.theta_i)
+        az_line = np.insert(az_line, 0, np.radians(projection.az_0))
+        alt_line = np.insert(alt_line, 0, projection.alt_0)
+        phi_line = np.insert(phi_line, 0, np.radians(projection.phi_0))
+        theta_line = np.insert(theta_line, 0, projection.theta_0)
+    else: # ascending shower
+        az_line = np.insert(az_line, 0, np.radians(projection.az_i))
+        alt_line = np.insert(alt_line, 0, projection.alt_i)
+        phi_line = np.insert(phi_line, 0, np.radians(projection.phi_i))
+        theta_line = np.insert(theta_line, 0, projection.theta_i)
+        az_line = np.append(az_line, np.radians(projection.az_top))
+        alt_line = np.append(alt_line, projection.alt_top)
+        phi_line = np.append(phi_line, np.radians(projection.phi_top))
+        theta_line = np.append(theta_line, projection.theta_top)
 
     ax1.scatter(az, alt, c='r', s=shw_Edep, marker='o')
     ax1.plot(az_line, alt_line, 'r-')
     ax2.scatter(phi, theta, c='r', s=shw_Edep, marker='o')
-    ax2.plot(phi, theta, 'r-')
+    ax2.plot(phi_line, theta_line, 'r-')
 
     # Coordinates of the telescope FoV limits in FoV projection
     phi_FoV = np.linspace(0., 360., 61)
     theta_FoV = np.ones_like(phi_FoV) * telescope.apert / 2.
     # Horizontal coordinates system
     alt_FoV, az_FoV = telescope.thetaphi_to_altaz(theta_FoV, phi_FoV)
+    if len(alt_FoV[alt_FoV<0.])>len(alt_FoV[alt_FoV>0.]): 
+        nadir = True
+    else:
+        nadir = False
 
     ax1.plot(np.radians(az_FoV), alt_FoV, 'g')
     ax2.plot(np.radians(phi_FoV), theta_FoV, 'g')
@@ -86,34 +100,38 @@ def show_projection(projection, profile, shower_Edep, axes, max_theta, X_mark):
         theta_hor, phi_hor = telescope.altaz_to_thetaphi(alt_hor, az_hor)
         ax2.plot(np.radians(phi_hor), theta_hor, 'g--')
 
-        # Coordinates of west-zenith-east arc in horizontal coordinates system
-        # Values greater than 90 degrees correspond to az_we = 180 degrees
-        alt_we = np.linspace(0., 180., 61)
-        az_we = alt_hor  # np.zeros(61)
+        if nadir:
+            # Coordinates of north-nadir-south arc in horizontal coordinates system
+            # alt values smaller than -90 deg correspond to az = 180 deg (south)
+            alt_ns = np.linspace(-180., 0., 61)
+        else:
+            # Coordinates of north-zenith-south arc in horizontal coordinates system
+            # alt values greater than 90 deg correspond to az = 180 deg (south)
+            alt_ns = np.linspace(0., 180., 61)
+        az_ns = alt_hor  # np.zeros(61)
         # In FoV projection
-        theta_we, phi_we = telescope.altaz_to_thetaphi(alt_we, az_we)
-        ax2.plot(np.radians(phi_we), theta_we, 'g--')
+        theta_ns, phi_ns = telescope.altaz_to_thetaphi(alt_ns, az_ns)
+        ax2.plot(np.radians(phi_ns), theta_ns, 'g--')
 
-        # Coordinates of south-zenith-north arc in horiziontal coordinates
-        # system
-        alt_sn = alt_we  # np.linspace(0., 180., 61)
-        az_sn = theta_2pi  # =np.ones(61) * 90.
+        # Coordinates of east-zenith(or nadir)-west arc in horiziontal coord. system
+        # alt values smaller than -90 deg correspond to az = 270 deg (west)
+        alt_ew = alt_ns  # np.linspace(0., 180., 61)
+        az_ew = theta_2pi  # =np.ones(61) * 90.
         # In FoV projection
-        theta_sn, phi_sn = telescope.altaz_to_thetaphi(alt_sn, az_sn)
-        ax2.plot(np.radians(phi_sn), theta_sn, 'g--')
+        theta_ew, phi_ew = telescope.altaz_to_thetaphi(alt_ew, az_ew)
+        ax2.plot(np.radians(phi_ew), theta_ew, 'g--')
 
-        # Coordinates of the arc phi=0/180 (going through north point and the
-        # telescope pointing direction) in FoV coordinates system
-        theta_phi0 = alt_we - 90.  # = np.linspace(-90., 90., 61)
-        # Negative values correspond to phi = 180 degrees
-        phi_phi0 = az_we  # =np.zeros(61)
+        # Coordinates of phi=0 arc (north-pointing-south) in FoV coord. system
+        theta_phi0 = np.linspace(-90., 90., 61)
+        # Negative values of theta correspond to phi = 180 degrees
+        phi_phi0 = az_ns  # =np.zeros(61)
         # Horizontal coordinates system
         alt_phi0, az_phi0 = telescope.thetaphi_to_altaz(theta_phi0, phi_phi0)
         ax1.plot(np.radians(az_phi0), alt_phi0, 'g--')
 
-        # Coordinates of the arc phi=90/270 in FoV coordinates system
+        # Coordinates of phi=90 arc in FoV coordinates system
         theta_phi90 = theta_phi0  # = np.linspace(-90., 90., 61)
-        # Negative values correspond to phi = 270 degrees
+        # Negative values of theta correspond to phi = 270 degrees
         phi_phi90 = theta_2pi  # =np.ones(61) * 90.
         # Horizontal coordinates system
         alt_phi90, az_phi90 = telescope.thetaphi_to_altaz(theta_phi90,
@@ -132,8 +150,12 @@ def show_projection(projection, profile, shower_Edep, axes, max_theta, X_mark):
         ax1.plot(np.radians(az_mark), alt_mark, 'bx')
         ax2.plot(np.radians(phi_mark), theta_mark, 'bx')
 
-    ax1.set_rmin(90.)
-    ax1.set_rmax(0.)
+    if nadir:
+        ax1.set_rmin(-90.)
+        ax1.set_rmax(0.)
+    else:
+        ax1.set_rmin(90.)
+        ax1.set_rmax(0.)
     # Polar angle labels in the plot refers to azimuth
     ax1.set_theta_zero_location('N')
     ax1.set_theta_direction(-1)
