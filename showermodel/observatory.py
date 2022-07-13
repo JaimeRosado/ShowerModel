@@ -289,7 +289,7 @@ def _array25(observatory, telescope, x_c, y_c, z_c, theta, alt, az, R,
         telescope = telescope.copy(x=x_c, y=y_c, z=z_c, theta=theta, alt=alt,
                                    az=az)
     elif telescope is None:
-        # Default theta and az values are those of .telescope
+        # Default theta and az values are those of telescope
         if theta is None:
             theta = _theta
         if az is None:
