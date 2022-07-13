@@ -218,7 +218,7 @@ def _atmosphere(atmosphere, h0, h_top, N_steps, model):
     # Air is assumed to be an ideal gas with 28.96 g/mol
     temp[rho > 0] = 28.96 * g * Xv[rho > 0] / R / rho[rho > 0]
     atmosphere.temp = temp
-    P = g * Xv / 10.  # A constant gravitational acceleration is assumed
+    P = g * Xv / 1000.  # A constant gravitational acceleration is assumed
     atmosphere.P = P
     # CORSIKA models do not describe the partial pressure of water vapor
     P_w = np.zeros_like(P)
