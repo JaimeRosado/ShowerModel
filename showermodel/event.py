@@ -23,7 +23,7 @@ class Event():
     shower : Shower
         Shower to be observed.
     atm_trans : bool, default True
-        Include the atmospheric transmision to transport photons.
+        Include the atmospheric transmission to transport photons.
     tel_eff : bool, default True
         Include the telescope efficiency to calculate the signals.
         If False, 100% efficiency is assumed for a given wavelength interval.
@@ -51,7 +51,7 @@ class Event():
         List of Image objects, one per telescope.
         Only available if generated via the method make_images.
     atm_trans : bool
-        True if the atmospheric transmision is included.
+        True if the atmospheric transmission is included.
     tel_eff : bool
         True if the telescope efficiency is included.
 
@@ -276,7 +276,7 @@ class Event():
         N_y : int
             Number of cells across the y direction.
         atm_trans : bool, default True
-            Include the atmospheric transmision to transport photons. If None,
+            Include the atmospheric transmission to transport photons. If None,
             this option is set to be the same as the original Event object.
         tel_eff : bool, default True
             Include the telescope efficiency to calculate the signals. If None,
@@ -305,7 +305,7 @@ class Event():
                 theta = telescope.theta
                 alt = telescope.alt
                 az = telescope.az
-                grid =sm.Grid(telescope, x_c, y_c, z_c, theta, alt,
+                grid = sm.Grid(telescope, x_c, y_c, z_c, theta, alt,
                               az, size_x, size_y, N_x, N_y)
             else:
                 raise ValueError('The input grid is not valid')
@@ -414,7 +414,7 @@ def _event(event, observatory, shower, atm_trans, tel_eff, **kwargs):
     shower : Shower
         Shower to be observed.
     atm_trans : bool, default True
-        Include the atmospheric transmision to transport photons.
+        Include the atmospheric transmission to transport photons.
     tel_eff : bool, default True
         Include the telescope efficiency to calculate the signals.
         If False, 100% efficiency is assumed for a given wavelength interval.
@@ -505,7 +505,7 @@ def _show_distribution(grid_event):
         # Image frame
         extent = (x_c-size_x/2., x_c+size_x/2., y_c-size_y/2., y_c+size_y/2.)
 
-        # Image plots with color map in logaritmic scale
+        # Image plots with color map in logarithmic scale
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4),
                                        constrained_layout=True)
         ax1.imshow(signal_cher,

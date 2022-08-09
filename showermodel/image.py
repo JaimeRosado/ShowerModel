@@ -37,7 +37,7 @@ class Image:
     ----------
     signal : Signal
     lat_profile : bool
-        Bool indicating wether a NKG lateral profile is used to
+        Bool indicating whether a NKG lateral profile is used to
         spread the signal. If False, a linear shower is assumed.
     N_pix : int
         Number of camera pixels.
@@ -323,7 +323,7 @@ def _image(image, signal, lat_profile, N_pix, int_time, NSB):
     # to the shower axis at each point
     chi1 = 2. * np.arctan(L / distance)
     chi2 = 2. * np.arctan(R / distance)
-    # Appararent size of the cylinder in number of pixels
+    # Apparent size of the cylinder in number of pixels
     n1 = np.array(np.round(chi1 / Delta_theta), int)  # Along shower axis
     n2 = np.array(np.round(chi2 / Delta_theta), int)  # Perpendicular
 
@@ -354,7 +354,7 @@ def _image(image, signal, lat_profile, N_pix, int_time, NSB):
             frames[f_index_p, pix_y_p, pix_x_p] += Npe_p
             continue
 
-        # Lists of lenght = 1 to allow for loops
+        # Lists of length = 1 to allow for loops
         x_p = [x[point]]
         y_p = [y[point]]
         z_p = [z[point]]
@@ -369,7 +369,7 @@ def _image(image, signal, lat_profile, N_pix, int_time, NSB):
         if n1_p > 1:
             # n1_p substeps along the shower axis
             L_p = np.linspace(-1., 1., n1_p) * L_half / 2.
-            # Arrays of lenght = n1_p
+            # Arrays of length = n1_p
             x_p = x_p + L_p * ux
             y_p = y_p + L_p * uy
             z_p = z_p + L_p * uz

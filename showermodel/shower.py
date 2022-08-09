@@ -225,13 +225,13 @@ class Shower:
         observatory : Observatory 
             Observatory object (may be a Grid object).
         atm_trans : bool, default True
-            Include the atmospheric transmision to calculate the signals.
+            Include the atmospheric transmission to calculate the signals.
         tel_eff : bool, default True
             Include the telescope efficiency to calculate the signals.
             If False, 100% efficiency is assumed for a given
             wavelength interval.
         **kwargs : {wvl_ini, wvl_fin, wvl_step}
-            These parameters will modify the wavelenght interval when
+            These parameters will modify the wavelength interval when
             tel_eff==False. If None, the wavelength interval defined in the
             telescope is used.
 
@@ -259,9 +259,9 @@ class Shower:
             Maximum offset angle in degrees relative to the telescope
             pointing direction.
         X_mark : float
-            Reference slant depth in g/cm^2 of the shower track to be ma
-            ked in the figure, default X_max. If X_mark=None, no mark is
-            included.
+            Reference slant depth in g/cm^2 of the shower track to be
+            made in the figure, default X_max. If X_mark=None, no mark
+            is included.
 
         Returns
         -------
@@ -324,12 +324,12 @@ class Shower:
         telescope : Telescope
             Telescope object to be used.
         atm_trans : bool, default True
-            Include the atmospheric transmision.
+            Include the atmospheric transmission.
         tel_eff : bool, default True
             Include the telescope efficiency. If False, 100% efficiency is
             assumed for a given wavelength interval.
         **kwargs : {wvl_ini, wvl_fin, wvl_step}
-            These parameters will modify the wavelenght interval when
+            These parameters will modify the wavelength interval when
             tel_eff==False. If None, the wavelength interval defined in the
             telescope is used.
 
@@ -432,7 +432,7 @@ class Shower:
         Parameters
         ----------
         grid : Grid
-            If None, a new Grid object is generated from the specificed
+            If None, a new Grid object is generated from the specified
             dimensions and telescope characteristics.
             If given, {telescope, tel_type, ..., N_x, N_y} are not used.
         telescope : Telescope
@@ -461,12 +461,12 @@ class Shower:
         N_y : int
             Number of cells across the y direction.
         atm_trans : bool, default True
-            Include the atmospheric transmision to transport photons.
+            Include the atmospheric transmission to transport photons.
         tel_eff : bool, default True
             Include the telescope efficiency to calculate the signal. If False,
-            100% efficiency is assumed for a given wavelenght interval.
+            100% efficiency is assumed for a given wavelength interval.
         **kwargs : {wvl_ini, wvl_fin, wvl_step}
-            These parameters will modify the wavelenght interval when
+            These parameters will modify the wavelength interval when
             tel_eff==False. If None, the wavelength interval defined in the
             telescope is used.
 

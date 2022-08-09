@@ -14,7 +14,7 @@ class Observatory(list):
     """
     List of telescopes.
 
-    The characterestics of the observatory are stored in attributes.
+    The characteristics of the observatory are stored in attributes.
 
     Note: Attributes inherited from Telescope (i.e., tel_type, tel_apert,
     tel_area and tel_N_pix) are not updated when telescopes are modified
@@ -85,7 +85,7 @@ class Observatory(list):
 
         """
         super().append(telescope)
-        self.N_tel+=1
+        self.N_tel += 1
 
 
 class Array25(Observatory):
@@ -93,7 +93,7 @@ class Array25(Observatory):
     Array of 25 telescopes similar to the layout of MST telescopes of CTA-South.
 
     The pointing directions of all the telescopes are set equally, but they can
-    be modified individually (along with other porperties) later on.
+    be modified individually (along with other properties) later on.
 
     The telescope index is sorted first by radius and then by azimuth, so that
     tel_index=0 corresponds to the central telescope.
@@ -159,7 +159,7 @@ class Grid(Observatory):
     Rectangular grid of telescopes across the x and y directions.
 
     The pointing directions of all the telescopes are set equally, but they can
-    be modified individually (along with other porperties) later on.
+    be modified individually (along with other properties) later on.
 
     The telescope index is sorted first by y (from max to min) and then by x
     (from min to max), so that tel_index=0 corresponds to the telescope placed

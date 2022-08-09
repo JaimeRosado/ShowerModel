@@ -69,11 +69,11 @@ class Profile(pd.DataFrame):
     dX : float
         Column 2, discretization step in g/cm^2 along the shower axis.
     E_dep : float
-        Column 3, energy deposit in MeV at each discretiztion step.
+        Column 3, energy deposit in MeV at each discretization step.
     N_ch : float
         Column 4, number of charged particles.
     atmosphere : Atmosphere
-        Atomosphere object.
+        Atmosphere object.
     E : float
         Energy of the primary particle.
     theta : float
@@ -139,7 +139,7 @@ class Profile(pd.DataFrame):
 
         Returns
         -------
-        fluorescence : Fluorescece
+        fluorescence : Fluorescence
         """
         return sm.Fluorescence(self)
 
@@ -233,7 +233,7 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH, zi,
     profile.atmosphere = atmosphere
 
     # The input shower parameters along with some geometric parameters are
-    # included as atributes of the DataFrame
+    # included as attributes of the DataFrame
     profile.E = E
     if alt is None:
         alt = 90. - theta
@@ -303,7 +303,7 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH, zi,
         if E < profile.E_dep.sum():
             profile.E = profile.E_dep.sum()
             raise ValueError("""
-                The input shower energy is lower than the integraged energy
+                The input shower energy is lower than the integrated energy
                 deposit profile.
                 """)
         elif E > profile.E_dep.sum()*1.2:
@@ -341,7 +341,7 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH, zi,
         # If not given, a typical value according to Heitler model is used
         if X_max is None:
             X_max = 36.7 * np.log(E / 4. / 81.)
-            # lambda_r = 36.7 g/cm2 radiation lenght in air
+            # lambda_r = 36.7 g/cm2 radiation length in air
             # E_c=81 MeV is the critical energy in air
         profile.X_max = X_max
         s = 3. * profile.X / (profile.X + 2. * X_max)  # Shower age
