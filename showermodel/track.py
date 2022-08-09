@@ -30,7 +30,7 @@ class Track(pd.DataFrame):
     theta : float
         Zenith angle in degrees of the apparent position of the source.
     alt : float
-        Altitude in degrees of the apperent position of the source. If None,
+        Altitude in degrees of the apparent position of the source. If None,
         theta is used. If given, theta is overwritten.
     az : float
         Azimuth angle (from north, clockwise) in degrees of the apparent
@@ -56,7 +56,7 @@ class Track(pd.DataFrame):
         Column 2, height in km from ground level.
     t : float
         Column 3, travel time in microseconds. t=0 at the first interaction
-        point. The shower is assumed to propagates with the speed of light.
+        point. The shower is assumed to propagate with the speed of light.
     atmosphere : Atmosphere
     theta : float
         Zenith angle in degrees of the apparent position of the source.
@@ -338,7 +338,7 @@ def _track(track, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, **kwargs):
     theta : float
         Zenith angle in degrees of the apparent position of the source.
     alt : float
-        Altitude in degrees of the apperent position of the source. If None,
+        Altitude in degrees of the apparent position of the source. If None,
         theta is used. If given, theta is overwritten.
     az : float
         Azimuth angle (from north, clockwise) in degrees of the apparent
@@ -370,7 +370,7 @@ def _track(track, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, **kwargs):
         theta = 90. - alt
     
     # The input parameters along with some geometric parameters are also
-    # included as atributes of the DataFrame. The angles are stored in degrees
+    # included as attributes of the DataFrame. The angles are stored in degrees
     track.theta = theta
     track.alt = alt
     if theta==180.:
@@ -387,7 +387,7 @@ def _track(track, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, **kwargs):
     sin_az = math.sin(az)
 
     # Coordinates of the unit vector pointing at the arrival shower direction
-    # opposite to the shower propogation vector
+    # opposite to the shower propagation vector
     track.ux = sin_theta * sin_az
     track.uy = sin_theta * cos_az
     track.uz = cos_theta # uz<0 for ascending showers

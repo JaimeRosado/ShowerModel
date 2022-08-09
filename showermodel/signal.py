@@ -24,14 +24,14 @@ class Signal(pd.DataFrame):
     shower : Shower
         Shower object to be used.
     projection : Projection
-        If None, it will generated from telescope and shower.
+        If None, it will be generated from telescope and shower.
     atm_trans : bool, default True
-        Include the atmospheric transmision to transport photons.
+        Include the atmospheric transmission to transport photons.
     tel_eff : bool, default True
         Include the telescope efficiency to calculate the signal. If False,
-        100% efficiency is assumed for a given wavelenght interval.
+        100% efficiency is assumed for a given wavelength interval.
     **kwargs : {wvl_ini, wvl_fin, wvl_step}
-        These parameters will modify the wavelenght interval when
+        These parameters will modify the wavelength interval when
         tel_eff==False. If None, the wavelength interval defined in the
         telescope is used.
 
@@ -273,7 +273,7 @@ def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
     telescope : Telescope
     shower : Shower
     projection : Projection
-        If None, it will generated from telescope and shower.
+        If None, it will be generated from telescope and shower.
     atm_trans : bool, default True
         Include the atmospheric transmission to transport photons.
     tel_eff : bool, default True

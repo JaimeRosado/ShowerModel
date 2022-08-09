@@ -222,7 +222,7 @@ class Projection(pd.DataFrame):
 def _projection(projection, telescope, track):
     """
     Obtain the projection of a shower track viewed from the telescope position
-    in both horizontal coordiantes system (alt/az) and FoV coordinates system
+    in both horizontal coordinates system (alt/az) and FoV coordinates system
     (theta/phi) and determine the fraction of the track within the telescope
     field of view.
 
