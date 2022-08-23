@@ -38,11 +38,7 @@ class Track(pd.DataFrame):
     ----------
     theta : float, default 0
         Zenith angle in degrees of the apparent position of the source.
-<<<<<<< Updated upstream
-    alt : float
-=======
     alt : float, default None
->>>>>>> Stashed changes
         Altitude in degrees of the apparent position of the source. If None,
         theta is used. If given, theta is overwritten.
     az : float, default 0
@@ -559,8 +555,4 @@ def _track(track, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, h0, h_top,
         track.x = xi - dist * track.ux
         track.y = yi - dist * track.uy
         # Travel time
-<<<<<<< Updated upstream
-        track.t = dist / 0.2998
-=======
         track.t = dist / ct.c_km_us
->>>>>>> Stashed changes
