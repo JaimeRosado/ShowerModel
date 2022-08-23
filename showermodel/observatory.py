@@ -125,9 +125,6 @@ class Observatory(list):
             Telescope to be added.
         """
         super().append(telescope)
-<<<<<<< Updated upstream
-        self.N_tel += 1
-=======
 
     def _check_pointing(self):
         theta = self[0].theta
@@ -177,7 +174,6 @@ _Array25__rot_angle = ct.config['Array25']['rot_angle']
 _Array25__theta = _Observatory__theta
 _Array25__alt = _Observatory__alt
 _Array25__az = _Observatory__az
->>>>>>> Stashed changes
 
 
 class Array25(Observatory):
@@ -598,4 +594,3 @@ def _show(observatory):
     ax.axes.xaxis.set_label_text('x (km)')
     ax.axes.yaxis.set_label_text('y (km)')
     return ax
-    
