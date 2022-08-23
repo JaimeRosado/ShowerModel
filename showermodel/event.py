@@ -303,20 +303,8 @@ class Event():
             Number of cells across the x direction.
         N_y : int, default 10
             Number of cells across the y direction.
-<<<<<<< Updated upstream
-        atm_trans : bool, default True
-            Include the atmospheric transmission to transport photons. If None,
-            this option is set to be the same as the original Event object.
-        tel_eff : bool, default True
-            Include the telescope efficiency to calculate the signals. If None,
-            this option is set to be the same as the original Event object.
-        **kwargs : {wvl_ini, wvl_fin, wvl_step}
-            These parameters will be passed to the Signal constructor to modify
-            the wavelength interval when tel_eff==False. If None, the wavelength
-            interval the grid telescopes is used.
-=======
         atm_trans : bool
-            Include the atmospheric transmision to transport photons.
+            Include the atmospheric transmission to transport photons.
             By default, this option is set to be the same as the Event object.
         tel_eff : bool
             Include the telescope efficiency to calculate the signals.
@@ -333,7 +321,6 @@ class Event():
             Discretization step in nm of the interval to calculate the signal
             when tel_eff==False. By default, this parameter is set to be the
             same as the Event object.
->>>>>>> Stashed changes
 
         Returns
         -------
@@ -343,36 +330,6 @@ class Event():
         (ax1, ax2, cbar) : AxesSubplot and Colorbar
             If 2D grid.
         """
-<<<<<<< Updated upstream
-        if not isinstance(grid, sm.Grid):
-            if grid is None:
-                observatory = self.observatory
-                telescope = observatory[0]  # tel_index=0 is used as reference
-                tel_type = telescope.tel_type
-                x_c = observatory.x_c
-                y_c = observatory.y_c
-                z_c = observatory.z_c
-                theta = telescope.theta
-                alt = telescope.alt
-                az = telescope.az
-                grid = sm.Grid(telescope, x_c, y_c, z_c, theta, alt,
-                              az, size_x, size_y, N_x, N_y)
-            else:
-                raise ValueError('The input grid is not valid')
-
-        # Default values from the original event
-        atm_trans = self.atm_trans if atm_trans is None else atm_trans
-        tel_eff = self.tel_eff if tel_eff is None else tel_eff
-        signal = self.signals[0]  # tel_index=0 is used as reference
-        kwargs['wvl_ini'] = kwargs.get('wvl_ini', signal.wvl_ini)
-        kwargs['wvl_fin'] = kwargs.get('wvl_fin', signal.wvl_fin)
-        kwargs['wvl_step'] = kwargs.get('wvl_step', signal.wvl_step)
-
-        grid_event = GridEvent(grid, self.shower, atm_trans, tel_eff, **kwargs)
-        return grid_event.show_distribution()
-
-    def make_images(self, lat_profile=True, NSB=40.):
-=======
         observatory = self.observatory
         telescope = observatory[tel_index]
         tel_type = telescope.tel_type
@@ -398,7 +355,6 @@ class Event():
         return grid_event, _show_distribution(grid_event)
 
     def make_images(self, lat_profile=_Image__lat_profile, NSB=_Image__NSB):
->>>>>>> Stashed changes
         """
         Generate a time-varying shower image for each telescope assuming a
         circular camera with square pixels of same solid angle. The list of
