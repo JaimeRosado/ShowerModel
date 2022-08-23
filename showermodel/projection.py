@@ -395,4 +395,3 @@ def _projection(projection, telescope, track):
     # FoV = True for shower points within the telescope field of view
     projection.FoV = ((projection.theta <= telescope.apert/2.)
                       & (projection.distance > 0.))
-

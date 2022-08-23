@@ -321,12 +321,6 @@ class Shower:
             Include the telescope efficiency to calculate the signals.
             If False, 100% efficiency is assumed for a given
             wavelength interval.
-<<<<<<< Updated upstream
-        **kwargs : {wvl_ini, wvl_fin, wvl_step}
-            These parameters will modify the wavelength interval when
-            tel_eff==False. If None, the wavelength interval defined in the
-            telescope is used.
-=======
         wvl_ini : float, default 290
             Initial wavelength in nm of the interval to calculate the signal
             when tel_eff==False.
@@ -336,7 +330,6 @@ class Shower:
         wvl_step : float, default 3
             Discretization step in nm of the interval to calculate the signal
             when tel_eff==False.
->>>>>>> Stashed changes
 
         Returns
         -------
@@ -364,13 +357,8 @@ class Shower:
             pointing direction.
         X_mark : float
             Reference slant depth in g/cm^2 of the shower track to be
-<<<<<<< Updated upstream
-            made in the figure, default X_max. If X_mark=None, no mark
-            is included.
-=======
             marked in the figure. If set to None, no mark is included.
             By default, the mark is placed at X_max.
->>>>>>> Stashed changes
 
         Returns
         -------
@@ -439,12 +427,6 @@ class Shower:
         tel_eff : bool, default True
             Include the telescope efficiency. If False, 100% efficiency is
             assumed for a given wavelength interval.
-<<<<<<< Updated upstream
-        **kwargs : {wvl_ini, wvl_fin, wvl_step}
-            These parameters will modify the wavelength interval when
-            tel_eff==False. If None, the wavelength interval defined in the
-            telescope is used.
-=======
         wvl_ini : float, default 290
             Initial wavelength in nm of the interval to calculate the signal
             when tel_eff==False.
@@ -454,7 +436,6 @@ class Shower:
         wvl_step : float, default 3
             Discretization step in nm of the interval to calculate the signal
             when tel_eff==False.
->>>>>>> Stashed changes
 
         Returns
         -------
@@ -558,20 +539,6 @@ class Shower:
 
         Parameters
         ----------
-<<<<<<< Updated upstream
-        grid : Grid
-            If None, a new Grid object is generated from the specified
-            dimensions and telescope characteristics.
-            If given, {telescope, tel_type, ..., N_x, N_y} are not used.
-        telescope : Telescope
-            When grid==None. If telescope==None, the Grid object is constructed
-            based on the default GridElement object.
-        x_c : float
-            x coordinate in km of the center of the grid.
-        y_c : float
-            y coordinate in km of the center of the grid.
-        z_c : float
-=======
         grid : Grid or None, default None
             Grid object to generate the distribution. If None, a new Grid
             object is generated from the specified dimensions and the
@@ -587,7 +554,6 @@ class Shower:
         y_c : float, default 0
             North coordinate in km of the center of the grid.
         z_c : float, default 0
->>>>>>> Stashed changes
             Height of the grid in km above ground level.
         size_x : float, defaut 2
             Size of the grid in km across the x direction.
@@ -606,17 +572,7 @@ class Shower:
             Azimuth angle (from north, clockwise) in degrees of the telescope
             pointing directions.
         atm_trans : bool, default True
-<<<<<<< Updated upstream
             Include the atmospheric transmission to transport photons.
-        tel_eff : bool, default True
-            Include the telescope efficiency to calculate the signal. If False,
-            100% efficiency is assumed for a given wavelength interval.
-        **kwargs : {wvl_ini, wvl_fin, wvl_step}
-            These parameters will modify the wavelength interval when
-            tel_eff==False. If None, the wavelength interval defined in the
-            telescope is used.
-=======
-            Include the atmospheric transmision to transport photons.
         tel_eff : bool, default False
             Include the telescope efficiency to calculate the signal. If False,
             100% efficiency is assumed for a given wavelenght interval.
@@ -629,7 +585,6 @@ class Shower:
         wvl_step : float, default 3
             Discretization step in nm of the interval to calculate the signal
             when tel_eff==False.
->>>>>>> Stashed changes
 
         Returns
         -------
