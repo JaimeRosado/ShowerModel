@@ -1,15 +1,18 @@
 # coding: utf-8
 
 import numpy as np
-import showermodel as sm
+import showermodel.constants as ct
 import matplotlib.pyplot as plt
-
-# Default values for array25
-from .telescope import _x, _y, _z, _theta, _az
-from .telescope import Telescope, IACT, GridElement
-
+from .telescope import Telescope, _pointing
 
 # Classes #####################################################################
+
+# Default values for Observatory
+_Observatory__obs_name = ct.config['Observatory'].get('obs_name') # optional
+_Observatory__theta = ct.config['Telescope']['theta']
+_Observatory__alt = ct.config['Telescope'].get('alt') # optional parameter
+_Observatory__az = ct.config['Telescope']['az']
+
 class Observatory(list):
     """
     List of telescopes.
@@ -22,75 +25,164 @@ class Observatory(list):
 
     Parameters
     ----------
-    *telescopes : Telescope
+    *telescopes : Telescope, mandatory
         List of telescopes objects to be included.
-    obs_type : str
-        Name given to the observatory. Default to None.
+    obs_name : str or None, default None
+        Name given to the observatory.
 
     Attributes
     ----------
-    obs_type : str
-        Name given to the observatory. Default to None.
+    obs_name : str or None
+        Name given to the observatory.
     N_tel : int
         Number of telescopes.
-    x_c : float
-        East coordinate in km of the center of the grid.
-    y_c : float
-        North coordinate in km of the center of the grid.
-    z_c : float
-        Height of the grid in km above ground level.
-    size_x : float
-        Size of the observatory in km across the x direction.
-    size_y : float
-        Size of the observatory in km across the y direction.
-    N_x : int
-        Number of cells across the x direction (only Grid objects).
-    N_y : int
-        Number of cells across the y direction (only Grid objects).
-    cell_area : float
-        Area in m^2 of one cell (only Grid objects).
-    tel_type : str
-        Name of the subclass of Telescope.
-    tel_apert : float
-        Angular diameter in degrees of the telescope FoV.
-    tel_area : float
-        Detection area of each telescope in m^2
-        (e.g., mirror area of an IACT).
-    tel_N_pix : int
-        Number of camera pixels.
+    tel_type : str or None
+        Telescope type. Only defined if all the telescopes are of the same
+        type.
+    theta : float or None
+        Zenith angle in degrees of the observatory pointing direction. Only
+        defined if all the telescopes point to the same direction.
+    alt : float or None
+        Altitude in degrees of the observatory pointing direction. Only
+        defined if all the telescopes point to the same direction.
+    az : float or None
+        Azimuth angle (from north, clockwise) in degrees of the observatory
+        pointing direction. Only defined if all the telescopes point to the
+        same direction.
 
     Methods
     -------
     show()
         Show the telescope positions and indexes in a 2D plot.
+    append()
+        Append a telescope to the observatory.
+    set_pointing()
+        Set pointings of all the telescopes.
     """
-    # obs_type = None
-    def __init__(self, *telescopes, obs_type=None):
+    def __init__(self, *telescopes, obs_name=__obs_name):
         if not np.all([isinstance(tel, Telescope) for tel in telescopes]):
-            raise ValueError("Input telescopes are not valid.")
+            raise TypeError("Input telescopes are not of type Telescope.")
         super().__init__([*telescopes])
-        self.obs_type = obs_type
-        _observatory(self)
+        self.obs_name = obs_name
+
+
+
+    @property
+    def N_tel(self):
+        self._N_tel = len(self)
+        return self._N_tel
+
+    @property
+    def tel_type(self):
+        tel_type = self[0].tel_type
+        if np.all([tel.tel_type==tel_type for tel in self]):
+            self._tel_type = tel_type
+        else:
+            self._tel_type = None
+        return self._tel_type
+
+    @property
+    def theta(self):
+        self._check_pointing()
+        return self._theta
+
+    @theta.setter
+    def theta(self, new_theta):
+        self.set_pointing(new_theta, None, self.az)
+
+    @property
+    def alt(self):
+        self._check_pointing()
+        return self._alt
+
+    @alt.setter
+    def alt(self, new_alt):
+        self.set_pointing(0., new_alt, self.az)
+
+    @property
+    def az(self):
+        self._check_pointing()
+        return self._az
+
+    @az.setter
+    def az(self, new_az):
+        self.set_pointing(self.theta, None, new_az)
 
     def show(self):
         """
-        Show the telescope positions and indexes of the observatory in a 2D plot.
-
+        Show the telescope positions and indexes of the observatory in a
+        2D plot.
         """
         return _show(self)
 
     def append(self, telescope):
         """
-        Overwrite the append method to increase N_tel.
+        Append a new telescope and increase N_tel.
 
+        Parameters
+        ----------
+        telescope : Telescope
+            Telescope to be added.
         """
         super().append(telescope)
+<<<<<<< Updated upstream
         self.N_tel += 1
+=======
+
+    def _check_pointing(self):
+        theta = self[0].theta
+        az = self[0].az
+        if np.all([(tel.theta==theta) & (tel.az==az) for tel in self]):
+            self._theta = theta
+            self._alt = 90. - theta
+            self._az = az
+        else:
+            self._theta = None
+            self._alt = None
+            self._az = None
+
+    def set_pointing(self, theta=__theta, alt=__alt, az=__az):
+        """
+        Set pointings of all the telescopes.
+
+        Parameters
+        ----------
+        theta : float, default 0
+            Zenith angle in degrees of the telescope pointing direction.
+        alt : float, default None
+            Altitude in degrees of the telescope pointing direction.
+            If None, theta is used. If given, theta is overwritten.
+        az : float, default 0
+            Azimuth angle (from north, clockwise) in degrees of the telescope
+        pointing direction.
+        """
+        if alt is None:
+            alt = 90. - theta
+        else:
+            theta = 90. - alt
+        for tel in self:
+            _pointing(tel, theta, alt, az)
+        self._theta = theta
+        self._alt = alt
+        self._az = az
+
+# Default values for Array25
+_Array25__obs_name = ct.config['Array25'].get('obs_name') # optional parameter
+_Array25__tel_type = ct.config['Array25']['tel_type']
+_Array25__x_c = ct.config['Array25']['x_c']
+_Array25__y_c = ct.config['Array25']['y_c']
+_Array25__z_c = ct.config['Array25']['z_c']
+_Array25__R = ct.config['Array25']['R']
+_Array25__rot_angle = ct.config['Array25']['rot_angle']
+_Array25__theta = _Observatory__theta
+_Array25__alt = _Observatory__alt
+_Array25__az = _Observatory__az
+>>>>>>> Stashed changes
 
 
 class Array25(Observatory):
     """
-    Array of 25 telescopes similar to the layout of MST telescopes of CTA-South.
+    Array of 25 telescopes similar to the layout of MST telescopes of CTA.
 
     The pointing directions of all the telescopes are set equally, but they can
     be modified individually (along with other properties) later on.
@@ -100,59 +192,111 @@ class Array25(Observatory):
 
     Parameters
     ----------
-    telescope : Telescope
-        If None, the default IACT object is used.
-    x_c : float
+    obs_name : str, default 'Array25'
+        Name given to the observatory.
+    telescope : Telescope, default None
+        Telescope object to be used to construct the observatory. If None, the
+        given tel_type telescope is used.
+    tel_type : str, default 'IACT'
+        Type of telescope to be used when telescope==None.
+    x_c : float, default 0
         East coordinate in km of the center of the array.
-    y_c : float
+    y_c : float, defatul 0
         North coordinate in km of the center of the array.
-    z_c : float
+    z_c : float, default 0
         Height of the array in km above ground level.
-    theta : float
+    R : float, default 341
+        Radius in km of the array.
+    rot_angle : float, default 0
+        Rotation angle in degrees of the array (clockwise).
+    theta : float, default 0
         Zenith angle in degrees of the telescope pointing directions.
-    alt : float
+    alt : float, default None
         Altitude in degrees of the telescope pointing directions. If None,
         theta is used. If given, theta is overwritten.
-    az : float
+    az : float, default 0
         Azimuth angle (from north, clockwise) in degrees of the telescope
         pointing directions.
-    R : float
-        Radius in km of the array.
-    rot_angle : float
-        Rotation angle in degrees of the array (clockwise).
 
     Attributes
     ----------
-    obs_type : str
-        Set to 'Array25'.
+    obs_name : str
+        Name given to the observatory.
     N_tel : int
-        Set to 25.
+        Number of telescopes.
     x_c : float
         East coordinate in km of the center of the array.
     y_c : float
         North coordinate in km of the center of the array.
     z_c : float
         Height of the array in km above ground level.
-    theta : float
-        Zenith angle in degrees of the telescope pointing directions.
-    alt : float
-        Altitude in degrees of the telescope pointing directions. If None,
-        theta is used. If given, theta is overwritten.
-    az : float
-        Azimuth angle (from north, clockwise) in degrees of the telescope
-        pointing directions.
     R : float
         Radius in km of the array.
     rot_angle : float
         Rotation angle in degrees of the array (clockwise).
+    tel_type : str or None
+        Telescope type. Only defined if all the telescopes are of the same
+        type.
+    theta : float or None
+        Zenith angle in degrees of the observatory pointing direction. Only
+        defined if all the telescopes point to the same direction.
+    alt : float or None
+        Altitude in degrees of the observatory pointing direction. Only
+        defined if all the telescopes point to the same direction.
+    az : float or None
+        Azimuth angle (from north, clockwise) in degrees of the observatory
+        pointing direction. Only defined if all the telescopes point to the
+        same direction.
     """
-    obs_type = 'Array25'
-    N_tel = 25
+    def __init__(self, obs_name=__obs_name, telescope=None,
+                 tel_type=__tel_type, x_c=__x_c, y_c=__y_c, z_c=__z_c,
+                 R=__R, rot_angle=__rot_angle, theta=__theta, alt=__alt,
+                 az=__az):
+        self.obs_name = obs_name
+        _array25(self, telescope, tel_type, x_c, y_c, z_c, R, rot_angle,
+                theta, alt, az)
 
-    def __init__(self, telescope=None, x_c=_x, y_c=_y, z_c=_z,
-                 theta=None, alt=None, az=None, R=0.341, rot_angle=0.):
-        _array25(self, telescope, x_c, y_c, z_c, theta, alt, az, R, rot_angle)
+    @property
+    def x_c(self):
+        return self._x_c
 
+    @property
+    def y_c(self):
+        return self._y_c
+
+    @property
+    def z_c(self):
+        return self._z_c
+
+    @property
+    def R(self):
+        return self._R
+
+    @property
+    def size_x(self):
+        return self._size_x
+
+    @property
+    def size_y(self):
+        return self._size_y
+
+    @property
+    def rot_angle(self):
+        return self._rot_angle
+
+# Default values for Grid
+_Grid__obs_name = ct.config['Grid'].get('obs_name') # optional parameter
+_Grid__tel_type = ct.config['Grid']['tel_type']
+_Grid__x_c = ct.config['Grid']['x_c']
+_Grid__y_c = ct.config['Grid']['y_c']
+_Grid__z_c = ct.config['Grid']['z_c']
+_Grid__size_x = ct.config['Grid']['size_x']
+_Grid__size_y = ct.config['Grid']['size_y']
+_Grid__N_x = ct.config['Grid']['N_x']
+_Grid__N_y = ct.config['Grid']['N_y']
+_Grid__theta = _Observatory__theta
+_Grid__alt = _Observatory__alt
+_Grid__az = _Observatory__az
 
 class Grid(Observatory):
     """
@@ -167,49 +311,48 @@ class Grid(Observatory):
 
     Parameters
     ----------
-    telescope : Telescope
-        If None, the default GridElement object is used.
-    x_c : float
+    obs_name : str, default 'Grid'
+        Name given to the observatory.
+    telescope : Telescope, default None
+        Telescope object to be used to construct the grid. If None, the
+        given tel_type telescope is used.
+    tel_type : str, default 'GridElement'
+        Type of telescope to be used when telescope==None.
+    x_c : float, default 0
         East coordinate in km of the center of the grid.
-    y_c : float
+    y_c : float, default 0
         North coordinate in km of the center of the grid.
-    z_c : float
+    z_c : float, default 0
         Height of the grid in km above ground level.
-    theta : float
+    size_x : float, defaut 2
+        Size of the grid in km along the x direction.
+    size_y : float, default 2
+        Size of the grid in km along the y direction.
+    N_x : int, default 10
+        Number of cells along the x direction.
+    N_y : int, default 10
+        Number of cells along the y direction.
+    theta : float, default 0
         Zenith angle in degrees of the telescope pointing directions.
-    alt : float
+    alt : float, default None
         Altitude in degrees of the telescope pointing directions. If None,
         theta is used. If given, theta is overwritten.
-    az : float
-        Azimuth angle in degrees of the telescope pointing directions.
-    size_x : float
-        Size of the grid in km across the x direction.
-    size_y : float
-        Size of the grid in km across the y direction.
-    N_x : int
-        Number of cells across the x direction.
-    N_y : int
-        Number of cells across the y direction.
+    az : float, default 0
+        Azimuth angle (from north, clockwise) in degrees of the telescope
+        pointing directions.
 
     Attributes
     ----------
-    obs_type : str
-        Set to 'Grid'.
+    obs_name : str
+        Name given to the observatory.
     N_tel : int
-        Set to N_x*N_y.
+        Number of cells.
     x_c : float
         East coordinate in km of the center of the grid.
     y_c : float
         North coordinate in km of the center of the grid.
     z_c : float
         Height of the grid in km above ground level.
-    theta : float
-        Zenith angle in degrees of the telescope pointing directions.
-    alt : float
-        Altitude in degrees of the telescope pointing directions. If None,
-        theta is used. If given, theta is overwritten.
-    az : float
-        Azimuth angle in degrees of the telescope pointing directions.
     size_x : float
         Size of the grid in km across the x direction.
     size_y : float
@@ -218,41 +361,66 @@ class Grid(Observatory):
         Number of cells across the x direction.
     N_y : int
         Number of cells across the y direction.
+    cell_area : float
+        Cell area in m^2.
+    tel_type : str or None
+        Telescope type. Only defined if all the telescopes are of the same
+        type.
+    theta : float or None
+        Zenith angle in degrees of the observatory pointing direction. Only
+        defined if all the telescopes point to the same direction.
+    alt : float or None
+        Altitude in degrees of the observatory pointing direction. Only
+        defined if all the telescopes point to the same direction.
+    az : float or None
+        Azimuth angle (from north, clockwise) in degrees of the observatory
+        pointing direction. Only defined if all the telescopes point to the
+        same direction.
     """
-    obs_type = 'Grid'
+    def __init__(self, obs_name=__obs_name, telescope=None,
+                 tel_type=__tel_type, x_c=__x_c, y_c=__y_c, z_c=__z_c,
+                 size_x=__size_x, size_y=__size_y, N_x=__N_x, N_y=__N_y,
+                 theta=__theta, alt=__alt, az=__az):
+        self.obs_name = obs_name
+        _grid(self, telescope, tel_type, x_c, y_c, z_c, size_x, size_y, N_x,
+              N_y, theta, alt, az)
 
-    def __init__(self, telescope=None, x_c=_x, y_c=_y, z_c=_z, theta=None,
-                 alt=None, az=None, size_x=2., size_y=2., N_x=10, N_y=10):
-        _grid(self, telescope, x_c, y_c, z_c, theta, alt, az, size_x,
-              size_y, N_x, N_y)
+    @property
+    def x_c(self):
+        return self._x_c
+
+    @property
+    def y_c(self):
+        return self._y_c
+
+    @property
+    def z_c(self):
+        return self._z_c
+
+    @property
+    def size_x(self):
+        return self._size_x
+
+    @property
+    def size_y(self):
+        return self._size_y
+
+    @property
+    def N_x(self):
+        return self._N_x
+
+    @property
+    def N_y(self):
+        return self._N_y
+
+    @property
+    def cell_area(self):
+        return self._cell_area
 
 
 # Constructors ################################################################
-def _observatory(observatory):
-    """
-    Constructor of Observatory class.
-
-    Parameters
-    -----------
-    observatory : Observatory
-    """
-    # observatory = Observatory([*telescopes])
-    observatory.N_tel = len(observatory)
-    observatory.size_x = None
-    observatory.size_y = None
-
-    # The first telescope is used as reference
-    observatory.x_c = observatory[0].x
-    observatory.y_c = observatory[0].y
-    observatory.z_c = observatory[0].z
-    observatory.tel_type = observatory[0].tel_type
-    observatory.tel_apert = observatory[0].apert
-    observatory.tel_area = observatory[0].area
-    observatory.tel_N_pix = observatory[0].N_pix
-
-
-def _array25(observatory, telescope, x_c, y_c, z_c, theta, alt, az, R,
-             rot_angle):
+def _array25(observatory, telescope, tel_type, x_c, y_c, z_c, R, rot_angle,
+             theta, alt, az):
     """
     Constructor of Array25 class.
 
@@ -260,13 +428,17 @@ def _array25(observatory, telescope, x_c, y_c, z_c, theta, alt, az, R,
     ----------
     observatory : Array25
     telescope : Telescope
-        If None, the default IACT object is used.
+        If None, the default IACT telescope is used.
     x_c : float
         East coordinate in km of the center of the array.
     y_c : float
         North coordinate in km of the center of the array.
     z_c : float
         Height of the array in km above ground level.
+    R : float
+        Radius in km of the array.
+    rot_angle : float
+        Rotation angle in degrees of the array (clockwise).
     theta : float
         Zenith angle in degrees of the telescope pointing directions.
     alt : float
@@ -275,49 +447,34 @@ def _array25(observatory, telescope, x_c, y_c, z_c, theta, alt, az, R,
     az : float
         Azimuth angle (from north, clockwise) in degrees of the telescope
         pointing directions.
-    R : float
-        Radius in km of the array.
-    rot_angle : float
-        Rotation angle in degrees of the array (clockwise).
     """
     if isinstance(telescope, Telescope):
-        # Default theta and az values are taken from the input telescope
-        if theta is None:
-            theta = telescope.theta
-        if az is None:
-            az = telescope.az
         telescope = telescope.copy(x=x_c, y=y_c, z=z_c, theta=theta, alt=alt,
                                    az=az)
     elif telescope is None:
-        # Default theta and az values are those of telescope
-        if theta is None:
-            theta = _theta
-        if az is None:
-            az = _az
         # The default telescope type is IACT
-        telescope = IACT(x_c, y_c, z_c, theta=theta, alt=alt, az=az)
+        telescope = Telescope(tel_type=tel_type, x=x_c, y=y_c, z=z_c,
+                              theta=theta, alt=alt, az=az)
     else:
-        raise ValueError('The input telescope is not valid.')
+        raise TypeError('The input telescope is not of type Telescope.')
 
-    observatory.x_c = x_c
-    observatory.y_c = y_c
-    observatory.z_c = z_c
+    observatory._tel_type = telescope.tel_type
+    observatory._x_c = x_c
+    observatory._y_c = y_c
+    observatory._z_c = z_c
     if alt is None:
         alt = 90. - theta
     else:
         theta = 90. - alt
-    observatory.theta = theta
-    observatory.alt = alt
-    observatory.az = az
-    observatory.size_x = 2.*R
-    observatory.size_y = 2.*R
-    observatory.R = R
-    observatory.rot_angle = rot_angle
-    observatory.tel_type = telescope.tel_type
-    observatory.tel_apert = telescope.apert
-    observatory.tel_area = telescope.area
-    observatory.tel_Npix = telescope.N_pix
+    observatory._theta = theta
+    observatory._alt = alt
+    observatory._az = az
+    observatory._R = R
+    observatory._size_x = 2.*R
+    observatory._size_y = 2.*R
+    observatory._rot_angle = rot_angle
 
+    observatory._N_tel = 0 # The append method increases N_tel
     # Central telescope
     observatory.append(telescope)
 
@@ -343,8 +500,8 @@ def _array25(observatory, telescope, x_c, y_c, z_c, theta, alt, az, R,
         observatory.append(telescope.copy(x=xi, y=yi))
 
 
-def _grid(grid, telescope, x_c, y_c, z_c, theta, alt, az, size_x,
-          size_y, N_x, N_y):
+def _grid(grid, telescope, tel_type, x_c, y_c, z_c, size_x, size_y, N_x, N_y,
+          theta, alt, az):
     """
     Constructor of Grid class.
 
@@ -353,6 +510,8 @@ def _grid(grid, telescope, x_c, y_c, z_c, theta, alt, az, size_x,
     grid : Grid
     telescope : Telescope
         If None, the default GridElement object is used.
+    tel_type : str, default 'GridElement'
+        Type of telescope to be used when telescope==None.
     x_c : float
         East coordinate in km of the center of the grid.
     y_c : float
@@ -361,6 +520,7 @@ def _grid(grid, telescope, x_c, y_c, z_c, theta, alt, az, size_x,
         Height of the grid in km above ground level.
     theta : float
         Zenith angle in degrees of the telescope pointing directions.
+        Default to 0.
     alt : float
         Altitude in degrees of the telescope pointing directions. If None,
         theta is used. If given, theta is overwritten.
@@ -384,47 +544,35 @@ def _grid(grid, telescope, x_c, y_c, z_c, theta, alt, az, size_x,
     # Telescope positions
     x_mid = x[1:] - step_x/2.
     y_mid = y[1:] + step_y/2.
-    cell_area = step_x * step_y * 1000000.
+    cell_area = step_x * step_y * 1000000. # m^2
 
     if isinstance(telescope, Telescope):
-        # Default theta and az values are taken from the input telescope
-        if theta is None:
-            theta = telescope.theta
-        if az is None:
-            az = telescope.az
         telescope = telescope.copy(z=z_c, theta=theta, alt=alt, az=az)
     elif telescope is None:
-        # The FoV is 180 degrees around zenith direction and area equal
-        # to one grid cell
-        theta = 0.
-        alt = None
-        az = 0.
-        telescope = GridElement(z=z_c, theta=theta, alt=None, az=0.,
-                                area=cell_area)
+        # The default telescope type is GridElement
+        telescope = Telescope(tel_type=tel_type, z=z_c, theta=theta, alt=alt,
+                              az=az)
     else:
-        raise ValueError('The input telescope is not valid.')
+        raise TypeError('The input telescope is not of type Telescope.')
 
-    grid.N_tel = N_x * N_y
-    grid.x_c = x_c
-    grid.y_c = y_c
-    grid.z_c = z_c
+    grid._tel_type = telescope.tel_type
+    grid._x_c = x_c
+    grid._y_c = y_c
+    grid._z_c = z_c
     if alt is None:
         alt = 90. - theta
     else:
         theta = 90. - alt
-    grid.theta = theta
-    grid.alt = alt
-    grid.az = az
-    grid.size_x = size_x
-    grid.size_y = size_y
-    grid.N_x = N_x
-    grid.N_y = N_y
-    grid.cell_area = cell_area
-    grid.tel_type = telescope.tel_type
-    grid.tel_apert = telescope.apert
-    grid.tel_area = telescope.area
-    grid.tel_Npix = telescope.N_pix
+    grid._theta = theta
+    grid._alt = alt
+    grid._az = az
+    grid._size_x = size_x
+    grid._size_y = size_y
+    grid._N_x = N_x
+    grid._N_y = N_y
+    grid._cell_area = cell_area
 
+    grid._N_tel = 0
     for yi in y_mid:
         for xi in x_mid:
             grid.append(telescope.copy(x=xi, y=yi))
@@ -450,3 +598,4 @@ def _show(observatory):
     ax.axes.xaxis.set_label_text('x (km)')
     ax.axes.yaxis.set_label_text('y (km)')
     return ax
+    

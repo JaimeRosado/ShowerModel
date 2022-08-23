@@ -1,0 +1,154 @@
+[Atmosphere] # For Atmosphere
+    # Ground level in km above sea level.
+    h0 = 0.0  # km
+
+    # Upper limit in km above sea level of the atmosphere discretization.
+    # If commented, the top level of the selected atmospheric model is taken. 
+    #h_top = 112.8292  # km
+
+    # Number of discretization steps.
+    N_steps = 550
+
+    # CORSIKA atmospheric model (from 1 to 29, except 9 and 10). See atm_models.toml.
+    atm_model = 1
+    
+    # Simple model of water-vapor profile from recommendation ITU-R P.835-6.
+    # The density is assumed to follow an exponential dependence on the altitude
+    # rho_w = rho_w_sl * exp(-h / h_scale)
+    # up to an altitude where the maxing ratio P_w / P = 2.0e-6.
+    # Above this altitude, the mixing ratio is assumed to be constant.
+    # Water pessure P_w is calculated from density assuming an ideal gas knowing
+    # the temperature and the molar mass of water.
+    #
+    # Water-vapor density in g/cm3 at sea level. Set to 0 if dry air is assumed.
+    rho_w_sl = 7.5e-6  # g/cm3
+    # Scale height in km.
+    h_scale = 2.0  # km
+
+
+[Shower] # For Track, Profile and Shower
+    # Zenith angle in degrees of the apparent position of the source.
+    theta = 0.0
+
+    # Altitude in degrees of the apperent position of the source.
+    # If commented, theta is used. If given, theta is overwritten.
+    #alt = 90.0
+
+    # Azimuth angle (from north, clockwise) in degrees of the apparent position of the source.
+    az = 0.0
+
+    # East and north coordinates in km of shower impact point on ground (z=0).
+    x0 = 0.0  # km
+    y0 = 0.0  # km
+
+    # East, north and height coordinates in km of the first interaction point of the shower.
+    # If zi==None, xi and yi are ignored and the shower impacts at (x0, y0, 0) on ground.
+    # If zi is given, x0 and y0 are ignored and the shower starts at (xi,yi,zi).
+    xi = 0.0    # km
+    yi = 0.0    # km
+    #zi = 100.0  # km
+
+    # Energy of the primary particle in MeV.
+    E = 10000000.0  # MeV
+
+    # Profile model: 'Greisen' or 'Gaisser-Hillas'
+    prf_model = 'Greisen'
+
+    # Slant depth in g/cm2 at shower maximum.
+    # If None, a typical value of X_max for gamma or proton showers is calculated from the radiation length.
+    #X_max = 430.0  # g/cm2
+
+    # X0 and Lambda parameters in g/cm2 to be used when prf_model=='Gaisser-Hillas'.
+    # If None, typical values for the input energy are used.
+    #X0_GH = 1.5  # g/cm2
+    #lambda_GH = 77.3  # g/cm2
+
+
+[Signal] # For Signal, Event, Cherenkov and Fluorescence
+    # Include the atmospheric transmision to transport photons.
+    atm_trans = true
+
+    # Include the telescope efficiency to calculate the signal.
+    # If False, 100% efficiency is assumed for a given wavelenght interval.
+    # For Signal and Event.
+    tel_eff = true
+
+    # Initial-final wavelengths and step size in nm of the wavelength interval to calculate the light production
+    # in the Cherenkov and Fluorescence classes, as well as the signal for tel_eff=false in Signal and Event.
+    wvl_ini = 290.0  # nm
+    wvl_fin = 430.0  # nm
+    wvl_step = 3.0   # nm (needed to integrate the Cherenkov signal when atm_trans==true)
+
+
+[Image] # For Image
+    # Use a NKG lateral profile to spread the signal.
+    # If False, a linear shower is assumed.
+    lat_profile = true
+
+    # Night sky background in MHz/m^2/deg^2 (photoelectrons).
+    NSB = 40.0  # MHz/m^2/deg^2
+        
+
+[Telescope]
+    # East, north and height coordinates of the telescope in km.
+    x = 0.0  # km
+    y = 0.0  # km
+    z = 0.0  # km
+
+    # Zenith angle in degrees of the telescope pointing direction.
+    theta = 0.0  # deg
+
+    # Altitude in degrees of the telescope pointing direction.
+    # If commented, theta is used. If given, theta is overwritten.
+    #alt = 90.0  # deg
+
+    # Azimuth angle (from north, clockwise) in degrees of the telescope pointing direction.
+    az = 0.0  # deg
+
+    # Type of telescope to be searched from tel_data.toml.
+    tel_type = 'generic'
+
+
+[Observatory]
+    # Name given to the observatory. Default to None.
+    #obs_name = 'Generic'
+
+
+[Array25]
+    # Name given to the observatory.
+    obs_name = 'Array25'
+
+    # Type of telescope to be used by default (when telescope=None).
+    tel_type = 'IACT'
+
+    # East, north and height coordinates in km of the center of the array.
+    x_c = 0.0  # km
+    y_c = 0.0  # km
+    z_c = 0.0  # km
+
+    # Radius in km of the array.
+    R = 0.341  # km
+
+    # Rotation angle in degrees of the array (clockwise).
+    rot_angle = 0.0  # deg
+
+
+[Grid]
+    # Name given to the observatory.
+    obs_name = 'Grid'
+
+    # Type of telescope to be used by default (when telescope=None).
+    tel_type = 'GridElement'
+
+    # East, north and height coordinates in km of the center of the grid.
+    x_c = 0.0  # km
+    y_c = 0.0  # km
+    z_c = 0.0  # km
+
+    # Size of the grid in km across the x and y directions.
+    size_x = 2.0  # km
+    size_y = 2.0  # km
+
+    # Number of cells across the x and y directions.
+    N_x = 10
+    N_y = 10

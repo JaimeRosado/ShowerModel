@@ -6,11 +6,11 @@ from .profile import Profile
 from .fluorescence import Fluorescence
 from .cherenkov import Cherenkov
 from .shower import Shower
-from .telescope import Telescope, IACT, GridElement
+from .telescope import Telescope
 from .projection import Projection
 from .signal import Signal
 from .observatory import Observatory, Array25, Grid
-from .event import Event, GridEvent
+from .event import Event
 from .image import Image
 
 from .version import __version__

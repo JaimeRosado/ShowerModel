@@ -1,11 +1,28 @@
 # coding: utf-8
 
 import numpy as np
-import math
 import showermodel as sm
+import showermodel.constants as ct
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+# Default values for Event
+_Event__atm_trans = ct.config['Signal']['atm_trans']
+_Event__tel_eff = ct.config['Signal']['tel_eff']
+_Event__wvl_ini = ct.config['Signal']['wvl_ini']
+_Event__wvl_fin = ct.config['Signal']['wvl_fin']
+_Event__wvl_step = ct.config['Signal']['wvl_step']
+
+# Default values for Grid
+_Grid__obs_name = ct.config['Grid'].get('obs_name') # optional parameter
+_Grid__size_x = ct.config['Grid']['size_x']
+_Grid__size_y = ct.config['Grid']['size_y']
+_Grid__N_x = ct.config['Grid']['N_x']
+_Grid__N_y = ct.config['Grid']['N_y']
+
+# Default values for Image
+_Image__lat_profile = ct.config['Image']['lat_profile']
+_Image__NSB = ct.config['Image']['NSB']
 
 # Class #######################################################################
 class Event():
@@ -18,24 +35,27 @@ class Event():
 
     Parameters
     ----------
-    observatory : Observatory
+    observatory : Observatory, mandatory
         Observatory that observes the shower.
-    shower : Shower
+    shower : Shower, mandatory
         Shower to be observed.
     atm_trans : bool, default True
         Include the atmospheric transmission to transport photons.
     tel_eff : bool, default True
         Include the telescope efficiency to calculate the signals.
         If False, 100% efficiency is assumed for a given wavelength interval.
-    **kwargs : {wvl_ini, wvl_fin, wvl_step}
-        These parameters will be passed to the Signal constructor to modify
-        the wavelength interval when tel_eff==False. If None, the wavelength
-        interval defined in each telescope is used.
+    wvl_ini : float, default 290
+        Initial wavelength in nm of the interval to calculate the signal when
+        tel_eff==False.
+    wvl_fin : float, default 430
+        Final wavelength in nm of the interval to calculate the signal when
+        tel_eff==False.
+    wvl_step : float, default 3
+        Discretization step in nm of the interval to calculate the signal when
+        tel_eff==False.
 
     Attributes
     ----------
-    event_type : str
-        Name given to the event. Default to None.
     shower : Shower
     track : Track
     profile : Profile
@@ -70,16 +90,20 @@ class Event():
         Show the shower track and the telescope positions in a 2D plot.
     show_geometry3D()
         Show the shower track and the telescope positions in a 3D plot.
+    show_distribution()
+        Make a GridEvent object and show the distribution of photons
+        per m^2 in a 1D or 2D plot.
     make_images()
         Generate shower images.
     show_images()
         Show shower images (if already exist).
     """
 
-    def __init__(self, observatory, shower, event_type=None, atm_trans=True,
-                 tel_eff=True, **kwargs):
-        self.event_type = event_type
-        _event(self, observatory, shower, atm_trans, tel_eff, **kwargs)
+    def __init__(self, observatory, shower, atm_trans=__atm_trans,
+                 tel_eff=__tel_eff, wvl_ini=__wvl_ini, wvl_fin=__wvl_fin,
+                 wvl_step=__wvl_step):
+        _event(self, observatory, shower, atm_trans, tel_eff,
+               wvl_ini, wvl_fin, wvl_step)
 
     def show_projection(self, tel_index=0, shower_Edep=True, axes=True,
                         max_theta=30., X_mark='X_max'):
@@ -89,20 +113,20 @@ class Event():
 
         Parameters
         ----------
-        tel_index : int
+        tel_index : int, default 0
             Index of the chosen telescope of the observatory.
         shower_Edep : bool, default True
             Make the radii of the shower track points proportional to the
             energy deposited in each step length.
         axes : bool, default True
             Show the axes of both frames of reference.
-        max_theta : float, default 30 degrees
+        max_theta : float, default 30
             Maximum offset angle in degrees relative to the telescope
             pointing direction.
-        X_mark : float or None
+        X_mark : float
             Reference slant depth in g/cm^2 of the shower track to be
-            marked in the figure, default to X_max. If X_mark is set to None,
-            no mark is included.
+            marked in the figure. If set to None, no mark is included.
+            By default, the mark is placed at X_max.
 
         Returns
         -------
@@ -157,10 +181,16 @@ class Event():
         return signal.show()
 
     def append_telescope(self, telescope):
-        """Append a telescope to the observatory and generate the corresponding
-        projection and signal."""
+        """
+        Append a telescope to the observatory and generate the corresponding
+        projection and signal.
+        
+        Parameters
+        ----------
+        telescope : Telescope, mandatory
+            Telescope to be appended.
+        """
         self.observatory.append(telescope)
-        self.observatory.N_tel += 1
         projection = telescope.Projection(self.shower)
         self.projections.append(projection)
         self.signals.append(telescope.Signal(self.shower, projection,
@@ -175,25 +205,24 @@ class Event():
 
         Parameters
         ----------
-        x_min : float
+        x_min : float, default -1
             Lower limit of the coordinate x in km.
-        x_max : float
+        x_max : float, default 1
             Upper limit of the coordinate x in km.
-        y_min : float
+        y_min : float, default -1
             Lower limit of the coordinate y in km.
-        y_max : float
+        y_max : float, default 1
             Upper limit of the coordinate y in km.
         X_mark : float
             Reference slant depth in g/cm^2 of the shower track to be
-            marked in the figure, default to X_max. If X_mark is set to None,
-            no mark is included.
+            marked in the figure. By default, the mark is placed at X_max.
         shower_Edep : bool, default True
             Make the radii of the shower track points proportional to the
             energy deposited in each step length.
-        signal_size : bool
+        signal_size : bool, default True
             Make the radii of the telescope position points proportional to
             the signal.
-        tel_index : bool
+        tel_index : bool, default False
             Show the telescope indexes together the telescope position points.
 
         Returns
@@ -202,8 +231,7 @@ class Event():
         """
         if X_mark == 'X_max':
             X_mark = self.shower.X_max
-        observatory = (self.grid if self.event_type == 'GridEvent'
-                       else self.observatory)
+        observatory = self.observatory  # observatory==grid for GridEvent
         from ._tools import show_geometry
         return show_geometry(self, observatory, '2d', x_min, x_max, y_min,
                              y_max, X_mark, shower_Edep, signal_size,
@@ -218,18 +246,17 @@ class Event():
 
         Parameters
         ----------
-        x_min : float
+        x_min : float, default -1
             Lower limit of the coordinate x in km.
-        x_max : float
+        x_max : float, default 1
             Upper limit of the coordinate x in km.
-        y_min : float
+        y_min : float, default -1
             Lower limit of the coordinate y in km.
-        y_max : float
+        y_max : float, default 1
             Upper limit of the coordinate y in km.
         X_mark : float
             Reference slant depth in g/cm^2 of the shower track to be
-            marked in the figure, default to X_max. If X_mark is set to None,
-            no mark is included.
+            marked in the figure. By default, the mark is placed at X_max.
         shower_Edep : bool, default True
             Make the radii of the shower track points proportional to the
             energy deposited in each step length.
@@ -247,34 +274,36 @@ class Event():
         """
         if X_mark == 'X_max':
             X_mark = self.shower.X_max
-        observatory = (self.grid if self.event_type == 'GridEvent'
-                       else self.observatory)
+        observatory = self.observatory
         from ._tools import show_geometry
         return show_geometry(self, observatory, '3d', x_min, x_max, y_min,
                              y_max, X_mark, shower_Edep, signal_size, False,
                              xy_proj, pointing)
 
-    def show_distribution(self, grid=None, size_x=2., size_y=2., N_x=10,
-                          N_y=10, atm_trans=None, tel_eff=None, **kwargs):
+    def show_distribution(self, grid=None, tel_index=0, size_x=_Grid__size_x,
+                          size_y=_Grid__size_y, N_x=_Grid__N_x, N_y=_Grid__N_y,
+                          **kwargs):
         """
-        Make a GridEvent object and show the distribution of photons
-        (or photoelectrons) per m^2 in an either 1D or 2D plot, depending on
-        the grid dimensions.
+        Make a new Event from a Grid object based on one of the telescopes of
+        the observatory and show the distribution of photons (or
+        photoelectrons) per m^2 in this grid. Results are shown in an either 1D
+        or 2D plot, depending on the grid dimensions.
 
         Parameters
         ----------
-        grid : Grid object
-            If None, a new Grid object is generated from the specified
-            dimensions and the characteristics of the telescope with tel_index=0
-            of the observatory. If given, size_x, size_y, N_x, N_y are not used.
-        size_x : float
+        tel_index : int, default 0
+            Index of the telescope used to generate the grid when grid==None.
+            The grid is centered at the telescope location and the pointing
+            direction is set to be the same.
+        size_x : float, defaut 2
             Size of the grid in km across the x direction.
-        size_y : float
+        size_y : float, default 2
             Size of the grid in km across the y direction.
-        N_x : int
+        N_x : int, default 10
             Number of cells across the x direction.
-        N_y : int
+        N_y : int, default 10
             Number of cells across the y direction.
+<<<<<<< Updated upstream
         atm_trans : bool, default True
             Include the atmospheric transmission to transport photons. If None,
             this option is set to be the same as the original Event object.
@@ -285,15 +314,36 @@ class Event():
             These parameters will be passed to the Signal constructor to modify
             the wavelength interval when tel_eff==False. If None, the wavelength
             interval the grid telescopes is used.
+=======
+        atm_trans : bool
+            Include the atmospheric transmision to transport photons.
+            By default, this option is set to be the same as the Event object.
+        tel_eff : bool
+            Include the telescope efficiency to calculate the signals.
+            By default, this option is set to be the same as the Event object.
+        wvl_ini : float
+            Initial wavelength in nm of the interval to calculate the signal
+            when tel_eff==False. By default, this parameter is set to be the
+            same as the Event object.
+        wvl_fin : float
+            Final wavelength in nm of the interval to calculate the signal when
+            tel_eff==False. By default, this parameter is set to be the same as
+            the Event object.
+        wvl_step : float
+            Discretization step in nm of the interval to calculate the signal
+            when tel_eff==False. By default, this parameter is set to be the
+            same as the Event object.
+>>>>>>> Stashed changes
 
         Returns
         -------
-        grid_event : GridEvent
+        grid_event : Event
         ax : AxesSubplot 
             If 1D grid.
         (ax1, ax2, cbar) : AxesSubplot and Colorbar
             If 2D grid.
         """
+<<<<<<< Updated upstream
         if not isinstance(grid, sm.Grid):
             if grid is None:
                 observatory = self.observatory
@@ -322,6 +372,33 @@ class Event():
         return grid_event.show_distribution()
 
     def make_images(self, lat_profile=True, NSB=40.):
+=======
+        observatory = self.observatory
+        telescope = observatory[tel_index]
+        tel_type = telescope.tel_type
+        x_c = telescope.x
+        y_c = telescope.y
+        z_c = telescope.z
+        theta = telescope.theta
+        alt = telescope.alt
+        az = telescope.az
+        obs_name = _Grid__obs_name
+        grid =sm.Grid(obs_name, telescope, tel_type, x_c, y_c, z_c,
+                      size_x, size_y, N_x, N_y, theta, alt, az)
+
+        # Default values from the Event object
+        atm_trans = kwargs.get('atm_trans', self.atm_trans)
+        tel_eff = kwargs.get('tel_eff', self.tel_eff)
+        wvl_ini = kwargs.get('wvl_ini', self.wvl_ini)
+        wvl_fin = kwargs.get('wvl_fin', self.wvl_fin)
+        wvl_step = kwargs.get('wvl_step', self.wvl_step)
+
+        grid_event = Event(grid, self.shower, atm_trans, tel_eff, wvl_ini,
+                           wvl_fin, wvl_step)
+        return grid_event, _show_distribution(grid_event)
+
+    def make_images(self, lat_profile=_Image__lat_profile, NSB=_Image__NSB):
+>>>>>>> Stashed changes
         """
         Generate a time-varying shower image for each telescope assuming a
         circular camera with square pixels of same solid angle. The list of
@@ -329,10 +406,10 @@ class Event():
 
         Parameters
         ----------
-        lat_profile : book
+        lat_profile : bool, default True
             Use a NKG lateral profile to spread the signal. If False,
             a linear shower is assumed.
-        NSB : float
+        NSB : float, default 40
             Night sky background in MHz/m^2/deg^2.
 
         Returns
@@ -344,6 +421,7 @@ class Event():
         --------
         Image : Constructor of Image object.
         """
+        # N_pix and int_time are not allowed to be changed
         images = [sm.Image(signal, lat_profile=lat_profile, NSB=NSB)
                   for signal in self.signals]
         self.images = images
@@ -356,15 +434,15 @@ class Event():
         
         Parameters
         ----------
-        col : int
-            Number of columns of the figure. Default to 5.
+        col : int, default 5
+            Number of columns of the figure.
         size : float, default 2
             Subplot size in cm.
         """
         if self.images is None:
             raise ValueError(
                 'Images must be generated first via make_images method.')
-        rows = math.ceil(len(self.observatory)/col)
+        rows = int(np.ceil(len(self.observatory)/col))
         fig, axes = plt.subplots(rows, col, figsize=(col*size, rows*size))
         plt.tight_layout()
         N = len(self.observatory)
@@ -375,30 +453,9 @@ class Event():
         #plt.show()
 
 
-class GridEvent(Event):
-    """
-    Daughter class of Event used to calculate ground distributions.
-
-    A Grid object must be input to create a GridEvent. The event_type is set to
-    'GridEvent' and the attribute observatory is replaced by grid. The method
-    show_distribution does not accept arguments.
-    """
-
-    def __init__(self, grid, shower, atm_trans=True,
-                 tel_eff=True, **kwargs):
-        self.event_type = 'GridEvent'
-        _event(self, grid, shower, atm_trans, tel_eff, **kwargs)
-
-    def show_distribution(self):  # Overwrite the method of the parent class
-        """
-        Show the distribution of photons (or photoelectrons) per m^2 in an
-        either 1D or 2D plot, depending on the grid dimensions.
-        """
-        return _show_distribution(self)
-
-
 # Constructor #################################################################
-def _event(event, observatory, shower, atm_trans, tel_eff, **kwargs):
+def _event(event, observatory, shower, atm_trans, tel_eff,
+           wvl_ini, wvl_fin, wvl_step):
     """
     Construct an Event object from a shower and an observatory.
     
@@ -418,32 +475,22 @@ def _event(event, observatory, shower, atm_trans, tel_eff, **kwargs):
     tel_eff : bool, default True
         Include the telescope efficiency to calculate the signals.
         If False, 100% efficiency is assumed for a given wavelength interval.
-    **kwargs : {wvl_ini, wvl_fin, wvl_step}
-        These parameters will be passed to the Signal constructor to modify
-        the wavelength interval when tel_eff==False. If None, the wavelength
-        interval defined in each telescope is used.
+    wvl_ini, wvl_fin, wvl_step : float
+        Wavelength interval to calculate the signal when tel_eff==False.
     """
     if not isinstance(shower, sm.Shower):
         observatory, shower = (shower, observatory)
         if not isinstance(shower, sm.Shower):
-            raise ValueError('The input shower is not valid')
-
-    if isinstance(event, GridEvent):
-        if isinstance(observatory, sm.Grid):
-            event.grid = observatory
-        else:
-            raise ValueError('The input grid is not valid')
+            raise TypeError('The input shower is not a Shower object.')
 
     if isinstance(observatory, (sm.Telescope, sm.Observatory)):
         if isinstance(observatory, sm.Telescope):
             telescope = observatory
-            event.observatory = sm.Observatory()
-            event.observatory.append(telescope)
-            event.observatory.N_tel = 1         
+            event.observatory = sm.Observatory(telescope)        
         else:
             event.observatory = observatory
     else:
-        raise ValueError('The input observatory is not valid')
+        raise TypeError('The input observatory is not an Observatory object.')
 
     event.shower = shower
     event.atmosphere = shower.atmosphere
@@ -454,14 +501,19 @@ def _event(event, observatory, shower, atm_trans, tel_eff, **kwargs):
 
     event.atm_trans = atm_trans
     event.tel_eff = tel_eff
+    # Even if tel_eff==True, wvl parameters are stored
+    # They may be used in Event.show_distribution with tel_eff=False
+    event.wvl_ini = wvl_ini
+    event.wvl_fin = wvl_fin
+    event.wvl_step = wvl_step
 
     event.projections = []
     event.signals = []
     for telescope in observatory:
         projection = sm.Projection(telescope, event.track)
         event.projections.append(projection)
-        signal = sm.Signal(
-            telescope, shower, projection, atm_trans, tel_eff, **kwargs)
+        signal = sm.Signal(telescope, shower, projection, atm_trans,
+                           tel_eff, wvl_ini, wvl_fin, wvl_step)
         event.signals.append(signal)
     
     event.images = None
@@ -473,14 +525,16 @@ def _show_distribution(grid_event):
     Show the distribution of photons (or photoelectrons) per m^2 in an either
     1D or 2D plot, depending on the grid dimensions.
     """
-    grid = grid_event.grid
-    # Detection area of the telescope, default to grid cell area.
-    area = grid.tel_area
+    grid = grid_event.observatory
+    if not isinstance(grid, sm.Grid): # error if grid is not Grid
+        raise ValueError("The observatory should be a Grid object.")
 
     signal_cher = np.array(
-        [signal.Npe_cher_sum for signal in grid_event.signals]) / area
+        [signal.Npe_cher_sum / signal.telescope.area
+         for signal in grid_event.signals])
     signal_fluo = np.array(
-        [signal.Npe_fluo_sum for signal in grid_event.signals]) / area
+        [signal.Npe_fluo_sum / signal.telescope.area
+         for signal in grid_event.signals])
     signal_total = signal_cher + signal_fluo
 
     signal_max = max(signal_cher.max(), signal_fluo.max())

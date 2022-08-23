@@ -1,9 +1,9 @@
 # coding: utf-8
 
-import math
 import numpy as np
 import pandas as pd
 import showermodel as sm
+import showermodel.constants as ct
 import warnings
 warnings.filterwarnings(
     'ignore',
@@ -11,12 +11,21 @@ warnings.filterwarnings(
     UserWarning)
 
 
-# Default values for track
-_theta = 0.  # deg
-_az = 0.     # deg
-_x0 = 0.     # km
-_y0 = 0.     # km
-
+# Default values for Track
+_Track__theta = ct.config['Shower']['theta']
+_Track__alt = ct.config['Shower'].get('alt') # optional parameter
+_Track__az = ct.config['Shower']['az']
+_Track__x0 = ct.config['Shower']['x0']
+_Track__y0 = ct.config['Shower']['y0']
+_Track__xi = ct.config['Shower']['xi']
+_Track__yi = ct.config['Shower']['yi']
+_Track__zi = ct.config['Shower'].get('zi') # optional parameter
+_Track__h0 = ct.config['Atmosphere']['h0']
+_Track__h_top = ct.config['Atmosphere'].get('h_top') # optional parameter
+_Track__N_steps = ct.config['Atmosphere']['N_steps']
+_Track__atm_model = ct.config['Atmosphere']['atm_model']
+_Track__rho_w_sl = ct.config['Atmosphere']['rho_w_sl']
+_Track__h_scale = ct.config['Atmosphere']['h_scale']
 
 # Class #######################################################################
 class Track(pd.DataFrame):
@@ -27,24 +36,68 @@ class Track(pd.DataFrame):
 
     Parameters
     ----------
-    theta : float
+    theta : float, default 0
         Zenith angle in degrees of the apparent position of the source.
+<<<<<<< Updated upstream
     alt : float
+=======
+    alt : float, default None
+>>>>>>> Stashed changes
         Altitude in degrees of the apparent position of the source. If None,
         theta is used. If given, theta is overwritten.
-    az : float
+    az : float, default 0
         Azimuth angle (from north, clockwise) in degrees of the apparent
         position of the source.
-    x0, y0 : float
-        East and north coordinates in km of shower impact point at ground.
-    xi, yi, zi : float, default None
-        East, north and height coordinates in km of the first interaction point
-        of the shower. If given, x0 and y0 are ignored.
-    atmosphere : Atmosphere
-        If None, a new Atmosphere object is generated.
-    **kwargs : {h0, h_top, N_steps, model}
-        Options to construct the new Atmosphere object when atm==None.
-        If None, the default Atmosphere object is used.
+    x0 : float, default 0
+        East coordinate in km of shower impact point on ground.
+    y0 : float, default 0
+        North coordinate in km of shower impact point on ground.
+    xi : float, default 0
+        East coordinate in km of the first interaction point of the shower.
+        If zi==None, xi and yi are ignored and the shower impacts at (x0, y0)
+        on ground. If zi is given, x0 and y0 are ignored and the shower starts
+        at (xi,yi,zi).
+    yi : float, default 0
+        North coordinate in km of the first interaction point of the shower.
+        If zi==None, xi and yi are ignored and the shower impacts at (x0, y0)
+        on ground. If zi is given, x0 and y0 are ignored and the shower starts
+        at (xi,yi,zi).
+    zi : float, default None
+        Height in km of the first interaction point of the shower. If zi==None,
+        xi and yi are ignored and the shower impacts at (x0, y0) on ground.
+        If zi is given, x0 and y0 are ignored and the shower starts at
+        (xi,yi,zi).
+    atmosphere : Atmosphere, default None
+        Atmosphere object to be used. If None, a new Atmosphere object
+        is generated. If given, h0, h_top, N_steps, atm_model, rho_w_sl
+        and h_scale are ignored.
+    h0 : float, default 0
+        Ground level in km above sea level for the atmosphere
+        discretization to be generated when atmosphere==None.
+    h_top : float or None, default None
+        Upper limit in km above sea level for the atmosphere
+        discretization to be generated when atmosphere==None. If h_top
+        is None, the top level of the selected atmospheric model is
+        taken.
+    N_steps : int, default 550
+        Number of discretization steps for the atmosphere discretization
+        to be generated when atmosphere==None.
+    atm_model : int or DataFrame, default 1
+        Atmospheric model used when atmosphere==None. If an int value
+        is given, atm_model is searched from either CORSIKA atmospheric
+        models (from 1 to 29) or a file named atm_models.toml in the
+        working directory containing user-defined models. If a
+        DataFrame is given, it should have two columns, one labelled as
+        h with height in km and other labelled as X_vert or P,
+        depending on whether vertical depth in g/cm^2 or pressure in
+        hPa is given.
+    rho_w_sl : float, default 7.5e-6
+        Water-vapor density in g/cm^3 at sea level to calculate a
+        simple exponential profile of water-vapor when
+        atmosphere==None. Set to zero if dry air is assumed.
+    h_scale : float, default 2.0
+        Scale height in km to be used in the water-vapor exponential
+        profile when atmospere==None.
 
     Attributes
     ----------
@@ -106,11 +159,13 @@ class Track(pd.DataFrame):
     --------
     Shower : Make a discretization of a shower.
     """
-    def __init__(self, theta=_theta, alt=None, az=_az, x0=_x0, y0=_y0,
-                 xi=_x0, yi=_y0, zi=None, atmosphere=None, **kwargs):
+    def __init__(self, theta=__theta, alt=__alt, az=__az, x0=__x0, y0=__y0,
+                 xi=__xi, yi=__y0, zi=__zi, atmosphere=None, h0=__h0,
+                 h_top=__h_top, N_steps=__N_steps, atm_model=__atm_model,
+                 rho_w_sl=__rho_w_sl, h_scale=__h_scale):
         super().__init__(columns=['x', 'y', 'z', 't'])
-        _track(self, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, **kwargs)
-
+        _track(self, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, h0,
+               h_top, N_steps, atm_model, rho_w_sl, h_scale)
     def h_to_xyz(self, h):
         """
         Get the x, y, z coordinates from height above sea level.
@@ -152,7 +207,7 @@ class Track(pd.DataFrame):
         t : float, array_like or None
         """
         z = np.array(z)
-        t = (self.zi - z) /self.uz / 0.2998
+        t = (self.zi - z) /self.uz / ct.c_km_us
         try: # for t being a float
             if t<0.:
                 return None, None, None
@@ -213,7 +268,7 @@ class Track(pd.DataFrame):
 
         Parameters
         ----------
-        telescope : Telescope
+        telescope : Telescope, mandatory
 
         Returns
         -------
@@ -236,13 +291,13 @@ class Track(pd.DataFrame):
 
         Parameters
         ----------
-        telescope : Telescope
+        telescope : Telescope, mandatory
         axes : bool, default True
             Show the axes of both coordinate systems of reference.
-        max_theta : float
+        max_theta : float, default 30
             Maximum offset angle in degrees relative to the telescope
             pointing direction.
-        X_mark : float
+        X_mark : float, default None
             Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure. If None, no mark is included.
 
@@ -268,15 +323,15 @@ class Track(pd.DataFrame):
 
         Parameters
         ----------
-        x_min : float
+        x_min : float, default -1
             Lower limit of the coordinate x in km.
-        x_max : float
+        x_max : float, default 1
             Upper limit of the coordinate x in km.
-        y_min : float
+        y_min : float, default -1
             Lower limit of the coordinate y in km.
-        y_max : float
+        y_max : float, default 1
             Upper limit of the coordinate y in km.
-        X_mark : float
+        X_mark : float, default None
             Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure. If None, no mark is included.
         tel_index : bool, default False
@@ -300,18 +355,18 @@ class Track(pd.DataFrame):
 
         Parameters
         ----------
-        x_min : float
+        x_min : float, default -1
             Lower limit of the coordinate x in km.
-        x_max : float
+        x_max : float, default 1
             Upper limit of the coordinate x in km.
-        y_min : float
+        y_min : float, default -1
             Lower limit of the coordinate y in km.
-        y_max : float
+        y_max : float, default 1
             Upper limit of the coordinate y in km.
-        X_mark : float
+        X_mark : float, default None
             Reference slant depth in g/cm^2 of the shower track to be
-            marked in the figure, default to X_max. If X_mark is set to None,
-            no mark is included.
+            marked in the figure, default to X_max. If None, no mark is
+            included.
         xy_proj : bool, default True
             Show the xy projection of the shower track.
         pointing : bool, default False
@@ -328,7 +383,8 @@ class Track(pd.DataFrame):
 
 
 # Constructor #################################################################
-def _track(track, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, **kwargs):
+def _track(track, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, h0, h_top,
+           N_steps, atm_model, rho_w_sl, h_scale):
     """
     Constructor of Track class.
 
@@ -345,16 +401,31 @@ def _track(track, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, **kwargs):
         position of the source.
     x0, y0 : float
     xi, yi, zi : float
-    atmosphere : Atmosphere
-        If None, a new Atmosphere object is generated.
-    **kwargs : {h0, h_top, N_steps, model}
-        Options to construct the new Atmosphere object when atm==None.
-        If None, the default Atmosphere object is used.
+    atmosphere : Atmosphere, default None
+        Atmosphere object to be used. If None, a new Atmosphere object is
+        generated.
+    h0 : float, default 0.0
+        Ground level in km above sea level of the Atmosphere object to be
+        generated when atmosphere==None.
+    h_top : float, default 112.8292
+        Top level of the atmosphere in km above sea level of the Atmosphere
+        object to be generated when atmosphere==None.
+    N_steps : int, default 550
+        Number of discretization steps of the Atmosphere object to be
+        generated when atmosphere==None.
+    atm_model : int or DataFrame
+        Atmospheric model assuming dry air.
+    rho_w_sl : float
+        Water-vapor density in g/cm^3 at sea level to calculate a simple
+        exponential profile of water-vapor. Set to zero if dry air is assumed.
+    h_scale : float
+        Scale height in km to be used in the water-vapor exponential profile.
     """
     if isinstance(atmosphere, sm.Atmosphere):
         pass
     elif atmosphere is None:
-        atmosphere = sm.Atmosphere(**kwargs)
+        atmosphere = sm.Atmosphere(h0, h_top, N_steps, atm_model,
+                                   rho_w_sl, h_scale)
     else:
         raise ValueError('The input atmosphere is not valid.')
     track.atmosphere = atmosphere
@@ -374,17 +445,17 @@ def _track(track, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, **kwargs):
     track.theta = theta
     track.alt = alt
     if theta==180.:
-        theta = math.pi
+        theta = ct.pi
         cos_theta = -1.
         sin_theta = 0.
     else:
-        theta = math.radians(theta)
-        cos_theta = math.cos(theta)
-        sin_theta = math.sin(theta)
+        theta = np.radians(theta)
+        cos_theta = np.cos(theta)
+        sin_theta = np.sin(theta)
     track.az = az
-    az = math.radians(az)
-    cos_az = math.cos(az)
-    sin_az = math.sin(az)
+    az = np.radians(az)
+    cos_az = np.cos(az)
+    sin_az = np.sin(az)
 
     # Coordinates of the unit vector pointing at the arrival shower direction
     # opposite to the shower propagation vector
@@ -418,7 +489,7 @@ def _track(track, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, **kwargs):
 
         # Total travel time in us, where t=0 corresponds to the moment when the
         # shower begins
-        track.t_total = abs(dist_top) / 0.2998
+        track.t_total = abs(dist_top) / ct.c_km_us
 
         # Coordinates along the shower track
         track.z = z
@@ -431,13 +502,13 @@ def _track(track, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, **kwargs):
             track.xi = track.x_top
             track.yi = track.y_top
             # Travel time
-            track.t = (dist_top - dist) / 0.2998
+            track.t = (dist_top - dist) / ct.c_km_us
         else: # ascending shower from ground
             track.zi = track.z0
             track.xi = track.x0
             track.yi = track.y0
             # Travel time
-            track.t = abs(dist) / 0.2998
+            track.t = abs(dist) / ct.c_km_us
 
     else:
         track.xi = xi
@@ -461,7 +532,7 @@ def _track(track, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, **kwargs):
 
             # Total travel time in us, where t=0 corresponds to the moment when
             # the shower begins
-            track.t_total = zi / track.uz / 0.2998
+            track.t_total = zi / track.uz / ct.c_km_us
 
         else: # ascending shower from arbitrary initial height
             if zi==0.:
@@ -480,7 +551,7 @@ def _track(track, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, **kwargs):
             
             # Total travel time in us, where t=0 corresponds to the moment when
             # the shower begins
-            track.t_total = dist / 0.2998
+            track.t_total = dist / ct.c_km_us
 
         # Coordinates along the shower track
         track.z = z[points]
@@ -488,4 +559,8 @@ def _track(track, theta, alt, az, x0, y0, xi, yi, zi, atmosphere, **kwargs):
         track.x = xi - dist * track.ux
         track.y = yi - dist * track.uy
         # Travel time
+<<<<<<< Updated upstream
         track.t = dist / 0.2998
+=======
+        track.t = dist / ct.c_km_us
+>>>>>>> Stashed changes

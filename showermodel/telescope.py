@@ -1,53 +1,73 @@
 # coding: utf-8
 
-import math
 import numpy as np
 import pandas as pd
-import showermodel as sm  # For projection
+import showermodel as sm
+import showermodel.constants as ct
 
-# Default values for telescope
-_x = 0.  # km
-_y = 0.  # km
-_z = 0.  # km
-_theta = 0.  # deg
-_az = 0.  # deg
+# Default parameters for Telescope
+_Telescope__tel_type = ct.config['Telescope'].get('tel_type') # optional parameter
+_Telescope__x = ct.config['Telescope']['x']
+_Telescope__y = ct.config['Telescope']['y']
+_Telescope__z = ct.config['Telescope']['z']
+_Telescope__theta = ct.config['Telescope']['theta']
+_Telescope__alt = ct.config['Telescope'].get('alt') # optional parameter
+_Telescope__az = ct.config['Telescope']['az']
+_Telescope__tel_type = ct.config['Telescope']['tel_type']
 
 
 # Class #######################################################################
 class Telescope:
     """
-    Object containing the characteristics of a Cherenkov/fluorescence telescope.
+    Object containing the characteristics of a Cherenkov/fluorescence
+    telescope.
 
     Parameters
     ----------
-    tel_type : str
-        Name given to the telescope. Default to None.
-    x : float
+    tel_type : str, default 'generic'
+        Type of telescope to be used.
+    x : float, default 0
         East coordinate of the telescope in km.
-    y : float
+    y : float, default 0
         North coordinate of the telescope in km.
-    z : float
+    z : float, default 0
         Height of the telescope in km above ground level.
-    theta : float
+    theta : float, default 0
         Zenith angle in degrees of the telescope pointing direction.
-    alt : float
-        Altitude in degrees of the telescope pointing direction. If None,
-        theta is used. If given, theta is overwritten.
-    az : float
+    alt : float, default None
+        Altitude in degrees of the telescope pointing direction.
+        If None, theta is used. If given, theta is overwritten.
+    az : float, default 0
         Azimuth angle (from north, clockwise) in degrees of the telescope
         pointing direction.
-    efficiency : DataFrame
-        If None, the default efficiency of the selected tel_type. If given,
-        the DataFrame should have two columns with wavelength in nm
-        (with constant discretization step) and efficiency (decimal fraction).
-    apert : float
+    apert : float, default 10.
         Angular diameter in degrees of the telescope field of view.
-    area : float
+    area : float, default 100.
         Detection area in m^2 (e.g., mirror area of an IACT).
-    N_pix : int
+    N_pix : int, default 1500
         Number of camera pixels.
-    int_time : float
+    int_time : float, default 0.01
         Integration time in microseconds of camera frames.
+    wvl : array_like, default None
+        Wavelength interval in nm with constant discretization step.
+        If None, it is calculated from wvl_ini, wvl_fin, wvl_step.
+    wvl_ini : float, default 290
+        Initial wavelength in nm of the interval where the efficiency is
+        non zero.
+    wvl_fin : float, default 430
+        Final wavelength in nm of the interval where the efficiency is
+        non zero.
+    wvl_step : float, default 3
+        Discretization step in nm of the interval where the efficiency is
+        non zero.
+    eff : float or array_like, default 1
+        Detection efficiency in decimal fraction. If a float value is given,
+        efficiency is assumed to be constant within the wavelength interval
+        [wvl_ini, wvl_fin]. If a a list of efficiency values is given,
+        it should match wvl.
+    eff_fluo : array_like or None, default None
+        Detection efficiency at the 57 bands considered in the fluorescence
+        model. If None, values are interpolated from eff.
 
     Attributes
     ----------
@@ -55,15 +75,12 @@ class Telescope:
         Name given to the telescope. Default to None.
     apert : float
         Angular diameter in degrees of the telescope field of view.
-        Default to 10 degrees.
     area : float
         Detection area in m^2 (e.g., mirror area of an IACT).
-        Default to 100 m^2.
     N_pix : int
         Number of camera pixels. Default to 1500.
     int_time : float
         Integration time in microseconds of camera frames.
-        Default to 0.01 us.
     sol_angle : float
         Telescope field of view in steradians.
     sol_angle_pix : float
@@ -72,25 +89,21 @@ class Telescope:
         Angular diameter in degrees of the pixel FoV.
     wvl_ini : float
         Initial wavelength in nm of the detection efficiency data.
-        Default to 290 nm.
     wvl_fin : float
         Final wavelength in nm of the detection efficiency data.
-        Default to 430 nm.
     wvl_step : float
         Step size in nm of the detection efficiency data.
-        Default to 3 nm.
-    wvl_fluo : ndarray
-        Array containing the wavelengths of the 34 fluorescence bands
-        included in the model. See Fluorescence class.
-    eff_fluo : ndarray
-        Array containing the detection efficiency at these 34
-        wavelengths. Default to 1.
-    wvl_cher : ndarray
+    wvl : ndarray
         Array containing the range of wavelengths in nm defined by
         wvl_ini, wvl_fin and wvl_step
-    eff_cher : ndarray
-        Array containing the detection efficiency data in this range
-        used to compute the Cherenkov signal. Default to 1.
+    eff : ndarray
+        Array containing the detection efficiency values.
+    wvl_fluo : ndarray
+        Array containing the wavelengths of fluorescence bands within
+        the wavelength interval.
+    eff_fluo : ndarray
+        Array containing the detection efficiency values at the fluorescence
+        bands within the wavelength interval.
     x : float
         East coordinate of the telescope in km.
     y : float
@@ -105,25 +118,14 @@ class Telescope:
         Azimuth angle (from north, clockwise) in degrees of the telescope
         pointing direction.
     ux : float
-        x coordinate of a unit vector parallel to the telescope pointing
-        direction.
+        x coordinate of a unit vector parallel to the telescope
+        pointing direction.
     uy : float
-        y coordinate of a unit vector parallel to the telescope pointing
-        direction.
+        y coordinate of a unit vector parallel to the telescope
+        pointing direction.
     uz : float
-        z coordinate of a unit vector parallel to the telescope pointing
-        direction.
-    sin_theta : float
-        Sine of theta (cosine of alt).
-    cos_theta : float
-        Cosine of theta (sine of alt).
-    sin_az : float
-        Sine of az.
-    cos_az : float
-        Cosine of az.
-    phi_right : float
-        Position angle phi in degrees of the right-hand direction from
-        the telescope point of view.
+        z coordinate of a unit vector parallel to the telescope
+        pointing direction.
 
     Methods
     -------
@@ -152,43 +154,133 @@ class Telescope:
     GridElement : GridElement class, daughter of Telescope class.
     Observatory : List of telescopes.
     """
-    # Default values of the class. They may be redefined in subclasses
-    # tel_type = None   # Generic telescope
-    apert = 10.  # deg
-    area = 100.  # m^2
-    N_pix = 1500
-    int_time = 0.01  # us
-
-    sol_angle = 2. * math.pi*(1. - math.cos(math.radians(apert) / 2.))  # str
-    sol_angle_pix = sol_angle / N_pix    # str
-    apert_pix = 2. * np.degrees(np.arccos(1.-sol_angle_pix/2./math.pi))  # deg
-    # Delta_pix = math.sqrt(sol_angle_pix / 2.)
-    # Delta_r = math.sqrt(sol_angle / 2 / math.pi)
-
-    wvl_ini = 290.  # nm
-    wvl_fin = 430.  # nm
-    wvl_step = 3.   # nm only used to integrate the Cherenkov light
-
-    # 34 fluorescence bands included in the model
-    wvl_fluo = np.array([296, 298, 302, 308, 312, 314, 316,
-                         318, 327, 329, 331, 334, 337, 346,
-                         350, 354, 358, 366, 367, 371, 376,
-                         381, 386, 388, 389, 391, 394, 400,
-                         405, 414, 420, 424, 427, 428])
-    # 100% efficiency assumed at these 34 wavelengths
-    eff_fluo = np.ones(34)
-
-    wvl_cher = np.arange(wvl_ini, wvl_fin, wvl_step)  # 47 wavelengths
-    # 100% efficiency assumed
-    eff_cher = np.ones_like(wvl_cher)
 
     # Methods #################################################################
-    def __init__(self, x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
-              tel_type=None, efficiency=None, apert=None, area=None,
-              N_pix=None, int_time=None):
+    # __name is replaced by _Telescope__name
+    def __init__(self, x=__x, y=__y, z=__z, theta=__theta, alt=__alt, az=__az,
+                 tel_type=__tel_type, **kwargs):
+        # Default values for tel_type
+        tel = ct.tel_data.get(str(tel_type))
+        if tel is None:
+            raise ValueError("This tel_type is not implemented.")
         self.tel_type = tel_type
-        _telescope(self, x, y, z, theta, alt, az, efficiency, apert, area,
-                   N_pix, int_time)
+        __apert = tel['apert']
+        __area = tel['area']
+        __N_pix = tel['N_pix']
+        __int_time = tel['int_time']
+        __wvl = tel.get('wvl') # optional parameter
+        __wvl_ini = tel['wvl_ini']
+        __wvl_fin = tel['wvl_fin']
+        __wvl_step = tel['wvl_step']
+        __eff = tel['eff']
+        __eff_fluo = tel.get('eff_fluo') # optional parameter
+
+        # Load telescope parameters. Default to those stored for tel_type
+        apert = kwargs.get('apert', __apert)
+        area = kwargs.get('area', __area)
+        N_pix = kwargs.get('N_pix', __N_pix)
+        int_time = kwargs.get('int_time', __int_time)
+        wvl = kwargs.get('wvl', __wvl)
+        wvl_ini = kwargs.get('wvl_ini', __wvl_ini)
+        wvl_fin = kwargs.get('wvl_fin', __wvl_fin)
+        wvl_step = kwargs.get('wvl_step', __wvl_step)
+        eff = kwargs.get('eff', __eff)
+        eff_fluo = kwargs.get('eff_fluo', __eff_fluo)
+        _telescope(self, x, y, z, theta, alt, az, apert, area, N_pix,
+               int_time, wvl, wvl_ini, wvl_fin, wvl_step, eff, eff_fluo)
+
+
+    @property
+    def theta(self):
+        return self._theta
+
+    @theta.setter
+    def theta(self, new_theta):
+        _pointing(self, new_theta, None, self._az)
+
+    @property
+    def alt(self):
+        return self._alt
+
+    @alt.setter
+    def alt(self, new_alt):
+        _pointing(self, None, new_alt, self._az)
+
+    @property
+    def az(self):
+        return self._az
+
+    @az.setter
+    def az(self, new_az):
+        _pointing(self, self._theta, None, new_az)
+
+    @property
+    def apert(self):
+        return self._apert
+
+    @apert.setter
+    def apert(self, new_apert):
+        _solid_angle(self, new_apert, self._N_pix)
+
+    @property
+    def N_pix(self):
+        return self._N_pix
+
+    @N_pix.setter
+    def N_pix(self, new_N_pix):
+        _solid_angle(self, self._apert, new_N_pix)
+
+    @property
+    def sol_angle(self):
+        return self._sol_angle
+
+    @property
+    def sol_angle_pix(self):
+        return self._sol_angle_pix
+
+    @property
+    def apert_pix(self):
+        return self._apert_pix
+
+    @property
+    def ux(self):
+        return self._ux
+
+    @property
+    def uy(self):
+        return self._uy
+
+    @property
+    def uz(self):
+        return self._uz
+
+    @property
+    def wvl(self):
+        return self._wvl
+
+    @property
+    def wvl_ini(self):
+        return self._wvl_ini
+
+    @property
+    def wvl_fin(self):
+        return self._wvl_fin
+
+    @property
+    def wvl_step(self):
+        return self._wvl_step
+
+    @property
+    def eff(self):
+        return self._eff
+
+    @property
+    def wvl_fluo(self):
+        return self._wvl_fluo
+
+    @property
+    def eff_fluo(self):
+        return self._eff_fluo
 
     def copy(self, **kwargs):
         """
@@ -197,8 +289,7 @@ class Telescope:
         Parameters
         ----------
         **kwargs : {x, y, z, ...}
-            Optional changes to the original telescope
-            attributes, including class attributes.
+            Optional changes to the original telescope attributes.
 
         Returns
         -------
@@ -215,17 +306,14 @@ class Telescope:
         kwargs['area'] = kwargs.get('area', self.area)
         kwargs['N_pix'] = kwargs.get('N_pix', self.N_pix)
         kwargs['int_time'] = kwargs.get('int_time', self.int_time)
+        kwargs['wvl'] = kwargs.get('wvl', 1.*self.wvl)
+        kwargs['wvl_ini'] = kwargs.get('wvl_ini', self.wvl_ini)
+        kwargs['wvl_fin'] = kwargs.get('wvl_fin', self.wvl_fin)
+        kwargs['wvl_step'] = kwargs.get('wvl_step', self.wvl_fin)
+        kwargs['eff'] = kwargs.get('eff', 1.*self.eff)
+        kwargs['eff_fluo'] = kwargs.get('eff_fluo', 1.*self.eff_fluo)
 
         telescope_c = Telescope(**kwargs)
-
-        if 'efficiency' not in kwargs:
-            telescope_c.wvl_ini = self.wvl_ini
-            telescope_c.wvl_step = self.wvl_step
-            telescope_c.wvl_fin = self.wvl_fin
-            telescope_c.wvl_cher = self.wvl_cher
-            telescope_c.eff_cher = self.eff_cher
-            telescope_c.eff_fluo = self.eff_fluo
-
         return telescope_c
 
     def altaz_to_thetaphi(self, alt, az):
@@ -258,7 +346,7 @@ class Telescope:
         x_FoV, y_FoV, z_FoV = self.hor_to_FoV(x_hor, y_hor, z_hor)
 
         theta = self.zr_to_theta(z_FoV, 1.)
-        phi = self.xy_to_phi(x_FoV, y_FoV) + self.phi_right - 360.
+        phi = self.xy_to_phi(x_FoV, y_FoV) + self._phi_right - 360.
         try:  # For phi being a scalar
             phi = phi + 360. if phi < 0. else phi   # [0, 360)
         except Exception:  # For phi being an array
@@ -289,10 +377,10 @@ class Telescope:
         Telescope.altaz_to_thetaphi : Convert horizontal coordinates alt, az to
             FoV coordinates theta, phi.
         """
-        sin_theta = self.sin_theta
-        cos_theta = self.cos_theta
-        sin_az = self.sin_az
-        cos_az = self.cos_az
+        sin_theta = self._sin_theta
+        cos_theta = self._cos_theta
+        sin_az = self._sin_az
+        cos_az = self._cos_az
 
         x_FoV = cos_az * x_hor - sin_az * y_hor
         y_FoV = (cos_theta * sin_az * x_hor + cos_theta * cos_az * y_hor
@@ -322,7 +410,7 @@ class Telescope:
             FoV coordinates theta, phi.
         """
         theta = np.radians(theta)
-        phi = np.radians(phi - self.phi_right + 360.)
+        phi = np.radians(phi - self._phi_right + 360.)
 
         x_FoV = np.sin(theta) * np.cos(phi)
         y_FoV = np.sin(theta) * np.sin(phi)
@@ -361,10 +449,10 @@ class Telescope:
         Telescope.thetaphi_to_altaz : Convert FoV coordinates theta, phi to
             horizontal coordinates alt, az.
         """
-        sin_theta = self.sin_theta
-        cos_theta = self.cos_theta
-        sin_az = self.sin_az
-        cos_az = self.cos_az
+        sin_theta = self._sin_theta
+        cos_theta = self._cos_theta
+        sin_az = self._sin_az
+        cos_az = self._cos_az
 
         x_hor = (cos_az * x_FoV + cos_theta * sin_az * y_FoV + sin_theta
                  * sin_az * z_FoV)
@@ -422,7 +510,7 @@ class Telescope:
 
         x_FoV, y_FoV, z_FoV = self.hor_to_FoV(x_hor, y_hor, z_hor)
         theta = self.zr_to_theta(z_FoV, distance)  # [0, 180]
-        phi = self.xy_to_phi(x_FoV, y_FoV) + self.phi_right - 360.
+        phi = self.xy_to_phi(x_FoV, y_FoV) + self._phi_right - 360.
         # [-90, 270) - (0, 360] = (-450, 270)
 
         try:  # For phi being a scalar
@@ -435,6 +523,10 @@ class Telescope:
         """
         Calculate the angle theta in degrees [0, 180] of a vector with vertical
         projection z and modulus r, where theta is defined from the z axis
+        
+        Parameters
+        ----------
+        z, r : float or array_like
         """
         from ._tools import zr_to_theta
         return zr_to_theta(z, r)
@@ -444,6 +536,10 @@ class Telescope:
         Calculate the angle phi in degrees [-90, 270) of the xy projection of a
         vector, where phi is defined from the x axis towards the y axis
         (anticlockwise)
+        
+        Parameters
+        ----------
+        x, y : float or array_like
         """
         from ._tools import xy_to_phi
         return xy_to_phi(x, y)
@@ -456,7 +552,7 @@ class Telescope:
 
         Parameters
         ----------
-        track : Track or Shower
+        track : Track or Shower, mandatory
 
         Returns
         -------
@@ -478,14 +574,14 @@ class Telescope:
 
         Parameters
         ----------
-        track : Track or Shower
+        track : Track or Shower, mandatory
             Track object to be used.
         axes : bool, default True
             Show the axes of both coordinate systems of reference.
-        max_theta : float, default 30 degrees
+        max_theta : float, default 30
             Maximum offset angle in degrees relative to the telescope
             pointing direction.
-        X_mark : float
+        X_mark : float, default None
             Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure. If None, no mark is included.
 
@@ -504,148 +600,9 @@ class Telescope:
                                             max_theta, X_mark))
 
 
-# Subclasses ##################################################################
-# Presently only the IACT and grid_elem subclasses are available.
-# More subclasses to be implemented.
-class IACT(Telescope):
-    """
-    Daughter class of Telescope.
-
-    tel_type is set to 'IACT' and the following default values are used:
-    apert = 8 deg, area = 113.097 m^2, N_pix = 1800, wvl_ini = 280 nm,
-    wvl_fin = 600 nm, wvl_step = 3nm
-
-    The detection efficiency is taken similar to MST telescopes of CTA.
-    """
-    # Default values of IACT
-    apert = 8.  # deg
-    area = 113.097  # m^2
-    N_pix = 1800
-    # int_time = 0.01  # us
-
-    sol_angle = 2. * math.pi*(1. - math.cos(math.radians(apert)/2.))  # str
-    sol_angle_pix = sol_angle / N_pix  # str
-    apert_pix = 2. * np.degrees(np.arccos(1.-sol_angle_pix/2./math.pi))  # deg
-    Delta_pix = math.sqrt(sol_angle_pix / 2.)
-    Delta_r = math.sqrt(sol_angle / 2 / math.pi)
-
-    wvl_ini = 280.  # nm
-    wvl_fin = 600.  # nm
-    wvl_step = 3.   # nm only used to integrate the Cherenkov light
-
-    # 34 fluorescence bands included in the model
-    # wvl_fluo = np.array([296, 298, 302, 308, 312, 314, 316,
-    #                      318, 327, 329, 331, 334, 337, 346,
-    #                      350, 354, 358, 366, 367, 371, 376,
-    #                      381, 386, 388, 389, 391, 394, 400,
-    #                      405, 414, 420, 424, 427, 428])
-
-    # Detection efficiency taken from CTA data at these 34 wavelengths
-    eff_fluo = np.array([0.252489433, 0.263035139, 0.287398782, 0.308913092,
-                         0.319016638, 0.323187842, 0.326638232, 0.329752346,
-                         0.339552709, 0.341029170, 0.342454324, 0.344086960,
-                         0.345252040, 0.347248391, 0.347256505, 0.346686550,
-                         0.346354164, 0.349208764, 0.349801116, 0.352296156,
-                         0.354879676, 0.356753586, 0.353959270, 0.352900969,
-                         0.352432398, 0.351494414, 0.350073889, 0.346680335,
-                         0.342513534, 0.335703253, 0.330467935, 0.326751911,
-                         0.323959630, 0.323028670])
-
-    # 107 wavelengths, ending in 598nm
-    wvl_cher = np.arange(wvl_ini, wvl_fin, wvl_step)
-    # Detection efficiency taken from CTA data at these 107 wavelengths
-    eff_cher = np.array([0.015491090, 0.079299180, 0.129636709, 0.172271597,
-                         0.207375577, 0.236202184, 0.263035139, 0.280541802,
-                         0.294669433, 0.305342911, 0.314872346, 0.321098876,
-                         0.326638232, 0.331242468, 0.334854807, 0.337795491,
-                         0.340290566, 0.342454324, 0.344086960, 0.345252040,
-                         0.346172895, 0.346778694, 0.347248391, 0.347255182,
-                         0.347044138, 0.346506611, 0.346354164, 0.346979403,
-                         0.348025435, 0.349801116, 0.351659605, 0.353400273,
-                         0.354879676, 0.356003591, 0.356271574, 0.354537850,
-                         0.352900969, 0.351494414, 0.350073889, 0.348520911,
-                         0.346680335, 0.344180639, 0.341759844, 0.339601025,
-                         0.337372559, 0.334868408, 0.332311345, 0.329540303,
-                         0.326751911, 0.323959630, 0.320980527, 0.317070704,
-                         0.313088141, 0.308639570, 0.304189576, 0.298629946,
-                         0.292593521, 0.286598981, 0.280644502, 0.275022087,
-                         0.269524770, 0.264660241, 0.259794163, 0.255157961,
-                         0.250526184, 0.246266668, 0.242256909, 0.238286004,
-                         0.234340729, 0.230033882, 0.225450238, 0.219591053,
-                         0.212757397, 0.205538060, 0.196889181, 0.185468854,
-                         0.173996418, 0.164205860, 0.155335908, 0.147509786,
-                         0.138970850, 0.132442597, 0.126951003, 0.121893936,
-                         0.117054131, 0.113109258, 0.109682504, 0.106428167,
-                         0.103273833, 0.100303912, 0.097453247, 0.094448853,
-                         0.091341851, 0.088381484, 0.085533194, 0.082668619,
-                         0.079789755, 0.077237853, 0.074972054, 0.072399174,
-                         0.069519165, 0.066662492, 0.063829159, 0.061106831,
-                         0.058511426, 0.057261531, 0.057550245])
-
-    def __init__(self, x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
-                 tel_type = 'IACT', efficiency=None, apert=None, area=None,
-                 N_pix=None, int_time=None):
-        self.tel_type = tel_type
-        _telescope(self, x, y, z, theta, alt, az, efficiency, apert, area,
-                   N_pix, int_time)
-
-
-class GridElement(Telescope):
-    """
-    Daughter class of Telescope used to calculate ground distributions. 
-
-    tel_type is set to 'GridElement' and the following default values are used:
-    apert = 180 deg, N_pix = 1, int_time = 10 us. The detection efficiency is
-    assumed to be 1.
-
-    See also
-    --------
-    Grid : Make a rectangular grid of telescopes across the x and y directions.
-    Shower.show_distribution : Show the light distribution on ground.
-    Event.show_distribution : Show the light distribution on ground.
-    """
-    # Default values
-    # theta = 0.  # deg  It is set to zero by default when Grid is called
-    apert = 180.  # deg
-    # area = 100. # m^2 It is set to one grid cell when Grid is called
-    N_pix = 1
-    int_time = 10.  # us
-
-    sol_angle = 2. * math.pi    # str
-    sol_angle_pix = sol_angle   # str
-    apert_pix = apert           # deg
-    Delta_pix = math.sqrt(math.pi)
-    Delta_r = 1.
-
-    # wvl_ini = 290.  # nm
-    # wvl_fin = 430.  # nm
-    # wvl_step = 3.   # nm only used to integrate the Cherenkov light
-
-    # 34 fluorescence bands included in the model
-    # wvl_fluo = np.array([296, 298, 302, 308, 312, 314, 316,
-    #                      318, 327, 329, 331, 334, 337, 346,
-    #                      350, 354, 358, 366, 367, 371, 376,
-    #                      381, 386, 388, 389, 391, 394, 400,
-    #                      405, 414, 420, 424, 427, 428])
-
-    # 100% efficiency assumed at these 34 wavelengths
-    # eff_fluo = np.ones(34)
-
-    # wvl_cher = np.arange(wvl_ini, wvl_fin, wvl_step) # 47 wavelengths
-    # 100% efficiency assumed
-    # eff_cher = np.ones_like(wvl_cher)
-
-    def __init__(self, x=_x, y=_y, z=_z, theta=_theta, alt=None, az=_az,
-                 tel_type = 'GridElement', efficiency=None, apert=None,
-                 area=None, N_pix=None, int_time=None):
-        self.tel_type = tel_type
-        _telescope(self, x, y, z, theta, alt, az, efficiency, apert, area,
-                   N_pix, int_time)
-
-
 # Constructor #################################################################
-def _telescope(telescope, x, y, z, theta, alt, az, efficiency, apert, area,
-               N_pix, int_time):
+def _telescope(telescope, x, y, z, theta, alt, az, apert, area, N_pix,
+               int_time, wvl, wvl_ini, wvl_fin, wvl_step, eff, eff_fluo):
     """
     Constructor of Telescope class and daughter classes.
 
@@ -666,10 +623,6 @@ def _telescope(telescope, x, y, z, theta, alt, az, efficiency, apert, area,
     az : float
         Azimuth angle (from north, clockwise) in degrees of the telescope
         pointing direction.
-    efficiency : DataFrame
-        If None, the default efficiency of the selected tel_type. If given,
-        the DataFrame should have two columns with wavelength in nm
-        (with constant discretization step) and efficiency (decimal fraction).
     apert : float
         Angular diameter in degrees of the telescope field of view.
     area : float
@@ -678,79 +631,108 @@ def _telescope(telescope, x, y, z, theta, alt, az, efficiency, apert, area,
         Number of camera pixels.
     int_time : float
         Integration time in microseconds of camera frames.
+    wvl : array_like or None
+        Wavelength interval. If None, wvl is calculated from wvl_ini, wvl_fin,
+        wvl_step.
+    wvl_ini, wvl_fin, wvl_step : float
+        Parameters defining the wavelength interval in nm where the efficiency
+        is non zero when a float value is given to efficiency.
+    eff : float or array_like
+    eff_fluo : array_like or None
     """
     telescope.x = x
     telescope.y = y
     telescope.z = z
+
+    _pointing(telescope, theta, alt, az)
+    _solid_angle(telescope, apert, N_pix)
+    telescope.area = area
+    telescope.int_time = int_time
+    _efficiency(telescope, wvl, wvl_ini, wvl_fin, wvl_step, eff, eff_fluo)
+
+def _pointing(telescope, theta, alt, az):
+    """
+    Set pointing parameters.
+    """
     if alt is None:
         alt = 90. - theta
     else:
         theta = 90. - alt
-    telescope.theta = theta
-    telescope.alt = alt
-    telescope.az = az
+    telescope._theta = theta
+    telescope._alt = alt
+    telescope._az = az
 
-    telescope.sin_theta = math.sin(math.radians(theta))
-    telescope.cos_theta = math.cos(math.radians(theta))
-    telescope.sin_az = math.sin(math.radians(az))
-    telescope.cos_az = math.cos(math.radians(az))
+    telescope._sin_theta = np.sin(np.radians(theta))
+    telescope._cos_theta = np.cos(np.radians(theta))
+    telescope._sin_az = np.sin(np.radians(az))
+    telescope._cos_az = np.cos(np.radians(az))
 
-    telescope.ux = telescope.sin_theta * telescope.sin_az
-    telescope.uy = telescope.sin_theta * telescope.cos_az
-    telescope.uz = telescope.cos_theta
+    telescope._ux = telescope._sin_theta * telescope._sin_az
+    telescope._uy = telescope._sin_theta * telescope._cos_az
+    telescope._uz = telescope._cos_theta
 
     # Coordinates of a point at 1km distance from the telescope in the north
     # direction
     x_north, y_north, z_north = telescope.hor_to_FoV(0., 1., 0.)
-    # Position angle of the the right-hand direction relative to north
+    # Position angle of the right-hand direction relative to north
     # direction
     phi_right = - telescope.xy_to_phi(x_north, y_north)  # (-270, 90]
-    telescope.phi_right = phi_right + 360. if phi_right < 0. else phi_right
+    telescope._phi_right = phi_right + 360. if phi_right < 0. else phi_right
     # [0, 360)
 
-    if (apert is not None) or (N_pix is not None):
-        if apert is not None:
-            telescope.apert = apert
-            telescope.sol_angle = (
-                2. * math.pi * (1.-math.cos(math.radians(telescope.apert)/2.)))
-            # str
+def _solid_angle(telescope, apert, N_pix):
+    """
+    Set solid-angle parameters.
+    """
+    telescope._apert = apert
+    telescope._N_pix = N_pix
 
-        if N_pix is not None:
-            telescope.N_pix = N_pix
+    sol_angle = 2. * ct.pi*(1.-np.cos(np.radians(apert)/2.))  # str
+    telescope._sol_angle = sol_angle
+    sol_angle_pix = sol_angle / N_pix    # str
+    telescope._sol_angle_pix = sol_angle_pix
+    apert_pix = 2. * np.degrees(np.arccos(1.-sol_angle_pix/2./ct.pi))  # deg
+    telescope._apert_pix = apert_pix
+    # Delta_pix = np.sqrt(sol_angle_pix / 2.)
+    # Delta_r = np.sqrt(sol_angle / 2 / ct.pi)
 
-        telescope.sol_angle_pix = telescope.sol_angle / telescope.N_pix  # str
-        telescope.apert_pix = (
-            2. * np.degrees(np.arccos(1.-telescope.sol_angle_pix/2./math.pi)))
-        # deg
-
-    if area is not None:
-        telescope.area = area
-
-    if int_time is not None:
-        telescope.int_time = int_time
-
-    if isinstance(efficiency, pd.DataFrame):
-        # Sorted to allow for interpolation
-        efficiency.sort_index(axis=0, ascending=True, inplace=True)
-        # The first column must be wavelength in nm
-        wvl = np.array(efficiency.iloc[:, 0])
-        telescope.wvl_cher = wvl
-        telescope.wvl_ini = wvl[0]
-        telescope.wvl_step = wvl[1] - wvl[0]
-        telescope.wvl_fin = wvl[-1] + telescope.wvl_step/2.
-        # -> wvl = np.arange(wvl_ini, wvl_fin, wvl_step)
-        if not np.all(np.diff(wvl) == telescope.wvl_step):
+def _efficiency(telescope, wvl, wvl_ini, wvl_fin, wvl_step, eff, eff_fluo):
+    """
+    Set efficiency parameters.
+    """
+    if wvl is None:
+        wvl = np.arange(wvl_ini, wvl_fin, wvl_step)
+        telescope._wvl = wvl
+    else: # wvl is given, so input wvl_ini, wvl_fin, wvl_step are ignored
+        wvl = np.array(wvl)
+        wvl_ini = wvl[0]
+        wvl_step = wvl[1] - wvl_ini
+        wvl_fin = wvl[-1] + wvl_step / 2.
+        if not np.all(np.diff(wvl)==wvl_step):
             raise ValueError(
                 "The wavelength discretization step must be constant.")
+        telescope._wvl = wvl
 
-        # The second column must be efficiency in decimal fraction
-        eff = np.array(efficiency.iloc[:, 1])
-        if (not np.all(eff >= 0.)) or (not np.all(eff <= 1.)):
-            raise ValueError(
-                "Efficiency must be positive and in decimal fraction.")
-        telescope.eff_cher = eff
-        telescope.eff_fluo = np.interp(telescope.wvl_fluo, wvl, eff, left=0.,
-                                       right=0.)
+    telescope._wvl_ini = wvl_ini
+    telescope._wvl_fin = wvl_fin
+    telescope._wvl_step = wvl_step
+    wvl_fluo = np.array(ct.fluo_model['wvl'])
+    telescope._wvl_fluo = wvl_fluo
 
-    else:
-        ValueError("The input efficiency data is not valid.")
+    if isinstance(eff, float):
+        # Constant efficiency is assumed
+        telescope._eff = np.full_like(wvl, eff)
+        eff_fluo = np.full_like(wvl_fluo, eff)
+        telescope._eff_fluo = eff_fluo
+
+    else: # eff array is given
+        eff = np.array(eff)
+        if len(wvl)!=len(eff):
+            raise ValueError("Lengths of wvl and eff do not match.")
+        telescope._eff = eff
+        
+        if eff_fluo is None: # Efficiency values are interpolated
+            eff_fluo = np.interp(wvl_fluo, wvl, eff, left=0., right=0.)
+        else: # eff_fluo is given
+            eff_fluo = np.array(eff_fluo)
+        telescope._eff_fluo = eff_fluo

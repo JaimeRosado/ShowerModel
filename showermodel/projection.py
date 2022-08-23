@@ -2,7 +2,7 @@
 
 import numpy as np
 import pandas as pd
-
+import showermodel.constants as ct
 
 # Class #######################################################################
 class Projection(pd.DataFrame):
@@ -15,9 +15,9 @@ class Projection(pd.DataFrame):
 
     Parameters
     ----------
-    telescope : Telescope
+    telescope : Telescope, mandatory
         Telescope object to be used.
-    track : Track or Shower
+    track : Track or Shower, mandatory
         Track object to be used.
 
     Attributes
@@ -95,10 +95,10 @@ class Projection(pd.DataFrame):
         ----------
         axes : bool, default True
             Show the axes of both frames of reference.
-        max_theta : float, default 30 degrees
+        max_theta : float, default 30
             Maximum offset angle in degrees relative to the telescope
             pointing direction.
-        X_mark : float
+        X_mark : float, default None
             Reference slant depth in g/cm^2 of the shower track to be
             marked in the figure. If None, no mark is included.
 
@@ -363,7 +363,7 @@ def _projection(projection, telescope, track):
     projection.distance_0 = distance_0
 
     # Half radius of the telescope mirror in km
-    half_R = np.sqrt(telescope.area / np.pi) / 2000.
+    half_R = np.sqrt(telescope.area / ct.pi) / 2000.
     # If the telescope is too close to the shower axis
     x, y, z = telescope.abs_to_rel(track.x, track.y, track.z)
     proj_u = x * track.ux + y * track.uy + z * track.uz
@@ -385,9 +385,10 @@ def _projection(projection, telescope, track):
 
     # Travel time of photons reaching the telescope, with time=0 for photons
     # emitted from the first interaction point. Equivalent to
-    # projection.time = track.t - (distance_i - distance) / 0.2998
+    # projection.time = track.t - (distance_i - distance) / ct.c_km_us
     # except for distance_min<half_R
-    projection.time = (track.t - distance_i / 0.2998
+    # c_km_us: speed of light in km/us
+    projection.time = (track.t - distance_i / ct.c_km_us
                        * (1. - np.sin(np.radians(projection.beta_i))
                        / np.sin(np.radians(beta))))
 

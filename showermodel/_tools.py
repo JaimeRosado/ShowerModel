@@ -1,10 +1,12 @@
 # coding: utf-8
 
-import math
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import showermodel.constants as ct
+import toml
+from pathlib import Path
 import warnings
 warnings.filterwarnings(
     'ignore',
@@ -165,7 +167,7 @@ def show_projection(projection, profile, shower_Edep, axes, max_theta, X_mark):
     ax2.set_rmax(max_theta)
     ax2.set_rlabel_position(-45)
     # Offset should be the north direction from right-hand direction
-    ax2.set_theta_zero_location('E', offset=telescope.phi_right)
+    ax2.set_theta_zero_location('E', offset=telescope._phi_right)
     ax2.set_theta_direction(-1)
     # theta is the name of the axial angle in the plot, not the
     # coordinate theta !
@@ -310,8 +312,8 @@ def rotate(vx, vy, vz, rot_angle, x, y, z):
     Rotate the vector (x,y,z) by an angle rot_angle (positive or negative)
     around the axis (vx,vy,vz), where v is a unit vector.
     """
-    ct = math.cos(math.radians(rot_angle))
-    st = math.sin(math.radians(rot_angle))
+    ct = np.cos(np.radians(rot_angle))
+    st = np.sin(np.radians(rot_angle))
     x_rot = ((ct+vx*vx*(1.-ct)) * x + (vx*vy*(1.-ct)-vz*st) * y
              + (vx*vz*(1.-ct)+vy*st) * z)
     y_rot = ((vx*vy*(1.-ct)+vz*st) * x + (ct+vy*vy*(1.-ct)) * y

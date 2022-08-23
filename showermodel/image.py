@@ -1,11 +1,15 @@
 # coding: utf-8
 
-import math
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from IPython.display import HTML
+import showermodel as sm
+import showermodel.constants as ct
 
+# Default values for Image
+_Image__lat_profile = ct.config['Image']['lat_profile']
+_Image__NSB = ct.config['Image']['NSB']
 
 # Class #######################################################################
 class Image:
@@ -19,19 +23,19 @@ class Image:
 
     Parameters
     ----------
-    signal : Signal
+    signal : Signal, mandatory
         Signal object to be used.
     lat_profile : bool, default True
         Use a NKG lateral profile to spread the signal. If False, a linear
         shower is assumed.
-    N_pix : int
-        Number of camera pixels. If not given, the predefined value in the
+    N_pix : int, default None
+        Number of camera pixels. If not given, the value defined in the
         Telescope object is used.
-    int_time : float
+    int_time : float, default None
         Integration time in microseconds of a camera frame. If not
-        given, the predefined value in the Telescope object is used.
-    NSB : float
-        Night sky background in MHz/m^2/deg^2.
+        given, the value defined in the Telescope object is used.
+    NSB : float, default 40
+        Night sky background in MHz/m^2/deg^2 (photoelectrons).
 
     Attributes
     ----------
@@ -65,7 +69,8 @@ class Image:
     animate()
         Show an animation of camera frames.
     """
-    def __init__(self, signal, lat_profile=True, N_pix=None, int_time=None, NSB=40.):
+    def __init__(self, signal, lat_profile=__lat_profile, N_pix=None,
+                 int_time=None, NSB=__NSB):
         _image(self, signal, lat_profile, N_pix, int_time, NSB)
 
     # Methods #################################################################
@@ -75,12 +80,12 @@ class Image:
 
         Parameters
         ----------
-        frame : int
-            Frame number. If not given, the sum of frames is shown.
-        NSB : float
-            Night sky background in MHz/m^2/deg^2. If not given, the one
+        frame : int, default None
+            Frame number. If None, the sum of frames is shown.
+        NSB : float, default None
+            Night sky background in MHz/m^2/deg^2. By default, the one
             defined in Image is used.
-        ax : AxesSubplot object
+        ax : AxesSubplot, default None
             Axes instance where the plot is generated. In not given, a new
             AxesSubplot object is created.
 
@@ -112,7 +117,7 @@ class Image:
             telescope = self.signal.telescope
             int_time = self.int_time
             sol_angle_pix = self.sol_angle_pix
-            NSB_pix = (NSB * 180.**2 / math.pi**2 * telescope.area *
+            NSB_pix = (NSB * 180.**2 / ct.pi**2 * telescope.area *
                        sol_angle_pix * int_time)
 
         # Sum of frames
@@ -143,8 +148,8 @@ class Image:
 
         Parameters
         ----------
-        NSB : float
-            Night sky background in MHz/m^2/deg^2. If not given, the one
+        NSB : float, default None
+            Night sky background in MHz/m^2/deg^2. By defaut, the one
             defined in Image is used.
 
         Returns
@@ -156,7 +161,7 @@ class Image:
         N_frames = self.N_frames
         frames = self.frames.copy()
         # Image size
-        N = 2 * N_pix_r +1
+        N = 2 * N_pix_r + 1
 
         # If no signal, an empty plot is generated
         if N_frames == 0:
@@ -172,7 +177,7 @@ class Image:
             telescope = self.signal.telescope
             int_time = self.int_time
             sol_angle_pix = self.sol_angle_pix
-            NSB_pix = (NSB * 180.**2 / math.pi**2 * telescope.area *
+            NSB_pix = (NSB * 180.**2 / ct.pi**2 * telescope.area *
                        sol_angle_pix * int_time)
 
         fig = plt.figure()
@@ -247,16 +252,16 @@ def _image(image, signal, lat_profile, N_pix, int_time, NSB):
     image.sol_angle_pix = sol_angle_pix
 
     # Side of a square pixel in solid angle projection
-    Delta_pix = math.sqrt(sol_angle_pix / 2.)
+    Delta_pix = np.sqrt(sol_angle_pix / 2.)
     # Number of pixels across a radius within the camera FoV
-    N_pix_r_exact = math.sqrt(N_pix / math.pi)
-    N_pix_r = math.ceil(N_pix_r_exact)
+    N_pix_r_exact = np.sqrt(N_pix / ct.pi)
+    N_pix_r = int(np.ceil(N_pix_r_exact))
     image.N_pix_r = N_pix_r
     # Image size
     N = 2 * N_pix_r + 1
 
     # Night sky background per pixel and frame
-    NSB_pix = (NSB * 180.**2 / math.pi**2 * telescope.area * sol_angle_pix
+    NSB_pix = (NSB * 180.**2 / ct.pi**2 * telescope.area * sol_angle_pix
                * int_time)
     image.NSB_pix = NSB_pix
 
@@ -286,7 +291,7 @@ def _image(image, signal, lat_profile, N_pix, int_time, NSB):
     cos_theta = np.array(np.cos(np.radians(projection.theta.loc[points])))
     # phi angle wrt right direction in radians
     phi = np.array(np.radians(projection.phi.loc[points]
-                              - telescope.phi_right))  # (-2*pi, 2*pi)
+                              - telescope._phi_right))  # (-2*pi, 2*pi)
     # Total number of photoelectrons
     Npe = np.array(signal.Npe_total)
 
@@ -348,7 +353,7 @@ def _image(image, signal, lat_profile, N_pix, int_time, NSB):
         if (n1_p < 2) and (n2_p < 2):
             phi_p = phi[point]
             # Radii and x, y indexes of pixels
-            pix_r_p = math.sqrt(1. - cos_theta[point]) / Delta_pix
+            pix_r_p = np.sqrt(1. - cos_theta[point]) / Delta_pix
             pix_x_p = int(round(pix_r_p * np.cos(phi_p) + N_pix_r_exact))
             pix_y_p = int(round(pix_r_p * np.sin(phi_p) + N_pix_r_exact))
             frames[f_index_p, pix_y_p, pix_x_p] += Npe_p
@@ -411,7 +416,7 @@ def _image(image, signal, lat_profile, N_pix, int_time, NSB):
         # Loop over substeps (may be only one)
         for (x_ps, y_ps, z_ps) in zip(x_p, y_p, z_p):
             # 5 * n2_p random polar angles for each substep
-            alpha_ps = 2. * math.pi * np.random.rand(5, n2_p)
+            alpha_ps = 2. * ct.pi * np.random.rand(5, n2_p)
             # v, w projections of 5 * n2_p vectors
             Rv_ps = np.array((R_p * np.cos(alpha_ps)).flat)
             Rw_ps = np.array((R_p * np.sin(alpha_ps)).flat)
@@ -423,7 +428,7 @@ def _image(image, signal, lat_profile, N_pix, int_time, NSB):
             distance_ps, alt_ps, az_ps, theta_ps, phi_ps = (
                 telescope.spherical(x_ps, y_ps, z_ps))
             cos_theta_ps = np.cos(np.radians(theta_ps))
-            phi_ps = np.radians(phi_ps - telescope.phi_right)
+            phi_ps = np.radians(phi_ps - telescope._phi_right)
             pix_r_ps = np.sqrt(1. - cos_theta_ps) / Delta_pix
             pix_x_ps = np.array(np.round(pix_r_ps * np.cos(phi_ps)
                                          + N_pix_r_exact), int)

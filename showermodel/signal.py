@@ -3,9 +3,19 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
 import showermodel as sm
+import showermodel.constants as ct
 
+# Default values for Signal
+_Signal__atm_trans = ct.config['Signal']['atm_trans']
+_Signal__tel_eff = ct.config['Signal']['tel_eff']
+_Signal__wvl_ini = ct.config['Signal']['wvl_ini']
+_Signal__wvl_fin = ct.config['Signal']['wvl_fin']
+_Signal__wvl_step = ct.config['Signal']['wvl_step']
+
+# Default values for Image
+_Image__lat_profile = ct.config['Image']['lat_profile']
+_Image__NSB = ct.config['Image']['NSB']
 
 # Class #######################################################################
 class Signal(pd.DataFrame):
@@ -19,21 +29,38 @@ class Signal(pd.DataFrame):
 
     Parameters
     ----------
-    telescope : Telescope
+    telescope : Telescope, mandatory
         Telescope object to be used.
-    shower : Shower
+    shower : Shower, mandatory
         Shower object to be used.
+<<<<<<< Updated upstream
     projection : Projection
         If None, it will be generated from telescope and shower.
+=======
+>>>>>>> Stashed changes
     atm_trans : bool, default True
         Include the atmospheric transmission to transport photons.
     tel_eff : bool, default True
+<<<<<<< Updated upstream
         Include the telescope efficiency to calculate the signal. If False,
         100% efficiency is assumed for a given wavelength interval.
     **kwargs : {wvl_ini, wvl_fin, wvl_step}
         These parameters will modify the wavelength interval when
         tel_eff==False. If None, the wavelength interval defined in the
         telescope is used.
+=======
+        Include the telescope efficiency to calculate the signals.
+        If False, 100% efficiency is assumed for a given wavelength interval.
+    wvl_ini : float, default 290
+        Initial wavelength in nm of the interval to calculate the signal when
+        tel_eff==False.
+    wvl_fin : float, default 430
+        Final wavelength in nm of the interval to calculate the signal when
+        tel_eff==False.
+    wvl_step : float, default 3
+        Discretization step in nm of the interval to calculate the signal when
+        tel_eff==False.
+>>>>>>> Stashed changes
 
     Attributes
     ----------
@@ -85,17 +112,18 @@ class Signal(pd.DataFrame):
     show_profile()
         Show the shower profile as a function of slant depth.
     show_light_production()
-        Show the production photons as a function of slant depth.
+        Show the production of photons as a function of slant depth.
     show()
         Show the signal evolution.
     Image()
         Generate a time-varying shower image.
     """
-    def __init__(self, telescope, shower, projection=None, atm_trans=True,
-                 tel_eff=True, **kwargs):
+    def __init__(self, telescope, shower, projection=None, atm_trans=__atm_trans,
+                 tel_eff=__tel_eff, wvl_ini=__wvl_ini, wvl_fin=__wvl_fin,
+                 wvl_step=__wvl_step):
         super().__init__(columns=['Npe_cher', 'Npe_fluo', 'Npe_total'])
         _signal(self, telescope, shower, projection, atm_trans, tel_eff,
-                **kwargs)
+                wvl_ini, wvl_fin, wvl_step)
 
     def show_projection(self, shower_Edep=True, axes=True, max_theta=30.,
                         X_mark='X_max'):
@@ -115,8 +143,8 @@ class Signal(pd.DataFrame):
             pointing direction.
         X_mark : float
             Reference slant depth in g/cm^2 of the shower track to be
-            marked in the figure, default to X_max. If X_mark is set to None,
-            no mark is included.
+            marked in the figure. If set to None, no mark is included.
+            By default, the mark is placed at X_max.
         """
         if X_mark == 'X_max':
             X_mark = self.shower.X_max
@@ -164,7 +192,8 @@ class Signal(pd.DataFrame):
         """
         return _show(self)
 
-    def Image(lat_profile=True, N_pix=None, int_time=0.01, NSB=40.):
+    def Image(lat_profile=_Image__lat_profile, N_pix=None, int_time=None,
+              NSB=_Image__NSB):
         """
         Generate a time-varying shower image in a circular camera with square
         pixels of same solid angle. A Nishimura-Kamata-Greisen lateral profile
@@ -176,13 +205,14 @@ class Signal(pd.DataFrame):
         lat_profile : bool, default True
             Use a NKG lateral profile to spread the signal. If False, a linear
             shower is assumed.
-        N_pix : int
-            Number of camera pixels. If not given, the predefined value in
-            the telescope that produces the signal.
-        int_time : float
-            Integration time in microseconds of a camera frame.
-        NSB : float
-            Night sky background in MHz/m^2/deg^2.
+        N_pix : int, default None
+            Number of camera pixels. If not given, the value defined in the
+            Telescope object is used.
+        int_time : float, default None
+            Integration time in microseconds of a camera frame. If not
+            given, the value defined in the Telescope object is used.
+        NSB : float, default 40
+            Night sky background in MHz/m^2/deg^2 (photoelectrons).
 
         Returns
         -------
@@ -206,7 +236,8 @@ def _show(signal):
 
     # Arrival time interval in microseconds (or nanoseconds) for each
     # discretization step.
-    Delta_time = track.dl / 0.2998 * (1. - np.cos(np.radians(beta)))
+    # c_km_us: speed of light in km/us
+    Delta_time = track.dl / ct.c_km_us * (1. - np.cos(np.radians(beta)))
     ns = True if time.max() < 0.1 else False  # Auto-scale
     if ns:
         time = time * 1000.
@@ -263,7 +294,7 @@ def _show(signal):
 
 # Constructor #################################################################
 def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
-            **kwargs):
+            wvl_ini, wvl_fin, wvl_step):
     """
     Calculate the signal produced by a shower detected by a telescope.
 
@@ -273,16 +304,26 @@ def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
     telescope : Telescope
     shower : Shower
     projection : Projection
+<<<<<<< Updated upstream
         If None, it will be generated from telescope and shower.
+=======
+        Only used when called from Event. If None, projection is generated from
+        telescope and shower.
+>>>>>>> Stashed changes
     atm_trans : bool, default True
         Include the atmospheric transmission to transport photons.
     tel_eff : bool, default True
         Include the telescope efficiency to calculate the signal. If False,
         100% efficiency is assumed for a given wavelength interval.
-    **kwargs : {wvl_ini, wvl_fin, wvl_step}
-        These parameters will modify the wavelength interval when
-        tel_eff==False. If None, the wavelength interval defined in the
-        telescope is used.
+    wvl_ini : float, default 290
+        Initial wavelength in nm of the interval to calculate the signal when
+        tel_eff==False.
+    wvl_fin : float, default 430
+        Final wavelength in nm of the interval to calculate the signal when
+        tel_eff==False.
+    wvl_step : float, default 3
+        Discretization step in nm of the interval to calculate the signal when
+        tel_eff==False.
     """
     if not isinstance(telescope, sm.Telescope):
         if not isinstance(telescope, sm.Shower):
@@ -315,18 +356,16 @@ def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
     signal.tel_eff = tel_eff
 
     if tel_eff:
-        # Wavelength range to calculate the signal
+        # Wavelength range defined in telescope
         wvl_ini = telescope.wvl_ini
         wvl_fin = telescope.wvl_fin
         wvl_step = telescope.wvl_step
-        wvl_cher = telescope.wvl_cher
+        wvl_cher = telescope.wvl
         eff_fluo = telescope.eff_fluo
-        eff_cher = telescope.eff_cher
+        eff_cher = telescope.eff
+
     else:
         # User-defined wavelength range
-        wvl_ini = kwargs.get('wvl_ini', telescope.wvl_ini)
-        wvl_fin = kwargs.get('wvl_fin', telescope.wvl_fin)
-        wvl_step = kwargs.get('wvl_step', telescope.wvl_step)
         wvl_cher = np.arange(wvl_ini, wvl_fin, wvl_step)
     signal.wvl_ini = wvl_ini
     signal.wvl_fin = wvl_fin
@@ -342,7 +381,8 @@ def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
 
     # Solid angle fraction covered by the telescope area. Only discretization
     # points within the telescope field of view contributes to the signal
-    collection = (telescope.area * np.cos(theta) / 4000000. / np.pi
+    # area is in m^2 but distance is in km
+    collection = (telescope.area * np.cos(theta) / 4000000. / ct.pi
                   / distance**2)
 
     # Collection efficiency for the angular distribution of Cherenkov light
@@ -360,10 +400,14 @@ def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
     # (between wvl_ini and wvl_fin). The atmospheric transmission is included
     # later
     rel_fluo = fluorescence.loc[points]
-    if tel_eff:
-        rel_fluo *= eff_fluo  # 34 bands
     # Selection of bands within the wavelength range
     rel_fluo = rel_fluo.loc[:, wvl_ini:wvl_fin]
+    wvl_fluo = np.array(ct.fluo_model['wvl'])
+    sel = (wvl_fluo>=wvl_ini) & (wvl_fluo<=wvl_fin)
+    wvl_fluo = wvl_fluo[sel]
+    if tel_eff:
+        eff_fluo = eff_fluo[sel]
+        rel_fluo *= eff_fluo
 
     if atm_trans:
         # Atmospheric transmission at 350 nm. Only Rayleigh scattering is
@@ -380,7 +424,7 @@ def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
         trans = np.exp(-thickness / 1645.)
 
         # Relative fluorescence contribution including atmospheric transmission
-        for wvl in rel_fluo:
+        for wvl in wvl_fluo:
             rel_fluo[wvl] *= trans ** ((350. / wvl)**4)
 
         # Wavelength factor for Cherenkov contribution to signal from each
@@ -391,21 +435,23 @@ def _signal(signal, telescope, shower, projection, atm_trans, tel_eff,
             # wvl**2 -> (wvl**2 - wvl_step**2 / 4.)
         if tel_eff:
             wvl_factor *= eff_cher
-        wvl_factor = wvl_factor.sum(axis=1) * wvl_step / (1./290.-1./430.)
+        wvl_factor = wvl_factor.sum(axis=1) * wvl_step / (1./_Signal__wvl_ini-
+                                                          1./_Signal__wvl_fin)
 
     elif tel_eff:  # If atmospheric transmission is not included
         # The wavelength factor of Cherenkov signal is the same for all
         # shower points
         wvl_factor = eff_cher / wvl_cher**2
         # wvl_cher**2 -> (wvl_cher**2 - wvl_step**2 / 4.)
-        wvl_factor = wvl_factor.sum() * wvl_step / (1./290.-1./430.)
+        wvl_factor = wvl_factor.sum() * wvl_step / (1./_Signal__wvl_ini-
+                                                    1./_Signal__wvl_fin)
 
-    # If neither the atmospheric transmission nor the telescope efficiency are
-    # included
-    else:
-        # The wavelength factor of Cherenkov signal only depends on the
-        # integration wavelength interval
-        wvl_factor = (1. / wvl_ini - 1. / wvl_fin) / (1. / 290. - 1. / 430.)
+    else:  # If both atm_trans==False and tel_eff==False
+        # The wavelength factor only depends on the chosen wavelenth interval.
+        # Note that the wavelength interval may be different to that defined
+        # in the Cherenkov class (default one)
+        wvl_factor = (1./wvl_ini-1./wvl_fin) / (1./_Signal__wvl_ini-
+                                                1./_Signal__wvl_fin)
 
     # Number of photoelectrons due to fluorescence light emitted from each
     # shower point

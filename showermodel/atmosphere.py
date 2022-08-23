@@ -2,6 +2,7 @@
 
 import numpy as np
 import pandas as pd
+import showermodel.constants as ct
 
 import warnings
 warnings.filterwarnings(
@@ -9,11 +10,13 @@ warnings.filterwarnings(
     'Pandas doesn\'t allow columns to be created via a new attribute name',
     UserWarning)
 
-# Default values for atmosphere
-_h0 = 2.20  # km
-_h_top = 112.8292  # km
-_N_steps = 550
-_model = 1
+# Default values for Atmosphere
+_Atmosphere__h0 = ct.config['Atmosphere']['h0']
+_Atmosphere__h_top = ct.config['Atmosphere'].get('h_top') # optional parameter
+_Atmosphere__N_steps = ct.config['Atmosphere']['N_steps']
+_Atmosphere__atm_model = ct.config['Atmosphere']['atm_model']
+_Atmosphere__rho_w_sl = ct.config['Atmosphere']['rho_w_sl']
+_Atmosphere__h_scale = ct.config['Atmosphere']['h_scale']
 
 
 # Class #######################################################################
@@ -25,15 +28,30 @@ class Atmosphere(pd.DataFrame):
 
     Parameters
     ----------
-    h0 : float
+    h0 : float, default 0.0
         Ground level in km above sea level.
-    h_top : float
-        Top level of the atmosphere in km above sea level.
-    N_steps : int
+    h_top : float or None, default None
+        Upper limit in km above sea level of the atmosphere
+        discretization. If None, the top level of the selected
+        atmospheric model is taken. 
+    N_steps : int, default 550
         Number of discretization steps.
-    model : int
-        CORSIKA atmospheric model. Presently either 1 or 17. More models to
-        be implemented.
+    atm_model : int or DataFrame, default 1
+        Atmospheric model assuming dry air. If an int value is given,
+        atm_model is searched either from CORSIKA atmospheric models
+        (from 1 to 29)
+        or a file named atm_models.toml in the working directory
+        containing user-defined models. If a DataFrame is given, it
+        should have two columns, one labelled as h with height in km
+        and other labelled as X_vert or P, depending on whether
+        vertical depth in g/cm^2 or pressure in hPa is given.
+    rho_w_sl : float, default 7.5e-6
+        Water-vapor density in g/cm^3 at sea level to calculate a
+        simple exponential profile of water-vapor. Set to zero if dry
+        air is assumed.
+    h_scale : float, default 2.0
+        Scale height in km to be used in the water-vapor exponential
+        profile.
 
     Attributes
     ----------
@@ -50,7 +68,7 @@ class Atmosphere(pd.DataFrame):
     P_w : float
         Column 5, partial pressure of water vapor in hPa.
     E_th : float
-        Column 6, cherenkov energy threshold in MeV at 350 nm.
+        Column 6, Cherenkov energy threshold in MeV at 350 nm.
     r_M : float
         Column 7, Moliere radius in km.
     h0 : float
@@ -63,9 +81,15 @@ class Atmosphere(pd.DataFrame):
         Size of discretization step in km.
     Xv_total : float
         Total vertical depth of the atmosphere.
-    model : int
-        CORSIKA atmospheric model. Presently either 1 or 17. More models to
-        be implemented.
+    atm_model : int or DataFrame
+        Atmospheric model assuming dry air.
+    info : str
+        Information about the atmospheric model. Set to df if
+        atm_model is a DataFrame.
+    rho_w_sl : float
+        Water-vapor density in g/cm^3 at sea level.
+    h_scale : float
+        Scale height in km used in the water-vapor exponential profile.
 
     Methods
     -------
@@ -75,6 +99,17 @@ class Atmosphere(pd.DataFrame):
         Get mass density from height.
     Xv_to_h()
         Get height from vertical depth.
+    Xv_to_rho()
+        Get density from vertical depth.
+    Xv_to_P()
+        Calculate pressure from vertical depth assuming constant acceleration
+        of gravity.
+    P_to_Xv()
+        Calculate vertical depth from pressure assuming constant acceleration
+        of gravity.
+    Xv_rho_to_P_T()
+        Calculate pressure and temperature from vertical depth and mass
+        density assuming constant acceleration of gravity and an ideal gas.
 
     See also
     --------
@@ -82,10 +117,12 @@ class Atmosphere(pd.DataFrame):
     Profile : DataFrame containing a shower profile discretization.
     Shower : Make a discretization of a shower.
     """
-    def __init__(self, h0=_h0, h_top=_h_top, N_steps=_N_steps, model=_model):
+    def __init__(self, h0=__h0, h_top=__h_top, N_steps=__N_steps,
+                 atm_model=__atm_model, rho_w_sl=__rho_w_sl,
+                 h_scale=__h_scale):
         super().__init__(
             columns=['h', 'X_vert', 'rho', 'temp', 'P', 'P_w', 'E_th', 'r_M'])
-        _atmosphere(self, h0, h_top, N_steps, model)
+        _atmosphere(self, h0, h_top, N_steps, atm_model, rho_w_sl, h_scale)
 
     def h_to_Xv(self, h):
         """
@@ -100,7 +137,7 @@ class Atmosphere(pd.DataFrame):
         -------
         Xv : float or array_like
         """
-        Xv, rho = self._get_Xv_rho(h)
+        Xv, rho = self._h_to_Xv_rho(h)
         return Xv
 
     def h_to_rho(self, h):
@@ -116,15 +153,20 @@ class Atmosphere(pd.DataFrame):
         -------
         rho : float or array_like
         """
-        Xv, rho = self._get_Xv_rho(h)
+        Xv, rho = self._h_to_Xv_rho(h)
         return rho
 
-    def _get_Xv_rho(self, h):
+    def _h_to_Xv_rho(self, h):
         """
         Get both the vertical depth in g/cm^2 and the mass density in g/cm^3.
         from height in km above sea level.
         """
-        return _get_Xv_rho(h, self.model)
+        if self._model is None:
+            # 
+            return _df_Xv_rho(h, self.atm_model)
+        else:
+            # _model contais the dictionary with atm_model
+            return _model_Xv_rho(h, self._model)
 
     def Xv_to_h(self, Xv):
         """
@@ -132,38 +174,104 @@ class Atmosphere(pd.DataFrame):
 
         Parameters
         ----------
-        Xv : float
+        Xv : float or array_like
+            Vertical depth in g/cm^2. If is outside the range of column
+            X_vert, return None.
+
+        Returns
+        -------
+        rho : float or array_like
+        """
+        h = np.append(self.h0, self.h)
+        h = np.append(h, self.h_top)
+        X_vert = np.append(self.Xv_total, self.X_vert)
+        X_vert = np.append(X_vert, self.Xv_top)
+        if self.Xv_top==0.:
+            X_vert[-1] = X_vert[-2] / 1000.  # to avoid log(0)
+
+        # An exponential atmosphere is assumed to interpolate h
+        # The approximation is good enough for the top atmosphere too
+        # (more or less linear)
+        # X_vert should be ascending
+        return 1.*np.interp(np.log(Xv), np.log(X_vert)[::-1], h[::-1],
+                            left=None, right=None)
+
+    def Xv_to_rho(self, Xv):
+        """
+        Get mass density in in g/cm^3 from vertical depth in g/cm^2.
+
+        Parameters
+        ----------
+        Xv : float or array_like
+            Vertical depth in g/cm^2. If is outside the range of column
+            X_vert, return None.
+
+        Returns
+        -------
+        rho : float or array_like
+        """
+        rho = np.append(self.rho0, self.rho)
+        rho = np.append(rho, self.rho_top)
+        X_vert = np.append(self.Xv_total, self.X_vert)
+        X_vert = np.append(X_vert, self.Xv_top)
+
+        # An exponential atmosphere is assumed so that rho has a linear
+        # dependence on X_vert
+        # X_vert should be ascending
+        return 1.*np.interp(Xv, X_vert[::-1], rho[::-1], left=None, right=None)
+
+    def Xv_to_P(self, Xv):
+        """
+        Calculate pressure from vertical depth assuming constant acceleration
+        of gravity.
+
+        Parameters
+        ----------
+        Xv : float or array_like
             Vertical depth in g/cm^2.
 
         Returns
         -------
-        h : float
+        P : float or array_like
         """
-        if Xv==0:
-            return self.h_top
-        elif Xv<0.:
-            return None
-        elif Xv>self.Xv_total:
-            return None
+        # g_cm: standard acceleration of gravity in cm/s^2
+        return 1. * ct.g_cm * Xv / 1000. # hPa  (1 hPa = 1000 erg/cm^3)
 
-        h = np.append(self.h0, self.h)
-        h = np.append(h, self.h_top)
-        X_vert = np.append(self.Xv_total, self.X_vert)
-        X_vert = np.append(X_vert, 0.)
-        h_lower = h[X_vert > Xv].max()  # Lower bound for h
-        h_upper = h[X_vert < Xv].min()  # Lower bound for h
-        # Upper and lower bounds for Xv (corresponding to h_lower and  h_upper)
-        Xv_upper = X_vert[X_vert > Xv].min()
-        Xv_lower = X_vert[X_vert < Xv].max()
-        # An exponential atmosphere is assumed to interpolate h
-        # The approximation is good enough for the top atmosphere too
-        # (more or less linear)
-        return (h_lower + (h_upper-h_lower) / np.log(Xv_upper/Xv_lower)
-                * np.log(Xv_upper/Xv))
+    def P_to_Xv(self, P):
+        """
+        Calculate vertical depth from pressure assuming constant acceleration
+        of gravity.
+
+        Parameters
+        ----------
+        P : float or array_like
+            Pressure in hPa.
+
+        Returns
+        -------
+        P : float or array_like
+        """
+        # g_cm: standard acceleration of gravity in cm/s^2
+        return 1. / ct.g_cm * P * 1000. # hPa  (1 hPa = 1000 erg/cm^3)
+
+    def Xv_rho_to_P_T(self, Xv, rho):
+        """
+        Calculate pressure and temperature from vertical depth and mass
+        density assuming constant acceleration of gravity and an ideal gas.
+        """
+        # M_air: air molar mass in g/mol (dry air)
+        # R_erg: molar gas constant in erg/K/mol
+        P = self.Xv_to_P(Xv)
+        temp = np.zeros_like(rho)
+        sel = rho>0.
+        temp[sel] = (ct.M_air * ct.g_cm * self.X_vert[sel] / ct.R_erg /
+                     self.rho[sel])
+
+        return 1.*P, 1.*temp
 
 
 # Constructor #################################################################
-def _atmosphere(atmosphere, h0, h_top, N_steps, model):
+def _atmosphere(atmosphere, h0, h_top, N_steps, atm_model, rho_w_sl, h_scale):
     """
     Constructor of Atmosphere class.
 
@@ -172,87 +280,143 @@ def _atmosphere(atmosphere, h0, h_top, N_steps, model):
     atmosphere : Atmosphere object
     h0 : float
         Ground level in km above sea level.
-    h_top : float
+    h_top : float or None
         Top level of the atmosphere in km above sea level.
     N_steps : int
         Number of discretization steps.
-    model : int
-        CORSIKA atmospheric model. Presently either 1 or 17. More models to
-        be implemented.
-    """
-    # For the default atmospheric parameters
-    # if (h0 == _h0) and (N_steps == _N_steps) and (model == _model):
-    #     global ATM
-    #     try:
-    #         atmosphere = ATM  # Outputs the default atmosphere if already generated
-    #    except Exception:
-    #         # If the default atmosphere is to be generated,
-    #         # it will be assigned to the global variable ATM
-    #         ATM = atmosphere
-
+    atm_model : int or DataFrame
+        Atmospheric model assuming dry air.
+    rho_w_sl : float
+        Water-vapor density in g/cm^3 at sea level to calculate a simple
+        exponential profile of water-vapor. Set to zero if dry air is assumed.
+    h_scale : float
+        Scale height in km to be used in the water-vapor exponential profile.
+    """     
     # The output DataFrame includes the input parameters h0, h_top, N_steps,
     # model as attributes
     atmosphere.h0 = h0
-    atmosphere.h_top = h_top
     atmosphere.N_steps = N_steps
-    atmosphere.model = model
+    atmosphere.atm_model = atm_model
+    atmosphere.rho_w_sl = rho_w_sl
+    atmosphere.h_scale = h_scale
 
-    # Array of mid heights of the discretization of the atmosphere.
-    # h0 represent the ground level.
-    height = np.linspace(h0, atmosphere.h_top, N_steps+1)
-    atmosphere.h_step = height[1] - height[0]
-    atmosphere.h = height[1:] - atmosphere.h_step/2.
+    # Load atmospheric model
+    if isinstance(atm_model, pd.DataFrame): # User-defined model
+        # Data ordered by h to allow for interpolation
+        atm_model = atm_model.sort_values(by='h', axis=0, ascending=True)
+        atmosphere._model = None  # to be used in _h_to_Xv_rho
+        atmosphere.info = 'DataFrame'
+        
+        h_top_model = atm_model.h.iloc[-1]
+        if h_top is None:
+            h_top = h_top_model
+        elif h_top>h_top_model:
+            h_top = h_top_model
+        
+        # Array of mid heights of the discretization of the atmosphere.
+        # h0 represents the ground level.
+        h = np.linspace(h0, h_top, N_steps+1)
+        h_step = h[1] - h[0]
+        h = h - h_step/2.
+        h[0] = h0  # keep h0 to obtain the total vertical depth Xv_total
+        h = np.append(h, h_top)  # keep h_top to obtain Xv_top
+        
+        # Vertical depth in g/cm2 and density in g/cm3 for h from DataFrame
+        X_vert, rho = _df_Xv_rho(h, atm_model)
+        
+    else: # Get atmospheric parameters of the selected model from atm_models
+        model = ct.atm_models.get(str(atm_model))
+        if model is None:
+            raise ValueError('This atm_model is not implemented.')
+        atmosphere._model = model
+        atmosphere.info = model.get('info')
 
-    # Vertical depth and density from the input model
-    Xv, rho = atmosphere._get_Xv_rho(h0)
-    atmosphere.Xv_total = Xv
+        h_top_model = _model_h_top(model)
+        if h_top is None:
+            h_top = h_top_model
+        elif h_top>h_top_model:
+            h_top = h_top_model
 
-    Xv, rho = atmosphere._get_Xv_rho(atmosphere.h)
-    atmosphere.X_vert = Xv
+        # Array of mid heights of the discretization of the atmosphere.
+        # h0 represents the ground level.
+        h = np.linspace(h0, h_top, N_steps+1)
+        h_step = h[1] - h[0]
+        h = h - h_step/2.
+        h[0] = h0  # keep h0 to obtain the total vertical depth Xv_total
+        h = np.append(h, h_top)  # keep h_top to obtain Xv_top
+
+        # Vertical depth in g/cm2 and density in g/cm3 for h from the selected model
+        X_vert, rho = _model_Xv_rho(h, model)
+
+    atmosphere.h_top = h_top
+    atmosphere.h_step = h_step
+    atmosphere.Xv_total = X_vert[0]
+    atmosphere.Xv_top = X_vert[-1]  # usually Xv_top=0
+    atmosphere.rho_0 = rho[0]
+    atmosphere.rho_top = rho[-1]
+    h = h[1:-1]  # only mid heights are stored in columns
+    X_vert = X_vert[1:-1]
+    rho = rho[1:-1]
+    atmosphere.h = h
+    atmosphere.X_vert = X_vert
     atmosphere.rho = rho
-
-    temp = np.zeros_like(rho)
-    from scipy.constants import g, R
-    g *= 100. # in cm/s^2
-    R *= 10000000. # in erg/(K.mol)
-    # Air is assumed to be an ideal gas with 28.96 g/mol
-    temp[rho > 0] = 28.96 * g * Xv[rho > 0] / R / rho[rho > 0]
-    atmosphere.temp = temp
-    P = g * Xv / 1000.  # A constant gravitational acceleration is assumed
+    
+    # It is assumed that air is an ideal gas and that the acceleration of
+    # gravity is constant
+    P, temp = atmosphere.Xv_rho_to_P_T(X_vert, rho)
     atmosphere.P = P
-    # CORSIKA models do not describe the partial pressure of water vapor
-    P_w = np.zeros_like(P)
+    atmosphere.temp = temp
+        
+    if rho_w_sl>0.:
+        # R_erg: molar gas constant in erg/K/mol
+        # M_w: water molar mass in g/mol
+        # Water-vapor density in g/cm3
+        rho_w = rho_w_sl * np.exp(-h / h_scale)
+        P_w = ct.R_erg / ct.M_w * rho_w * temp / 1000. # hPa  (1 hPa = 1000 erg/cm^3)
+        P_w_min = 2.e-6 * P
+        P_w[P_w<P_w_min] = P_w_min[P_w<P_w_min]
+    else:
+        P_w = np.zeros_like(temp)
     atmosphere.P_w = P_w
 
     # delta=1-n at 350nm. J.C. Owens, Appl. Opt. 6 (1967) 51
+    # P (calculated for dry air) is assumed to be the total pressure
     delta = np.zeros_like(temp)
-    delta[temp > 0] = 0.00000001 * (
-        8132.8589*(P[temp > 0]-P_w[temp > 0])/temp[temp > 0]
-        * (1.+(P[temp > 0]-P_w[temp > 0])
-            * (0.000000579-0.0009325/temp[temp > 0]+0.25844/temp[temp > 0]**2))
-        + 6961.9879*P_w[temp > 0]/temp[temp > 0]
-        * (1.+P_w[temp > 0]*(1.+0.00037*P_w[temp > 0])
-            * (-0.00237321+2.23366/temp[temp > 0]-710.792/temp[temp > 0]**2
-                + 0.000775141/temp[temp > 0]**3)))
+    sel = temp>0.
+    pw = P_w[sel]
+    p = P[sel] - pw
+    t = temp[sel]
+    delta[sel] = 0.00000001 * (
+        8132.8589 * p / t * (1. + p *
+            (0.000000579 - 0.0009325 / t + 0.25844 / t**2)) +
+        6961.9879 * pw / t * (1. + pw * (1. + 0.00037 * pw) *
+            (-0.00237321 + 2.23366 / t - 710.792 / t**2 + 0.000775141 / t**3)))
 
     # Threshold energy for Cherenkov production at 350 nm in air
-    atmosphere.E_th = 0.511 / np.sqrt(2.*delta)
+    # mc2: electron mass in MeV
+    E_th = np.zeros_like(delta)
+    E_th[sel] = ct.mc2 / np.sqrt(2.*delta[sel])
+    atmosphere.E_th = E_th
 
-    # Moliere radius in km
-    atmosphere.r_M = 21.2 / 81. * 36.7 / atmosphere.rho / 100000.
-
+    # Moliere radius
+    # E_c: critical energy in air in MeV
+    # lambda_r: radiation length in air in g/cm2
+    r_M = np.zeros_like(rho)
+    r_M[sel] = (4.*ct.pi/ct.alpha)**0.5 * (ct.mc2 / ct.E_c * ct.lambda_r
+                                           / rho[sel] * 1.e-5)
+    atmosphere.r_M = r_M
 
 # Auxiliary functions #########################################################
-def _get_Xv_rho(h, model):
+def _model_Xv_rho(h, model):
     """
     Get vertical depth in g/cm^2 and mass density in g/cm^3 from height in km
-    above sea level for an atmospheric model.
+    above sea level from an atmospheric model.
 
     Parameters
     ----------
     h : float or array_like
         Height in km.
-    model : int
+    model : dict
         CORSIKA atmospheric model. Presently either 1 or 17. More models to
         be implemented.
 
@@ -263,47 +427,106 @@ def _get_Xv_rho(h, model):
     rho : float or array_like
         Mass density in g/cm^3.
     """
-    # Some atmospheric models used in CORSIKA.
-    # Each row contains the model parameters for a different atmospheric layer:
-    # h_ini(km), a(g/cm^2), b(g/cm^2), c(km)
-    if model == 1:  # model 1
-        h_top = 112.8292  # Height of the atmosphere at which Xv=0
-        #     h_ini(km),     a(g/cm^2), b(g/cm^2),          c(km)
-        param = ((100.0,    0.01128292,    1.00000, 10000.0000000),
-                 (040.0,    0.00000000,  540.17780,     7.7217016),
-                 (010.0,    0.61289000, 1305.59480,     6.3614304),
-                 (004.0,  -94.91900000, 1144.90690,     8.7815355),
-                 (000.0, -186.55530600, 1222.65620,     9.9418638))
-    elif model == 17:
-        h_top = 112.8292
-        #     h_ini(km),     a(g/cm^2),  b(g/cm^2),         c(km)
-        param = ((100.0,    0.01128292,    1.00000, 10000.0000000),
-                 (037.0,    0.00043545,  655.67307,     7.3752177),
-                 (011.4,    0.61289000, 1322.97480,     6.2956893),
-                 (007.0,  -57.93248600, 1143.04250,     8.0000534),
-                 (000.0, -149.80166300, 1183.60710,     9.5424834))
-    else:
-        raise ValueError('This input model is not implemented yet')
-
     h = np.array(h)
     Xv = np.zeros_like(h)
     rho = np.zeros_like(h)
-
-    # For the atmospheric models used in CORSIKA, the different atmospheric
+    
+    # For the atmospheric models used in CORSIKA, all the atmospheric
     # layers are exponential except for the top layer, which is linear
-    for (i, (h_ini, a, b, c)) in enumerate(param):
-        if i == 0:                  # Top layer
-            h_fin = h_top           # h_top is such that Xv=0 for h=h_top
-            Xv[(h >= h_ini) & (h < h_fin)] = (
-                a - b * h[(h >= h_ini) & (h < h_fin)] / c)
-            # Constant density
-            rho[(h >= h_ini) & (h < h_fin)] = b / c / 100000.
-        else:  # Exponential model for the other layers
-            Xv[(h >= h_ini) & (h < h_fin)] = (
-                a + b * np.exp(-h[(h >= h_ini) & (h < h_fin)] / c))
-            rho[(h >= h_ini) & (h < h_fin)] = (
-                (Xv[(h >= h_ini) & (h < h_fin)] - a) / c / 100000.)
-        h_fin = h_ini
+    # First, take all the layers, except the last one
+    layers = zip(model['h_low'][:-1], # h_low in km
+                 model['h_low'][1:],  # h_up in km
+                 model['a'][:-1],     # g/cm2
+                 model['b'][:-1],     # g/cm2
+                 model['c'][:-1])     # cm
+
+    # Exponential layers
+    for h_low, h_up, a, b, c in layers:
+        layer = (h>=h_low) & (h<h_up)
+        Xv[layer] = a + b * np.exp(-h[layer] * 1.e5 / c)
+        rho[layer] = (Xv[layer] - a) / c
+
+    # Top layer (lineal)
+    h_low = model['h_low'][-1]
+    a = model['a'][-1]
+    b = model['b'][-1]
+    c = model['c'][-1]
+    rho_up = b / c
+    h_up = a / rho_up / 1.e5
+    layer = (h>=h_low) & (h<h_up)
+    Xv[layer] = a - rho_up * h[layer] * 1.e5
+    # Constant density
+    rho[layer] = rho_up
 
     # If the input h is a scalar, then the function returns two scalars
     return 1.*Xv, 1.*rho
+
+
+def _df_Xv_rho(h, df):
+    """
+    Interpolate the vertical depth in g/cm^2 from a DataFrame and calculate
+    the mass density in g/cm^3.
+
+    Parameters
+    ----------
+    h : float or array_like
+        Height in km.
+    df : DataFrame
+        DataFrame containing height and vertical depth.
+
+    Returns
+    -------
+    Xv : float or array_like
+        Vertical depth in g/cm^2.
+    rho : float or array_like
+        Mass density in g/cm^3.
+    """
+    # Check lower limit
+    if h[0]<df.h.iloc[0]:
+        raise ValueError(
+            'The input DataFrame should include the ground level h0.')
+    h_df = np.array(df.h)
+
+    Xv_df = df.get('X_vert')
+    if Xv_df is None:
+        P = df.get('P')
+        if P is None:
+            raise ValueError(
+                'The input DataFrame should have a column X_vert or P.')
+        else:
+            Xv_df = 1. / ct.g_cm * P * 1000.
+    Xv_df = np.array(Xv_df)
+
+    # Check upper limit
+    if Xv_df[-1]==0.:
+        Xv_df[-1] = Xv_df[-2] / 1000. # to avoid log(0)
+
+    # An exponential atmosphere is assumed for interpolation and
+    # numerical derivative
+    log_Xv_df = np.log(Xv_df)
+    log_Xv_lim = log_Xv_df[-1]
+
+    # Vertical depth. Xv=0 for h>h_df[-1]
+    Xv = np.exp(np.interp(h, h_df, log_Xv_df, right=-np.inf))
+
+    # Mass density. Expected to be constant at the top
+    rho_df = -Xv_df * (np.diff(log_Xv_df, append=0.) /
+                       np.diff(h_df, append=0.) * 1.e-5)
+    rho_df[-1] = rho_df[-2]
+    # Xv_df and rho_df must be ascending, but both Xv and rho are descending
+    # rho=0 for Xv=0 (h>h_df[-1])
+    rho = np.interp(Xv, Xv_df[::-1], rho_df[::-1], left=0.)
+
+    # If the input h is a scalar, then the function returns Xv and rho as scalars
+    return 1.*Xv, 1.*rho
+
+def _model_h_top(model):
+    """
+    Get the top height of the atmosphere.
+    """
+    # Top layer (lineal)
+    a = model['a'][-1]
+    b = model['b'][-1]
+    c = model['c'][-1]
+    return a / b * c / 1.e5
+

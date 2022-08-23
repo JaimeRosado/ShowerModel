@@ -1,0 +1,498 @@
+# CORSIKA atmospheric models (ignoring water vapor)
+# They consist in 5 layers. In the first 4 layers, the density follows
+# an exponential dependence on the altitude, so the vertical depth is
+# X_vert = a + b * exp(-h / c)
+# In the fifth layer, X_vert decreases linearly with height
+# X_vert = a - b * h / c
+# Pressure and temperature are calculated assuming an ideal gas
+# (with molar mass of dry air) and constant acceleration of gravity.
+
+[1]
+# Optional paramter
+info = "U.S. standard atmosphere as parameterized by Linsley"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 4.0, 10.0, 40.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-186.555305, -94.919, 0.61289, 0.0, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1222.6562, 1144.9069, 1305.5948, 540.1778, 1.0]
+
+# Parameter c in cm
+c = [994186.38, 878153.55, 636143.04, 772170.16, 1.0e9]
+
+
+[2]
+# Optional paramter
+info = "AT115 Central European atmosphere for Jan. 15, 1993"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 4.0, 10.0, 40.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-118.1277, -154.258, 0.4191499, 5.4094056e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1173.9861, 1205.7625, 1386.7807, 555.8935, 1.0]
+
+# Parameter c in cm
+c = [919546.0, 963267.92, 614315.0, 739059.6, 1.0e9]
+
+
+[3]
+# Optional paramter
+info = "AT223 Central European atmosphere for Feb. 23, 1993"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 4.0, 10.0, 40.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-195.837264, -50.4128778, 0.345594007, 5.46207e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1240.48, 1117.85, 1210.9, 608.2128, 1.0]
+
+# Parameter c in cm
+c = [933697.0, 765229.0, 636790.0, 733793.8, 1.0e9]
+
+
+[4]
+# Optional paramter
+info = "AT511 Central European atmosphere for May 11, 1993"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 4.0, 10.0, 40.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-253.95047, -128.97714, 0.353207, 5.526876e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1285.2782, 1173.1616, 1320.4561, 680.6803, 1.0]
+
+# Parameter c in cm
+c = [1088310.0, 935485.0, 635137.0, 727312.6, 1.0e9]
+
+
+[5]
+# Optional paramter
+info = "AT616 Central European atmosphere for June 16, 1993"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 4.0, 10.0, 40.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-208.12899, -120.26179, 0.31167036, 5.591489e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1251.474, 1173.321, 1307.826, 763.1139, 1.0]
+
+# Parameter c in cm
+c = [1032310.0, 925528.0, 645330.0, 720851.4, 1.0e9]
+
+
+[6]
+# Optional paramter
+info = "AT822 Central European atmosphere for Aug. 22, 1993"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 4.0, 10.0, 40.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-77.875723, -214.96818, 0.3721868, 5.5309816e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1103.3362, 1226.5761, 1382.6933, 685.6073, 1.0]
+
+# Parameter c in cm
+c = [932077.0, 1109960.0, 630217.0, 726901.3, 1.0e9]
+
+
+[7]
+# Optional paramter
+info = "AT1014 Central European atmosphere for Oct. 14, 1993"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 4.0, 10.0, 40.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-242.56651, -103.21398, 0.3349752, 5.527485e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1262.7013, 1139.0249, 1270.2886, 681.4061, 1.0]
+
+# Parameter c in cm
+c = [1059360.0, 888814.0, 639902.0, 727251.8, 1.0e9]
+
+
+[8]
+# Optional paramter
+info = "AT1224 Central European atmosphere for Dec. 24, 1993"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 4.0, 10.0, 40.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-195.34842, -71.997323, 0.3378142, 5.48224e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1210.4, 1103.8629, 1215.3545, 629.7611, 1.0]
+
+# Parameter c in cm
+c = [970276.0, 820946.0, 639074.0, 731776.5, 1.0e9]
+
+
+# [9] Not existing. User-defined model in COSRIKA
+
+# [10] Not existing. User-defined model in COSRIKA
+
+
+[11]
+# Optional paramter
+info = "South pole atmosphere for March 31, 1997 (MSIS-90-E)"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 4.0, 10.0, 40.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-137.656, -37.9610, 0.222659, -0.000616201, 0.00207722]
+
+# Parameter b in g/cm2
+b = [1130.74, 1052.05, 1137.21, 442.512, 1.0]
+
+# Parameter c in cm
+c = [867358.0, 741208.0, 633846.0, 759850.0, 5.4303203e9]
+
+
+[12]
+# Optional paramter
+info = "South pole atmosphere for Jul. 01, 1997 (MSIS-90-E)"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 4.0, 10.0, 40.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-163.331, -65.3713, 0.402903, -0.000479198, 0.00188667]
+
+# Parameter b in g/cm2
+b = [1183.70, 1108.06, 1424.02, 207.595, 1.0]
+
+# Parameter c in cm
+c = [875221.0, 753213.0, 545846.0, 793043.0, 5.9787908e9]
+
+
+[13]
+# Optional paramter
+info = "South pole atmosphere for Oct. 01, 1997 (MSIS-90-E)"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 4.0, 10.0, 40.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-142.801, -70.1538, 1.14855, -0.000910269, 0.00152236]
+
+# Parameter b in g/cm2
+b = [1177.19, 1125.11, 1304.77, 433.823, 1.0]
+
+# Parameter c in cm
+c = [861745.0, 765925.0, 581351.0, 775155.0, 7.4095699e9]
+
+
+[14]
+# Optional paramter
+info = "South pole atmosphere for Dec. 31, 1997 (MSIS-90-E)"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 4.0, 10.0, 40.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-128.601, -39.5548, 1.13088, -0.00264960, 0.00192534]
+
+# Parameter b in g/cm2
+b = [1139.99, 1073.82, 1052.96, 492.503, 1.0]
+
+# Parameter c in cm
+c = [861913.0, 744955.0, 675928.0, 829627.0, 5.8587010e9]
+
+
+[15]
+# Optional paramter
+info = "South pole atmosphere for January after Lipari"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 2.67, 5.33, 8.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-113.139, -79.0635, -54.3888, 0.0, 0.00421033]
+
+# Parameter b in g/cm2
+b = [1133.10, 1101.20, 1085.00, 1098.00, 1.0]
+
+# Parameter c in cm
+c = [861730.0, 826340.0, 790950.0, 682800.0, 2.6798156e9]
+
+
+[16]
+# Optional paramter
+info = "South pole atmosphere for August after Lipari"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 6.67, 13.33, 20.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-59.0293, -21.5794, -7.14839, 0.0, 0.000190175]
+
+# Parameter b in g/cm2
+b = [1079.00, 1071.90, 1182.00, 1647.10, 1.0]
+
+# Parameter c in cm
+c = [764170.0, 699910.0, 635650.0, 551010.0, 59.329575e9]
+
+
+[17]
+# Optional paramter
+model = "U.S. standard atmosphere as parameterized by Keilhauer"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 7.0, 11.4, 37.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-149.801663, -57.932486, 0.63631894, 4.3545369e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1183.6071, 1143.0425, 1322.9748, 655.67307, 1.0]
+
+# Parameter c in cm
+c = [954248.34, 800005.34, 629568.93, 737521.77, 1.0e9]
+
+
+[18]
+# Optional paramter
+model = "Malargüe GDAS model for January after Will/Keilhauer"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 9.4, 15.3, 31.6, 100.0]
+
+# Parameter a in g/cm2
+a = [-136.72575606, -31.636643044, 1.8890234035, 3.9201867984e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1174.8298334, 1204.8233453, 1637.7703583, 735.96095023, 1.0]
+
+# Parameter c in cm
+c = [982815.95248, 754029.87759, 594416.83822, 733974.36972, 1.0e9]
+
+
+[19]
+# Optional paramter
+model = "Malargüe GDAS model for February after Will/Keilhauer"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 9.2, 15.4, 31.0, 100.0]
+
+# Parameter a in g/cm2
+a = [-137.25655862, -31.793978896, 2.0616227547, 4.1243062289e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1176.0907565, 1197.8951104, 1646.4616955, 755.18728657, 1.0]
+
+# Parameter c in cm
+c = [981369.6125, 756657.65383, 592969.89671, 731345.88332, 1.0e9]
+
+
+[20]
+# Optional paramter
+model = "Malargüe GDAS model for March after Will/Keilhauer"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 9.6, 15.2, 30.7, 100.0]
+
+# Parameter a in g/cm2
+a = [-132.36885162, -29.077046629, 2.090501509, 4.3534337925e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1172.6227784, 1215.3964677, 1617.0099282, 769.51991638, 1.0]
+
+# Parameter c in cm
+c = [972654.0563, 742769.2171, 595342.19851, 728921.61954, 1.0e9]
+
+
+[21]
+# Optional paramter
+model = "Malargüe GDAS model for April after Will/Keilhauer"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 10.0, 14.9, 32.6, 100.0]
+
+# Parameter a in g/cm2
+a = [-129.9930412, -21.847248438, 1.5211136484, 3.9559055121e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1172.3291878, 1250.2922774, 1542.6248413, 713.1008285, 1.0]
+
+# Parameter c in cm
+c = [962396.5521, 711452.06673, 603480.61835, 735460.83741, 1.0e9]
+
+
+[22]
+# Optional paramter
+model = "Malargüe GDAS model for May after Will/Keilhauer"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 10.2, 15.1, 35.9, 100.0]
+
+# Parameter a in g/cm2
+a = [-125.11468467, -14.591235621, 0.93641128677, 3.2475590985e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1169.9511302, 1277.6768488, 1493.5303781, 617.9660747, 1.0]
+
+# Parameter c in cm
+c = [947742.88769, 685089.57509, 609640.01932, 747555.95526, 1.0e9]
+
+
+[23]
+# Optional paramter
+model = "Malargüe GDAS model for June after Will/Keilhauer"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 10.1, 16.0, 36.7, 100.0]
+
+# Parameter a in g/cm2
+a = [-126.17178851, -7.7289852811, 0.81676828638, 3.1947676891e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1171.0916276, 1295.3516434, 1455.3009344, 595.11713507, 1.0]
+
+# Parameter c in cm
+c = [940102.98842, 661697.57543, 612702.0632, 749976.26832, 1.0e9]
+
+
+[24]
+# Optional paramter
+model = "Malargüe GDAS model for July after Will/Keilhauer"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 9.6, 16.5, 37.4, 100.0]
+
+# Parameter a in g/cm2
+a = [-126.17216789, -8.6182537514, 0.74177836911, 2.9350702097e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1172.7340688, 1258.9180079, 1450.0537141, 583.07727715, 1.0]
+
+# Parameter c in cm
+c = [934649.58886, 672975.82513, 614888.52458, 752631.28536, 1.0e9]
+
+
+[25]
+# Optional paramter
+model = "Malargüe GDAS model for August after Will/Keilhauer"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 9.6, 15.9, 36.3, 100.0]
+
+# Parameter a in g/cm2
+a = [-123.27936204, -10.051493041, 0.84187346153, 3.2422546759e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1169.763036, 1251.0219808, 1436.6499372, 627.42169844, 1.0]
+
+# Parameter c in cm
+c = [931569.97625, 678861.75136, 617363.34491, 746739.16141, 1.0e9]
+
+
+[26]
+# Optional paramter
+model = "Malargüe GDAS model for September after Will/Keilhauer"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 9.5, 16.2, 37.2, 100.0]
+
+# Parameter a in g/cm2
+a = [-126.94494665, -9.5556536981, 0.74939405052, 2.9823116961e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1174.8676453, 1251.5588529, 1440.8257549, 606.31473165, 1.0]
+
+# Parameter c in cm
+c = [936953.91919, 678906.60516, 618132.60561, 750154.67709, 1.0e9]
+
+
+[27]
+# Optional paramter
+model = "Malargüe GDAS model for October after Will/Keilhauer"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 9.5, 15.5, 36.5, 100.0]
+
+# Parameter a in g/cm2
+a = [-133.13151125, -13.973209265, 0.8378263431, 3.111742176e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1176.9833473, 1244.234531, 1464.0120855, 622.11207419, 1.0]
+
+# Parameter c in cm
+c = [954151.404, 692708.89816, 615439.43936, 747969.08133, 1.0e9]
+
+
+[28]
+# Optional paramter
+model = "Malargüe GDAS model for November after Will/Keilhauer"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 9.6, 15.3, 34.6, 100.0]
+
+# Parameter a in g/cm2
+a = [-134.72208165, -18.172382908, 1.1159806845, 3.5217025515e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1175.7737972, 1238.9538504, 1505.1614366, 670.64752105, 1.0]
+
+# Parameter c in cm
+c = [964877.07766, 706199.57502, 610242.24564, 741412.74548, 1.0e9]
+
+
+[29]
+# Optional paramter
+model = "Malargüe GDAS model for December after Will/Keilhauer"
+
+# Lower limit in km of the 5 layers.
+# The upper limit of the fifth one is h_limit = a * c / b
+h_low = [0.0, 9.6, 15.6, 33.3, 100.0]
+
+# Parameter a in g/cm2
+a = [-135.40825209, -22.830409026, 1.4223453493, 3.7512921774e-4, 0.01128292]
+
+# Parameter b in g/cm2
+b = [1174.644971, 1227.2753683, 1585.7130562, 691.23389637, 1.0]
+
+# Parameter c in cm
+c = [973884.44361, 723759.74682, 600308.13983, 738390.20525, 1.0e9]

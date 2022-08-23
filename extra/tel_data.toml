@@ -1,0 +1,161 @@
+# Default telescope data corresponding to tel_type.
+# For the optional parameter eff_fluo, efficiency values should be given for the
+# 57 fluorescence bands considered in fluorescence_model.toml 
+# wvl_fluo = [281, 282, 296, 298, 302,
+#             308, 312, 314, 316, 318,
+#             327, 329, 331, 334, 337,
+#             346, 350, 354, 358, 366,
+#             367, 371, 376, 381, 386,
+#             388, 389, 391, 394, 400,
+#             405, 414, 420, 424, 427,
+#             428, 434, 436, 442, 449,
+#             457, 460, 465, 467, 471,
+#             481, 492, 503, 515, 523,
+#             531, 545, 570, 575, 586,
+#             594, 666]
+
+[generic]
+    # Angular diameter in degrees of the telescope field of view.
+    apert = 10.0  # deg
+
+    # Detection area in m^2 (e.g., mirror area of an IACT).
+    area = 100.0  # m^2
+
+    # Number of camera pixels.
+    N_pix = 1500
+
+    # Integration time in microseconds of camera frames.
+    int_time = 0.01  # us
+
+    # Wavelength interval where efficiency is non zero.
+    # Array of wavelengths in nm. Discretization step must be constant.
+    # If not given, it is calculated from wvl = np.arange(wvl_ini, wvl_fin, wvl_step)
+    #wvl = [290.0, ..., 428.0]
+    # Initial-final wavelengths and step size in nm. Only used if wvl is not given.
+    wvl_ini = 290.0  # nm
+    wvl_fin = 430.0  # nm (not included in wvl)
+    wvl_step = 3.0   # nm (needed to integrate the Cherenkov signal when atm_trans==true)
+
+    # Detection efficiency in decimal fraction.
+    # If a float value is given, efficiency is assumed to be constant within the wavelength interval [wvl_ini, wvl_fin].
+    # A list of efficiency values can be given instead, making sure that efficiency matches wvl.
+    eff = 1.0
+    # Optional parameter. Detection efficiency at the 57 bands considered in the fluorescence model (see above).
+    # If not given, values are interpolated from eff.
+    # Put zeros if neccesary to match length of wvl_fluo.
+    #eff_fluo = [1.0, ..., 1.0]
+
+[GridElement]
+    # Angular diameter in degrees of the telescope field of view.
+    apert = 180.0  # deg
+
+    # Detection area in m^2 (e.g., mirror area of an IACT).
+    area = 100.0  # m^2
+
+    # Number of camera pixels.
+    N_pix = 1
+
+    # Integration time in microseconds of camera frames.
+    int_time = 10.0  # us
+
+    # Wavelength interval where efficiency is non zero.
+    # Array of wavelengths in nm. Discretization step must be constant.
+    # If not given, it is calculated from wvl = np.arange(wvl_ini, wvl_fin, wvl_step)
+    #wvl = [290.0, ..., 428.0]
+    # Initial-final wavelengths and step size in nm. Only used if wvl is not given.
+    wvl_ini = 290.0  # nm
+    wvl_fin = 430.0  # nm (not included in wvl)
+    wvl_step = 3.0   # nm (needed to integrate the Cherenkov signal when atm_trans==true)
+
+    # Detection efficiency in decimal fraction.
+    # If a float value is given, efficiency is assumed to be constant within the wavelength interval [wvl_ini, wvl_fin].
+    # A list of efficiency values can be given instead, making sure that efficiency matches wvl.
+    eff = 1.0
+    # Optional parameter. Detection efficiency at the 57 bands considered in the fluorescence model (see above).
+    # If not given, values are interpolated from eff.
+    # Put zeros if neccesary to match length of wvl_fluo.
+    #eff_fluo = [1.0, ..., 1.0]
+
+[IACT]
+    # Angular diameter in degrees of the telescope field of view.
+    apert = 8.0  # deg
+
+    # Detection area in m^2 (e.g., mirror area of an IACT).
+    area = 113.097  # m^2
+
+    # Number of camera pixels.
+    N_pix = 1800
+
+    # Integration time in microseconds of camera frames.
+    int_time = 0.01  # us
+
+    # Wavelength interval where efficiency is non zero.
+    # Array of wavelengths in nm. Discretization step must be constant.
+    # If not given, it is calculated from wvl = np.arange(wvl_ini, wvl_fin, wvl_step)
+    wvl = [280.0, 283.0, 286.0, 289.0, 292.0,
+           295.0, 298.0, 301.0, 304.0, 307.0,
+           310.0, 313.0, 316.0, 319.0, 322.0,
+           325.0, 328.0, 331.0, 334.0, 337.0,
+           340.0, 343.0, 346.0, 349.0, 352.0,
+           355.0, 358.0, 361.0, 364.0, 367.0,
+           370.0, 373.0, 376.0, 379.0, 382.0,
+           385.0, 388.0, 391.0, 394.0, 397.0,
+           400.0, 403.0, 406.0, 409.0, 412.0,
+           415.0, 418.0, 421.0, 424.0, 427.0,
+           430.0, 433.0, 436.0, 439.0, 442.0,
+           445.0, 448.0, 451.0, 454.0, 457.0,
+           460.0, 463.0, 466.0, 469.0, 472.0,
+           475.0, 478.0, 481.0, 484.0, 487.0,
+           490.0, 493.0, 496.0, 499.0, 502.0,
+           505.0, 508.0, 511.0, 514.0, 517.0,
+           520.0, 523.0, 526.0, 529.0, 532.0,
+           535.0, 538.0, 541.0, 544.0, 547.0,
+           550.0, 553.0, 556.0, 559.0, 562.0,
+           565.0, 568.0, 571.0, 574.0, 577.0,
+           580.0, 583.0, 586.0, 589.0, 592.0,
+           595.0, 598.0]
+    # Initial-final wavelengths and step size in nm. Only used if wvl is not given.
+    wvl_ini = 280.0  # nm
+    wvl_fin = 560.0  # nm (not included in wvl)
+    wvl_step = 3.0   # nm (needed to integrate the Cherenkov signal when atm_trans==true)
+
+    # Detection efficiency in decimal fraction.
+    # If a float value is given, efficiency is assumed to be constant within the wavelength interval [wvl_ini, wvl_fin].
+    # A list of efficiency values can be given instead, making sure that efficiency matches wvl.
+    eff = [0.01549109, 0.07929918, 0.12963671, 0.17227160, 0.20737558,
+           0.23620218, 0.26303514, 0.28054180, 0.29466943, 0.30534291,
+           0.31487235, 0.32109888, 0.32663823, 0.33124247, 0.33485481,
+           0.33779549, 0.34029057, 0.34245432, 0.34408696, 0.34525204,
+           0.34617290, 0.34677869, 0.34724839, 0.34725518, 0.34704414,
+           0.34650661, 0.34635416, 0.34697940, 0.34802544, 0.34980112,
+           0.35165961, 0.35340027, 0.35487968, 0.35600359, 0.35627157,
+           0.35453785, 0.35290097, 0.35149441, 0.35007389, 0.34852091,
+           0.34668034, 0.34418064, 0.34175984, 0.33960103, 0.33737256,
+           0.33486841, 0.33231135, 0.32954030, 0.32675191, 0.32395963,
+           0.32098053, 0.31707070, 0.31308814, 0.30863957, 0.30418957,
+           0.29862994, 0.29259352, 0.28659898, 0.28064450, 0.27502209,
+           0.26952477, 0.26466024, 0.25979416, 0.25515796, 0.25052618,
+           0.24626667, 0.24225691, 0.23828600, 0.23434073, 0.23003388,
+           0.22545024, 0.21959105, 0.21275740, 0.20553806, 0.19688918,
+           0.18546885, 0.17399642, 0.16420586, 0.15533591, 0.14750979,
+           0.13897085, 0.13244260, 0.12695100, 0.12189394, 0.11705413,
+           0.11310926, 0.10968250, 0.10642817, 0.10327383, 0.10030391,
+           0.09745325, 0.09444885, 0.09134185, 0.08838148, 0.08553319,
+           0.08266862, 0.07978976, 0.07723785, 0.07497205, 0.07239917,
+           0.06951917, 0.06666249, 0.06382916, 0.06110683, 0.05851143,
+           0.05726153, 0.05755025]
+    # Optional parameter. Detection efficiency at the 57 bands considered in the fluorescence model (see above).
+    # If not given, values are interpolated from eff.
+    # Put zeros if neccesary to match length of wvl_fluo.
+    eff_fluo = [0.03676045, 0.05802982, 0.24514650, 0.26303514, 0.28525101,
+                0.30851939, 0.31902337, 0.32294533, 0.32663823, 0.32970772,
+                0.33945887, 0.34101182, 0.34245432, 0.34408696, 0.34525204,
+                0.34724839, 0.34718483, 0.34668579, 0.34635416, 0.34920922,
+                0.34980112, 0.35223983, 0.35487968, 0.35618225, 0.35399222,
+                0.35290097, 0.35243212, 0.35149441, 0.35007389, 0.34668034,
+                0.34256678, 0.33570312, 0.33046398, 0.32675191, 0.32395963,
+                0.32296660, 0.31574318, 0.31308814, 0.30418958, 0.29059534,
+                0.27502209, 0.26952477, 0.26141619, 0.25824876, 0.25207011,
+                0.23828600, 0.22154411, 0.19308241, 0.15272720, 0.13244260,
+                0.11866740, 0.10228386, 0.07808849, 0.07411443, 0.06382916,
+                0.05767816, 0.00000000]

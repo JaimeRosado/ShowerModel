@@ -4,11 +4,16 @@ import numpy as np
 import pandas as pd
 import warnings
 import matplotlib.pyplot as plt
+import showermodel.constants as ct
+
 warnings.filterwarnings(
     'ignore',
     'Pandas doesn\'t allow columns to be created via a new attribute name',
     UserWarning)
 
+# Default values for Cherenkov
+_Cherenkov__wvl_ini = ct.config['Signal']['wvl_ini']
+_Cherenkov__wvl_fin = ct.config['Signal']['wvl_fin']
 
 # Class #######################################################################
 class Cherenkov(pd.DataFrame):
@@ -22,7 +27,7 @@ class Cherenkov(pd.DataFrame):
 
     Parameters
     ----------
-    profile : Profile
+    profile : Profile, mandatory
         Profile object to be used.
 
     Attributes
@@ -89,8 +94,9 @@ def _cherenkov(cherenkov, profile):
     cherenkov.atmosphere = profile.atmosphere
     E_th = profile.atmosphere.E_th[profile.index]
     C_E = _E_factor(profile.s, E_th, profile.E/2.)
-    cherenkov.N_ph = (2. * np.pi / 137.036 * (1. / 290. - 1. / 430.)
-                      * 1e12 * C_E * profile.N_ch * profile.dl)
+    cherenkov.N_ph = (2. * ct.pi * ct.alpha * (1./_Cherenkov__wvl_ini -
+                                               1./_Cherenkov__wvl_fin)
+                      * 1.e12 * C_E * profile.N_ch * profile.dl)
 
     cherenkov.a = 0.42489 + 0.58371 * profile.s - 0.082373 * profile.s**2
     cherenkov.theta_c = np.degrees(0.62694 / E_th**0.6059)
@@ -148,4 +154,4 @@ def _E_factor(s, Eth, Emax):
                 factor[i] = factor[i] + a0[i] * (
                     tail(Eth[i], Etail, s[i]) - tail(Eth[i], Emax, s[i]))
 
-    return 0.511**2 * factor
+    return ct.mc2**2 * factor

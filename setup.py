@@ -21,13 +21,18 @@ setup(
         "pandas",
         "matplotlib",
         "scipy",
+        "toml",
         "ipython",
         "setuptools_scm"
     ],
     package_data={
         'showermodel': [
+            'extra/atm_models.toml',
             'extra/averaged_profile_5sh_100TeV.dat',
-            'extra/Edep_profile_1000GeV_1000sh_0deg.dat'
+            'extra/Edep_profile_1000GeV_1000sh_0deg.dat',
+            'extra/mean_annual_global_reference_atmosphere.xlsx',
+            'extra/showermodel_config.toml',
+            'extra/tel_data.toml'
         ],
     },
     # here are optional dependencies (as "tag" : "dependency spec")
