@@ -115,14 +115,8 @@ def _fluorescence(fluorescence, profile):
         if PPw == 0:
             P_PP = P / PP0
         else:
-<<<<<<< Updated upstream
-            fluorescence[wvl] = (
-                N0_337 * I_rel * (1. + P0 / PP0) / (1. + ((P - P_w) / PP0
-                   + P_w / PPw) * (T0 / temp)**(0.5 - a)))
-=======
             P_PP = P / PP0 + P_w / PPw
 
         fluorescence[wvl] = (
             N0_337 * I_rel * (1. + P0 / PP0) / (1. + P_PP
                                                 * (T0 / temp)**(0.5 - a)))
->>>>>>> Stashed changes
