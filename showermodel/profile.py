@@ -392,15 +392,9 @@ def _profile(profile, E, theta, alt, prf_model, X_max, X0_GH, lambda_GH, zi,
     elif prf_model == 'Gaisser-Hillas':
         # If not given, a typical value according to Heitler model is used
         if X_max is None:
-<<<<<<< Updated upstream
-            X_max = 36.7 * np.log(E / 4. / 81.)
-            # lambda_r = 36.7 g/cm2 radiation length in air
-            # E_c=81 MeV is the critical energy in air
-=======
             # E_c: critical energy in air in MeV
             # lambda_r: radiation length in air in g/cm
             X_max = ct.lambda_r * np.log(E / 4. / ct.E_c)
->>>>>>> Stashed changes
         profile.X_max = X_max
         s = 3. * profile.X / (profile.X + 2. * X_max)  # Shower age
         profile.s = s
