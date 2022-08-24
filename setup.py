@@ -32,7 +32,8 @@ setup(
             'extra/Edep_profile_1000GeV_1000sh_0deg.dat',
             'extra/mean_annual_global_reference_atmosphere.xlsx',
             'extra/showermodel_config.toml',
-            'extra/tel_data.toml'
+            'extra/tel_data.toml',
+            'showermodel/constants/*.toml',
         ],
     },
     # here are optional dependencies (as "tag" : "dependency spec")
