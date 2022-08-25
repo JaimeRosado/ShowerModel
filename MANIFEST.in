@@ -1,2 +1,3 @@
-exclude showermodel/_dev_version.py
-global-exclude *.pyc *.o
+prune src/project_template_python_pure/_dev_version
+prune .github
+recursive-include extra *.dat *.toml *.xlsx
