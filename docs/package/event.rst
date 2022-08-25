@@ -6,9 +6,6 @@ Event
 .. autoclass:: showermodel.event.Event
    :show-inheritance:
 
-.. autoclass:: showermodel.event.GridEvent
-   :show-inheritance:
-
 *Methods:*
    .. automethod:: showermodel.event.Event.show_projection
       :noindex:
