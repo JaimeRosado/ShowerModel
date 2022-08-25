@@ -1,6 +1,7 @@
 """
 Empty setup.py file to enable editable installation.
 Do not change. Use setup.cfg.
+Based on https://github.com/cta-observatory/project-template-python-pure
 """
 
 from setuptools import setup
