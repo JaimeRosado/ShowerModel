@@ -5,10 +5,6 @@ Telescope
 
 .. autoclass:: showermodel.telescope.Telescope
    :show-inheritance:
-.. autoclass:: showermodel.telescope.IACT
-   :show-inheritance:
-.. autoclass:: showermodel.telescope.GridElement
-   :show-inheritance:
 
 *Methods:*
    .. automethod:: showermodel.telescope.Telescope.copy
