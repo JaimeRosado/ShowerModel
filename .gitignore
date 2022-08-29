@@ -2,7 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-showermodel/_version.py
+src/showermodel/_version.py
 
 # C extensions
 *.so
