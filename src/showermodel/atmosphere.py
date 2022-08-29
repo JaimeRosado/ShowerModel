@@ -180,7 +180,7 @@ class Atmosphere(pd.DataFrame):
 
         Returns
         -------
-        rho : float or array_like
+        h : float or array_like
         """
         h = np.append(self.h0, self.h)
         h = np.append(h, self.h_top)
@@ -249,7 +249,7 @@ class Atmosphere(pd.DataFrame):
 
         Returns
         -------
-        P : float or array_like
+        Xv : float or array_like
         """
         # g_cm: standard acceleration of gravity in cm/s^2
         return 1. / ct.g_cm * P * 1000. # hPa  (1 hPa = 1000 erg/cm^3)
@@ -258,6 +258,16 @@ class Atmosphere(pd.DataFrame):
         """
         Calculate pressure and temperature from vertical depth and mass
         density assuming constant acceleration of gravity and an ideal gas.
+
+        Parameters
+        ----------
+        Xv : float or array_like
+            Vertical depth in g/cm^2.
+
+        Returns
+        -------
+        P : float or array_like
+        T : float or array_like
         """
         # M_air: air molar mass in g/mol (dry air)
         # R_erg: molar gas constant in erg/K/mol
