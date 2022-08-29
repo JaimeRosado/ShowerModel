@@ -65,8 +65,6 @@ class Observatory(list):
         super().__init__([*telescopes])
         self.obs_name = obs_name
 
-
-
     @property
     def N_tel(self):
         self._N_tel = len(self)
@@ -243,6 +241,15 @@ class Array25(Observatory):
         Azimuth angle (from north, clockwise) in degrees of the observatory
         pointing direction. Only defined if all the telescopes point to the
         same direction.
+
+    Methods
+    -------
+    show()
+        Show the telescope positions and indexes in a 2D plot.
+    append()
+        Append a telescope to the observatory.
+    set_pointing()
+        Set pointings of all the telescopes.
     """
     def __init__(self, obs_name=__obs_name, telescope=None,
                  tel_type=__tel_type, x_c=__x_c, y_c=__y_c, z_c=__z_c,
@@ -372,6 +379,15 @@ class Grid(Observatory):
         Azimuth angle (from north, clockwise) in degrees of the observatory
         pointing direction. Only defined if all the telescopes point to the
         same direction.
+
+    Methods
+    -------
+    show()
+        Show the telescope positions and indexes in a 2D plot.
+    append()
+        Append a telescope to the observatory.
+    set_pointing()
+        Set pointings of all the telescopes.
     """
     def __init__(self, obs_name=__obs_name, telescope=None,
                  tel_type=__tel_type, x_c=__x_c, y_c=__y_c, z_c=__z_c,

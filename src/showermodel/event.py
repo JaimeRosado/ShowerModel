@@ -91,7 +91,7 @@ class Event():
     show_geometry3D()
         Show the shower track and the telescope positions in a 3D plot.
     show_distribution()
-        Make a GridEvent object and show the distribution of photons
+        Make an Event from a Grid object and show the distribution of photons
         per m^2 in a 1D or 2D plot.
     make_images()
         Generate shower images.

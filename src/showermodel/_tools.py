@@ -77,7 +77,7 @@ def show_projection(projection, profile, shower_Edep, axes, max_theta, X_mark):
     phi_FoV = np.linspace(0., 360., 61)
     theta_FoV = np.ones_like(phi_FoV) * telescope.apert / 2.
     # Horizontal coordinates system
-    alt_FoV, az_FoV = telescope.thetaphi_to_altaz(theta_FoV, phi_FoV)
+    alt_FoV, az_FoV = telescope.theta_phi_to_alt_az(theta_FoV, phi_FoV)
     if len(alt_FoV[alt_FoV<0.])>len(alt_FoV[alt_FoV>0.]): 
         nadir = True
     else:
@@ -92,7 +92,7 @@ def show_projection(projection, profile, shower_Edep, axes, max_theta, X_mark):
         phi_2pi = phi_FoV  # = np.linspace(0., 360., 61)
         theta_2pi = np.ones(61) * 90.
         # Horizontal coordinates system
-        alt_2pi, az_2pi = telescope.thetaphi_to_altaz(theta_2pi, phi_2pi)
+        alt_2pi, az_2pi = telescope.theta_phi_to_alt_az(theta_2pi, phi_2pi)
         ax1.plot(np.radians(az_2pi), alt_2pi, 'g--')
 
         # Coordinates of the horizon in horizontal projection
@@ -103,19 +103,19 @@ def show_projection(projection, profile, shower_Edep, axes, max_theta, X_mark):
         ax2.plot(np.radians(phi_hor), theta_hor, 'g--')
 
         if nadir:
-            # Coordinates of north-nadir-south arc in horizontal coordinates system
-            # alt values smaller than -90 deg correspond to az = 180 deg (south)
+            # Coordinates of north-nadir-south arc in horizontal coordinates
+            # alt smaller than -90 deg corresponds to az = 180 deg (south)
             alt_ns = np.linspace(-180., 0., 61)
         else:
-            # Coordinates of north-zenith-south arc in horizontal coordinates system
-            # alt values greater than 90 deg correspond to az = 180 deg (south)
+            # Coordinates of north-zenith-south arc in horizontal coordinates
+            # alt greater than 90 deg corresponds to az = 180 deg (south)
             alt_ns = np.linspace(0., 180., 61)
         az_ns = alt_hor  # np.zeros(61)
         # In FoV projection
         theta_ns, phi_ns = telescope.altaz_to_thetaphi(alt_ns, az_ns)
         ax2.plot(np.radians(phi_ns), theta_ns, 'g--')
 
-        # Coordinates of east-zenith(or nadir)-west arc in horiziontal coord. system
+        # Coordinates of east-zenith(or nadir)-west arc in horiziontal coord.
         # alt values smaller than -90 deg correspond to az = 270 deg (west)
         alt_ew = alt_ns  # np.linspace(0., 180., 61)
         az_ew = theta_2pi  # =np.ones(61) * 90.
@@ -128,7 +128,7 @@ def show_projection(projection, profile, shower_Edep, axes, max_theta, X_mark):
         # Negative values of theta correspond to phi = 180 degrees
         phi_phi0 = az_ns  # =np.zeros(61)
         # Horizontal coordinates system
-        alt_phi0, az_phi0 = telescope.thetaphi_to_altaz(theta_phi0, phi_phi0)
+        alt_phi0, az_phi0 = telescope.theta_phi_to_alt_az(theta_phi0, phi_phi0)
         ax1.plot(np.radians(az_phi0), alt_phi0, 'g--')
 
         # Coordinates of phi=90 arc in FoV coordinates system
@@ -136,7 +136,7 @@ def show_projection(projection, profile, shower_Edep, axes, max_theta, X_mark):
         # Negative values of theta correspond to phi = 270 degrees
         phi_phi90 = theta_2pi  # =np.ones(61) * 90.
         # Horizontal coordinates system
-        alt_phi90, az_phi90 = telescope.thetaphi_to_altaz(theta_phi90,
+        alt_phi90, az_phi90 = telescope.theta_phi_to_alt_az(theta_phi90,
                                                           phi_phi90)
         ax1.plot(np.radians(az_phi90), alt_phi90, 'g--')
 

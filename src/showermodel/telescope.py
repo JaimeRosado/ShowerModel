@@ -135,9 +135,9 @@ class Telescope:
         Convert cartesian coordinates from horizontal system to FoV system.
     FoV_to_hor()
         Convert cartesian coordinates from FoV system to horizontal system.
-    thetaphi_to_altaz()
+    theta_phi_to_alt_az()
         Convert FoV coordinates theta/phi to horizontal coordinates alt/az.
-    altaz_to_thetaphi()
+    alt_az_to_theta_phi()
         Convert horizontal coordinates alt/az to FoV coordinates theta/phi.
     spherical()
         Calculate the spherical coordinates in both horizontal and FoV systems.
@@ -316,7 +316,7 @@ class Telescope:
         telescope_c = Telescope(**kwargs)
         return telescope_c
 
-    def altaz_to_thetaphi(self, alt, az):
+    def alt_az_to_theta_phi(self, alt, az):
         """
         Convert polar horizontal coordinates alt, az to FoV coordinates
         theta, phi.
@@ -333,7 +333,7 @@ class Telescope:
         --------
         Telescope.hor_to_FoV : Convert cartesian coordinates from horizontal
             system to FoV system.
-        Telescope.thetaphi_to_altaz : Convert FoV coordinates theta, phi to
+        Telescope.theta_phi_to_alt_az : Convert FoV coordinates theta, phi to
             horizontal coordinates alt, az.
         """
         alt = np.radians(alt)
@@ -374,8 +374,8 @@ class Telescope:
         --------
         Telescope.FoV_to_hor : Convert cartesian coordinates from FoV system to
             horizontal system.
-        Telescope.altaz_to_thetaphi : Convert horizontal coordinates alt, az to
-            FoV coordinates theta, phi.
+        Telescope.alt_az_to_theta_phi : Convert horizontal coordinates alt, az
+            to FoV coordinates theta, phi.
         """
         sin_theta = self._sin_theta
         cos_theta = self._cos_theta
@@ -390,7 +390,7 @@ class Telescope:
 
         return x_FoV, y_FoV, z_FoV
 
-    def thetaphi_to_altaz(self, theta, phi):
+    def theta_phi_to_alt_az(self, theta, phi):
         """
         Convert FoV coordinates theta, phi to horizontal coordinates alt, az.
 
@@ -406,8 +406,8 @@ class Telescope:
         --------
         Telescope.FoV_to_hor : Convert cartesian coordinates from FoV system to
             horizontal system.
-        Telescope.altaz_to_thetaphi : Convert horizontal coordinates alt, az to
-            FoV coordinates theta, phi.
+        Telescope.alt_az_to_theta_phi : Convert horizontal coordinates alt, az
+            to FoV coordinates theta, phi.
         """
         theta = np.radians(theta)
         phi = np.radians(phi - self._phi_right + 360.)
@@ -446,7 +446,7 @@ class Telescope:
         --------
         Telescope.hor_to_FoV : Convert cartesian coordinates from horizontal
             system to FoV system.
-        Telescope.thetaphi_to_altaz : Convert FoV coordinates theta, phi to
+        Telescope.theta_phi_to_alt_az : Convert FoV coordinates theta, phi to
             horizontal coordinates alt, az.
         """
         sin_theta = self._sin_theta

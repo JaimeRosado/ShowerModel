@@ -13,9 +13,9 @@ Telescope
       :noindex:
    .. automethod:: showermodel.telescope.Telescope.FoV_to_hor
       :noindex:
-   .. automethod:: showermodel.telescope.Telescope.thetaphi_to_altaz
+   .. automethod:: showermodel.telescope.Telescope.theta_phi_to_alt_az
       :noindex:
-   .. automethod:: showermodel.telescope.Telescope.altaz_to_thetaphi
+   .. automethod:: showermodel.telescope.Telescope.alt_az_to_theta_phi
       :noindex:
    .. automethod:: showermodel.telescope.Telescope.spherical
       :noindex:

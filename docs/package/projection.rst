@@ -13,7 +13,7 @@ Projection
       :noindex:
    .. automethod:: showermodel.projection.Projection.FoV_to_hor
       :noindex:
-   .. automethod:: showermodel.projection.Projection.thetaphi_to_altaz
+   .. automethod:: showermodel.projection.Projection.theta_phi_to_alt_az
       :noindex:
    .. automethod:: showermodel.projection.Projection.altaz_to_thetaphi
       :noindex:

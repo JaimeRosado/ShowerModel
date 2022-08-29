@@ -19,6 +19,8 @@ Event
       :noindex:
    .. automethod:: showermodel.event.Event.show_geometry3D
       :noindex:
+   .. automethod:: showermodel.event.Event.show_distribution
+      :noindex:
    .. automethod:: showermodel.event.Event.make_images
       :noindex:
    .. automethod:: showermodel.event.Event.show_images

@@ -104,9 +104,9 @@ class Signal(pd.DataFrame):
     Image()
         Generate a time-varying shower image.
     """
-    def __init__(self, telescope, shower, projection=None, atm_trans=__atm_trans,
-                 tel_eff=__tel_eff, wvl_ini=__wvl_ini, wvl_fin=__wvl_fin,
-                 wvl_step=__wvl_step):
+    def __init__(self, telescope, shower, projection=None,
+                 atm_trans=__atm_trans, tel_eff=__tel_eff, wvl_ini=__wvl_ini,
+                 wvl_fin=__wvl_fin, wvl_step=__wvl_step):
         super().__init__(columns=['Npe_cher', 'Npe_fluo', 'Npe_total'])
         _signal(self, telescope, shower, projection, atm_trans, tel_eff,
                 wvl_ini, wvl_fin, wvl_step)

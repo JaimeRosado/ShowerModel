@@ -74,7 +74,7 @@ class Projection(pd.DataFrame):
         Convert cartesian coordinates from horizontal system to FoV system.
     FoV_to_hor()
         Convert cartesian coordinates from FoV system to horizontal system.
-    thetaphi_to_altaz()
+    theta_phi_to_alt_az()
         Convert FoV coordinates theta/phi to horizontal coordinates alt/az.
     altaz_to_thetaphi()
         Convert horizontal coordinates alt/az to FoV coordinates theta/phi.
@@ -126,7 +126,7 @@ class Projection(pd.DataFrame):
         --------
         Projection.hor_to_FoV : Convert cartesian coordinates from horizontal
             system to FoV system.
-        Projection.thetaphi_to_altaz : Convert FoV coordinates theta, phi to
+        Projection.theta_phi_to_alt_az : Convert FoV coordinates theta, phi to
             horizontal coordinates alt, az.
         """
         return self.telescope.altaz_to_thetaphi(alt, az)
@@ -156,7 +156,7 @@ class Projection(pd.DataFrame):
         """
         return self.telescope.hor_to_FoV(x_hor, y_hor, z_hor)
 
-    def thetaphi_to_altaz(self, theta, phi):
+    def theta_phi_to_alt_az(self, theta, phi):
         """
         Convert FoV coordinates theta, phi to horizontal coordinates alt, az.
 
@@ -175,7 +175,7 @@ class Projection(pd.DataFrame):
         Projection.altaz_to_thetaphi : Convert horizontal coordinates alt, az
             to FoV coordinates theta, phi.
         """
-        return self.telescope.thetaphi_to_altaz(theta, phi)
+        return self.telescope.theta_phi_to_alt_az(theta, phi)
 
     def FoV_to_hor(self, x_FoV, y_FoV, z_FoV):
         """
@@ -197,7 +197,7 @@ class Projection(pd.DataFrame):
         --------
         Projection.hor_to_FoV : Convert cartesian coordinates from horizontal
             system to FoV system.
-        Projection.thetaphi_to_altaz : Convert FoV coordinates theta, phi to
+        Projection.theta_phi_to_alt_az : Convert FoV coordinates theta, phi to
             horizontal coordinates alt, az.
         """
         return self.telescope.FoV_to_hor(x_FoV, y_FoV, z_FoV)
@@ -308,8 +308,8 @@ def _projection(projection, telescope, track):
         projection.theta_top = theta_i
         projection.phi_top = phi_i
     else:
-        distance_top, alt_top, az_top, theta_top, phi_top = telescope.spherical(
-            track.x_top, track.y_top, track.z_top)
+        distance_top, alt_top, az_top, theta_top, phi_top = (
+            telescope.spherical(track.x_top, track.y_top, track.z_top))
         projection.alt_top = alt_top
         projection.az_top = az_top
         projection.theta_top = theta_top

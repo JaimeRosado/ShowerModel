@@ -21,7 +21,8 @@ class Fluorescence(pd.DataFrame):
 
     Fluorescence light is evaluated at each of the 57 bands of the fluorescence
     spectrum in the 280 - 670 nm range based on the parameterization described
-    in D. Morcuende et al., Astropart. Phys. 107(2019)26 and references therein.
+    in D. Morcuende et al., Astropart. Phys. 107(2019)26 and references
+    therein.
 
     Parameters
     ----------
@@ -31,15 +32,19 @@ class Fluorescence(pd.DataFrame):
     Attributes
     ----------
     281 : float
-        Column 0, number of fluorescence photons in the band centered at 281 nm.
+        Column 0, number of fluorescence photons in the band centered at
+        281 nm.
     282 : float
-        Column 1, number of fluorescence photons in the band centered at 282 nm.
+        Column 1, number of fluorescence photons in the band centered at
+        282 nm.
     296 : float
-        Column 2, number of fluorescence photons in the band centered at 296 nm.
+        Column 2, number of fluorescence photons in the band centered at
+        296 nm.
     ... :float
         Column ...
     666 : float
-        Column 56, number of fluorescence photons in the band centered at 666 nm.
+        Column 56, number of fluorescence photons in the band centered at
+        666 nm.
     profile : Profile
     atmosphere : Atmosphere
 

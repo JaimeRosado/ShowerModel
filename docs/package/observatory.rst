@@ -13,3 +13,7 @@ Observatory
 *Methods:*
    .. automethod:: showermodel.observatory.Observatory.show
       :noindex:
+   .. automethod:: showermodel.observatory.Observatory.append
+      :noindex:
+   .. automethod:: showermodel.observatory.Observatory.set_pointing
+      :noindex:
