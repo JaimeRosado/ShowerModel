@@ -1,11 +1,11 @@
 cff-version: 1.1.0
 message: "If you use this software, please cite it as below."
 authors:
-  - family-names: Jaime
-    given-names: Rosado
+  - family-names: Rosado
+    given-names: Jaime
     orcid: https://orcid.org/0000-0001-8208-9480
-  - family-names: Daniel
-    given-names: Morcuende
+  - family-names: Morcuende
+    given-names: Daniel
     orcid: https://orcid.org/0000-0001-9400-0922
 title: ShowerModel
 doi: 10.5281/zenodo.6773258
