@@ -59,6 +59,6 @@ Otherwise, open an Issue with your error.
 
 
 ## Further information
-See our presentation video and poster from ADASS XXX conference https://adass2020.es/:
+See our presentation video and contribution to ADASS XXX conference:
 * https://drive.google.com/file/d/14AGV91mQXDwecGy2qxgNEmWeIcxKy_I0/view?usp=sharing
-* https://adass2020.es/static/ftp/P4-176/P4-176.pdf
+* [https://adass2020.es/static/ftp/P4-176/P4-176.pdf](https://www.aspbooks.org/a/volumes/article_details/?paper_id=40528)
